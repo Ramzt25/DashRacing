@@ -9,6 +9,7 @@ import { registerAIRoutes } from './routes/ai.js';
 import { registerWebScrapingRoutes } from './routes/webscraping.js';
 import { registerUserStatsRoutes } from './routes/userstats.js';
 import { registerLiveRoutes } from './routes/live.js';
+import { registerAdminRoutes } from './routes/admin.js';
 import registerVehicleRoutes from './routes/vehicles.js';
 import { ENV } from './env.js';
 
@@ -47,6 +48,7 @@ await registerAIRoutes(app);
 await registerWebScrapingRoutes(app);
 await registerUserStatsRoutes(app);
 await registerLiveRoutes(app);
+await registerAdminRoutes(app);
 app.register(registerVehicleRoutes, { prefix: '/vehicles' });
 app.register(registerVehicleRoutes, { prefix: '/api/vehicles' });
 

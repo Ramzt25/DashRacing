@@ -5,8 +5,12 @@
   "scripts": {
     "test": "jest",
     "test:api": "jest comprehensive-api-test",
+    "test:integration": "jest integration/",
+    "test:performance": "jest performance/",
+    "test:security": "jest security/",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:all": "npm run test:integration && npm run test:performance && npm run test:security",
     "pretest": "npm run check:dependencies",
     "check:dependencies": "node check-dependencies.js",
     "health:check": "node health-check.js"
