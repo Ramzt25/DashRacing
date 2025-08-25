@@ -5,7 +5,7 @@
     "**/.env.local",
     "**/.env.production"
   ],
-  "tasks": {
+  "pipeline": {
     "build": {
       "dependsOn": ["^build", "db:generate"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"],
