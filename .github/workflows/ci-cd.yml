@@ -1,0 +1,194 @@
+name: DashRacing CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  NODE_VERSION: '18'
+  DATABASE_URL: 'file:./test.db'
+
+jobs:
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        test-type: [integration, performance, security]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        cd tests && npm ci
+
+    - name: Setup test database
+      run: |
+        npx prisma generate
+        npx prisma db push --force-reset
+
+    - name: Start backend for testing
+      run: |
+        npm run build
+        npm start &
+        sleep 10
+      env:
+        DATABASE_URL: ${{ env.DATABASE_URL }}
+        PORT: 3000
+
+    - name: Run ${{ matrix.test-type }} tests
+      run: |
+        cd tests
+        npm run test:${{ matrix.test-type }}
+      env:
+        API_URL: http://localhost:3000
+        TEST_TIMEOUT: 30000
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.test-type }}
+        path: tests/coverage/
+
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Type check
+      run: npm run type-check
+
+    - name: Build backend
+      run: npm run build
+
+    - name: Build admin portal
+      run: |
+        cd admin-portal
+        npm ci
+        npm run build
+
+    - name: Build mobile app (validation)
+      run: |
+        cd mobile
+        npm ci
+        npm run type-check
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run security audit
+      run: npm audit --audit-level moderate
+
+    - name: Check for vulnerabilities
+      run: |
+        cd tests
+        npm ci
+        npm run test:security
+
+  lint:
+    name: Lint and Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run ESLint
+      run: npm run lint
+
+    - name: Check formatting
+      run: npm run format -- --check
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [test, build, security-scan, lint]
+    if: github.ref == 'refs/heads/develop'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to staging
+      run: |
+        echo "Deploying to staging environment..."
+        # Add actual deployment commands here
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [test, build, security-scan, lint]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to production
+      run: |
+        echo "Deploying to production environment..."
+        # Add actual deployment commands here
+
+  notify:
+    name: Notification
+    runs-on: ubuntu-latest
+    needs: [test, build, security-scan, lint]
+    if: always()
+
+    steps:
+    - name: Notify on success
+      if: ${{ success() }}
+      run: echo "✅ All checks passed successfully!"
+
+    - name: Notify on failure
+      if: ${{ failure() }}
+      run: echo "❌ Some checks failed. Please review the logs."
