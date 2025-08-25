@@ -10,6 +10,11 @@ node_modules
 dist/
 build/
 .expo/
+*/dist/
+*/build/
+*/.expo/
+*/android/build/
+*/android/.gradle/
 
 # Dependencies
 node_modules/
@@ -30,3 +35,7 @@ npm-debug.log*
 # Database
 *.db
 !schema.prisma
+
+# Backup files
+*_backup.*
+*.backup
