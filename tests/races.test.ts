@@ -1,6 +1,6 @@
 import { test, expect } from '@jest/globals';
-import { buildServer } from '../src/plugins';
-import { registerAuthRoutes } from '../src/auth';
+import { buildServer } from '../backend/plugins';
+import { registerAuthRoutes } from '../backend/auth';
 
 describe('Races API', () => {
   let app: any;

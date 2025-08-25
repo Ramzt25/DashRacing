@@ -1,0 +1,924 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DashRacing Platform - Test Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; border-bottom: 2px solid #007bff; padding-bottom: 20px; margin-bottom: 30px; }
+        .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .metric { background: #f8f9fa; padding: 15px; border-radius: 5px; text-align: center; border-left: 4px solid #007bff; }
+        .metric.success { border-left-color: #28a745; }
+        .metric.warning { border-left-color: #ffc107; }
+        .metric.danger { border-left-color: #dc3545; }
+        .test-suite { margin-bottom: 25px; border: 1px solid #ddd; border-radius: 5px; }
+        .suite-header { background: #007bff; color: white; padding: 10px 15px; font-weight: bold; }
+        .suite-content { padding: 15px; }
+        .test-item { padding: 8px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .test-item:last-child { border-bottom: none; }
+        .status-passed { color: #28a745; font-weight: bold; }
+        .status-failed { color: #dc3545; font-weight: bold; }
+        .recommendations { background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 15px; margin-top: 20px; }
+        .error-details { background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; padding: 10px; margin-top: 10px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏁 DashRacing Platform</h1>
+            <h2>Comprehensive Test Report</h2>
+            <p>Generated: 2025-08-25T21:15:51.576Z</p>
+        </div>
+        
+        <div class="summary">
+            <div class="metric warning">
+                <h3>17%</h3>
+                <p>Pass Rate</p>
+            </div>
+            <div class="metric success">
+                <h3>1</h3>
+                <p>Tests Passed</p>
+            </div>
+            <div class="metric danger">
+                <h3>5</h3>
+                <p>Tests Failed</p>
+            </div>
+            <div class="metric">
+                <h3>6</h3>
+                <p>Total Tests</p>
+            </div>
+        </div>
+        
+        
+            <div class="test-suite">
+                <div class="suite-header">
+                    Infrastructure Tests (1/2 passed)
+                </div>
+                <div class="suite-content">
+                    
+                        <div class="test-item">
+                            <span>Health Check</span>
+                            <span class="status-failed">FAILED</span>
+                        </div>
+                        <div class="error-details"><strong>Error:</strong> Command failed: node health-check.js</div>
+                    
+                        <div class="test-item">
+                            <span>Dependencies Check</span>
+                            <span class="status-passed">PASSED</span>
+                        </div>
+                        
+                    
+                </div>
+            </div>
+        
+            <div class="test-suite">
+                <div class="suite-header">
+                    Integration Tests (0/1 passed)
+                </div>
+                <div class="suite-content">
+                    
+                        <div class="test-item">
+                            <span>Integration Tests</span>
+                            <span class="status-failed">FAILED</span>
+                        </div>
+                        <div class="error-details"><strong>Error:</strong> Command failed: npm run test:integration
+FAIL integration/api-endpoints.test.ts
+  API Endpoints Integration Tests
+    Authentication Endpoints
+      ✕ POST /auth/register - should create new user (1 ms)
+      ✕ POST /auth/login - should authenticate user
+      ✕ POST /auth/login - should reject invalid credentials
+    Car Management Endpoints
+      ✕ POST /cars - should create a new car (1 ms)
+      ✕ GET /cars - should list user cars
+      ✕ GET /cars/:id - should get specific car
+      ✕ PUT /cars/:id - should update car (1 ms)
+    Race Management Endpoints
+      ✕ POST /races - should create a new race
+      ✕ GET /races - should list races
+      ✕ POST /races/:id/join - should join a race
+      ✕ GET /races/:id/participants - should list race participants
+    User Statistics Endpoints
+      ✕ GET /my/stats - should get current user stats
+      ✕ GET /leaderboard - should get leaderboard
+      ✕ GET /users/:id/stats - should get specific user stats
+    Event Management Endpoints
+      ✕ GET /events - should list events
+      ✕ POST /events - should create new event
+    Health and System Endpoints
+      ✕ GET /health - should return system health
+      ✕ GET / - should return API info
+
+  ● API Endpoints Integration Tests › Authentication Endpoints › POST /auth/register - should create new user
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › Authentication Endpoints › POST /auth/login - should authenticate user
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › Authentication Endpoints › POST /auth/login - should reject invalid credentials
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › Car Management Endpoints › POST /cars - should create a new car
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › Car Management Endpoints › GET /cars - should list user cars
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › Car Management Endpoints › GET /cars/:id - should get specific car
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › Car Management Endpoints › PUT /cars/:id - should update car
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › Race Management Endpoints › POST /races - should create a new race
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › Race Management Endpoints › GET /races - should list races
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › Race Management Endpoints › POST /races/:id/join - should join a race
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › Race Management Endpoints › GET /races/:id/participants - should list race participants
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › User Statistics Endpoints › GET /my/stats - should get current user stats
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › User Statistics Endpoints › GET /leaderboard - should get leaderboard
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › User Statistics Endpoints › GET /users/:id/stats - should get specific user stats
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › Event Management Endpoints › GET /events - should list events
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › Event Management Endpoints › POST /events - should create new event
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › Health and System Endpoints › GET /health - should return system health
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● API Endpoints Integration Tests › Health and System Endpoints › GET / - should return API info
+
+    AggregateError:
+
+    [0m [90m 19 |[39m
+     [90m 20 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 21 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 22 |[39m       email[33m:[39m [32m`test-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 23 |[39m       password[33m:[39m [32m'TestPassword123!'[39m[33m,[39m
+     [90m 24 |[39m       handle[33m:[39m [32m`testuser${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (integration/api-endpoints.test.ts:21:30)
+
+    Cause:
+    AggregateError:
+
+
+
+Test Suites: 1 failed, 1 total
+Tests:       18 failed, 18 total
+Snapshots:   0 total
+Time:        2.065 s
+Ran all test suites matching /integration\//i.
+</div>
+                    
+                </div>
+            </div>
+        
+            <div class="test-suite">
+                <div class="suite-header">
+                    Performance Tests (0/1 passed)
+                </div>
+                <div class="suite-content">
+                    
+                        <div class="test-item">
+                            <span>Performance Tests</span>
+                            <span class="status-failed">FAILED</span>
+                        </div>
+                        <div class="error-details"><strong>Error:</strong> Command failed: npm run test:performance
+FAIL performance/load-tests.test.ts
+  Performance and Load Tests
+    API Response Time Tests
+      ✕ GET /health - should respond within 100ms (1 ms)
+      ✕ GET /races - should respond within 500ms (1 ms)
+      ✕ GET /leaderboard - should respond within 1000ms
+      ✕ GET /my/stats - should respond within 500ms
+    Load Testing
+      ✕ Health endpoint load test - 100 requests, 10 concurrent (1 ms)
+      ✕ Races endpoint load test - 50 requests, 5 concurrent
+      ✕ Leaderboard endpoint load test - 30 requests, 3 concurrent
+      ✕ Authentication load test - 20 logins, 2 concurrent
+    Memory and Resource Usage Tests
+      ✕ Large payload handling - should handle large car data
+      ✕ Concurrent car creation - stress test
+    Database Performance Tests
+      ✕ Large dataset queries - leaderboard performance (1 ms)
+      ✕ Complex stats queries - user statistics performance
+
+  ● Performance and Load Tests › API Response Time Tests › GET /health - should respond within 100ms
+
+    AggregateError:
+
+    [0m [90m 26 |[39m
+     [90m 27 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 28 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 29 |[39m       email[33m:[39m [32m`perftest-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 30 |[39m       password[33m:[39m [32m'PerfTest123!'[39m[33m,[39m
+     [90m 31 |[39m       handle[33m:[39m [32m`perftest${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (performance/load-tests.test.ts:28:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● Performance and Load Tests › API Response Time Tests › GET /races - should respond within 500ms
+
+    AggregateError:
+
+    [0m [90m 26 |[39m
+     [90m 27 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 28 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 29 |[39m       email[33m:[39m [32m`perftest-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 30 |[39m       password[33m:[39m [32m'PerfTest123!'[39m[33m,[39m
+     [90m 31 |[39m       handle[33m:[39m [32m`perftest${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (performance/load-tests.test.ts:28:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● Performance and Load Tests › API Response Time Tests › GET /leaderboard - should respond within 1000ms
+
+    AggregateError:
+
+    [0m [90m 26 |[39m
+     [90m 27 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 28 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 29 |[39m       email[33m:[39m [32m`perftest-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 30 |[39m       password[33m:[39m [32m'PerfTest123!'[39m[33m,[39m
+     [90m 31 |[39m       handle[33m:[39m [32m`perftest${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (performance/load-tests.test.ts:28:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● Performance and Load Tests › API Response Time Tests › GET /my/stats - should respond within 500ms
+
+    AggregateError:
+
+    [0m [90m 26 |[39m
+     [90m 27 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 28 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 29 |[39m       email[33m:[39m [32m`perftest-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 30 |[39m       password[33m:[39m [32m'PerfTest123!'[39m[33m,[39m
+     [90m 31 |[39m       handle[33m:[39m [32m`perftest${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (performance/load-tests.test.ts:28:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● Performance and Load Tests › Load Testing › Health endpoint load test - 100 requests, 10 concurrent
+
+    AggregateError:
+
+    [0m [90m 26 |[39m
+     [90m 27 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 28 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 29 |[39m       email[33m:[39m [32m`perftest-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 30 |[39m       password[33m:[39m [32m'PerfTest123!'[39m[33m,[39m
+     [90m 31 |[39m       handle[33m:[39m [32m`perftest${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (performance/load-tests.test.ts:28:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● Performance and Load Tests › Load Testing › Races endpoint load test - 50 requests, 5 concurrent
+
+    AggregateError:
+
+    [0m [90m 26 |[39m
+     [90m 27 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 28 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 29 |[39m       email[33m:[39m [32m`perftest-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 30 |[39m       password[33m:[39m [32m'PerfTest123!'[39m[33m,[39m
+     [90m 31 |[39m       handle[33m:[39m [32m`perftest${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (performance/load-tests.test.ts:28:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● Performance and Load Tests › Load Testing › Leaderboard endpoint load test - 30 requests, 3 concurrent
+
+    AggregateError:
+
+    [0m [90m 26 |[39m
+     [90m 27 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 28 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 29 |[39m       email[33m:[39m [32m`perftest-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 30 |[39m       password[33m:[39m [32m'PerfTest123!'[39m[33m,[39m
+     [90m 31 |[39m       handle[33m:[39m [32m`perftest${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (performance/load-tests.test.ts:28:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● Performance and Load Tests › Load Testing › Authentication load test - 20 logins, 2 concurrent
+
+    AggregateError:
+
+    [0m [90m 26 |[39m
+     [90m 27 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 28 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 29 |[39m       email[33m:[39m [32m`perftest-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 30 |[39m       password[33m:[39m [32m'PerfTest123!'[39m[33m,[39m
+     [90m 31 |[39m       handle[33m:[39m [32m`perftest${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (performance/load-tests.test.ts:28:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● Performance and Load Tests › Memory and Resource Usage Tests › Large payload handling - should handle large car data
+
+    AggregateError:
+
+    [0m [90m 26 |[39m
+     [90m 27 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 28 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 29 |[39m       email[33m:[39m [32m`perftest-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 30 |[39m       password[33m:[39m [32m'PerfTest123!'[39m[33m,[39m
+     [90m 31 |[39m       handle[33m:[39m [32m`perftest${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (performance/load-tests.test.ts:28:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● Performance and Load Tests › Memory and Resource Usage Tests › Concurrent car creation - stress test
+
+    AggregateError:
+
+    [0m [90m 26 |[39m
+     [90m 27 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 28 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 29 |[39m       email[33m:[39m [32m`perftest-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 30 |[39m       password[33m:[39m [32m'PerfTest123!'[39m[33m,[39m
+     [90m 31 |[39m       handle[33m:[39m [32m`perftest${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (performance/load-tests.test.ts:28:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● Performance and Load Tests › Database Performance Tests › Large dataset queries - leaderboard performance
+
+    AggregateError:
+
+    [0m [90m 26 |[39m
+     [90m 27 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 28 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 29 |[39m       email[33m:[39m [32m`perftest-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 30 |[39m       password[33m:[39m [32m'PerfTest123!'[39m[33m,[39m
+     [90m 31 |[39m       handle[33m:[39m [32m`perftest${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (performance/load-tests.test.ts:28:30)
+
+    Cause:
+    AggregateError:
+
+
+
+  ● Performance and Load Tests › Database Performance Tests › Complex stats queries - user statistics performance
+
+    AggregateError:
+
+    [0m [90m 26 |[39m
+     [90m 27 |[39m     [90m// Create test user and get auth token[39m
+    [31m[1m>[22m[39m[90m 28 |[39m     [36mconst[39m registerResponse [33m=[39m [36mawait[39m api[33m.[39mpost([32m'/auth/register'[39m[33m,[39m {
+     [90m    |[39m                              [31m[1m^[22m[39m
+     [90m 29 |[39m       email[33m:[39m [32m`perftest-${Date.now()}@example.com`[39m[33m,[39m
+     [90m 30 |[39m       password[33m:[39m [32m'PerfTest123!'[39m[33m,[39m
+     [90m 31 |[39m       handle[33m:[39m [32m`perftest${Date.now()}`[39m[33m,[39m[0m
+
+      at Function.Object.<anonymous>.AxiosError.from (node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (node_modules/axios/lib/adapters/http.js:620:25)
+      at ClientRequest.eventHandlers.<computed> (node_modules/follow-redirects/index.js:49:24)
+      at Axios.request (node_modules/axios/lib/core/Axios.js:45:41)
+      at Object.<anonymous> (performance/load-tests.test.ts:28:30)
+
+    Cause:
+    AggregateError:
+
+
+
+Test Suites: 1 failed, 1 total
+Tests:       12 failed, 12 total
+Snapshots:   0 total
+Time:        2.003 s
+Ran all test suites matching /performance\//i.
+</div>
+                    
+                </div>
+            </div>
+        
+            <div class="test-suite">
+                <div class="suite-header">
+                    Security Tests (0/1 passed)
+                </div>
+                <div class="suite-content">
+                    
+                        <div class="test-item">
+                            <span>Security Tests</span>
+                            <span class="status-failed">FAILED</span>
+                        </div>
+                        <div class="error-details"><strong>Error:</strong> Command failed: npm run test:security
+FAIL security/security-tests.test.ts
+  ● Test suite failed to run
+
+    [96msecurity/security-tests.test.ts[0m:[93m188[0m:[93m31[0m - [91merror[0m[90m TS2339: [0mProperty 'toBeOneOf' does not exist on type 'Matchers<void, number> & SnapshotMatchers<void, number> & Inverse<JestMatchers<void, number>> & PromiseMatchers<number>'.
+
+    [7m188[0m       expect(response.status).toBeOneOf([400, 413]); // Bad Request or Payload Too Large
+    [7m   [0m [91m                              ~~~~~~~~~[0m
+    [96msecurity/security-tests.test.ts[0m:[93m234[0m:[93m31[0m - [91merror[0m[90m TS2339: [0mProperty 'toBeOneOf' does not exist on type 'Matchers<void, number> & SnapshotMatchers<void, number> & Inverse<JestMatchers<void, number>> & PromiseMatchers<number>'.
+
+    [7m234[0m       expect(response.status).toBeOneOf([403, 404]);
+    [7m   [0m [91m                              ~~~~~~~~~[0m
+    [96msecurity/security-tests.test.ts[0m:[93m268[0m:[93m31[0m - [91merror[0m[90m TS2339: [0mProperty 'toBeOneOf' does not exist on type 'Matchers<void, number> & SnapshotMatchers<void, number> & Inverse<JestMatchers<void, number>> & PromiseMatchers<number>'.
+
+    [7m268[0m       expect(response.status).toBeOneOf([403, 404]);
+    [7m   [0m [91m                              ~~~~~~~~~[0m
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        1.872 s
+Ran all test suites matching /security\//i.
+</div>
+                    
+                </div>
+            </div>
+        
+            <div class="test-suite">
+                <div class="suite-header">
+                    API Comprehensive Tests (0/1 passed)
+                </div>
+                <div class="suite-content">
+                    
+                        <div class="test-item">
+                            <span>API Tests</span>
+                            <span class="status-failed">FAILED</span>
+                        </div>
+                        <div class="error-details"><strong>Error:</strong> Command failed: npm run test:api</div>
+                    
+                </div>
+            </div>
+        
+        
+        
+            <div class="recommendations">
+                <h3>🔧 Recommendations for 100% Functionality</h3>
+                <ul>
+                    
+                        <li><strong>[High]</strong> Fix failing tests to achieve 100% pass rate<br>
+                        <small>5 tests are currently failing</small></li>
+                    
+                        <li><strong>[Critical]</strong> Start backend services and verify connections<br>
+                        <small>Infrastructure tests indicate services are not running</small></li>
+                    
+                </ul>
+            </div>
+        
+    </div>
+</body>
+</html>

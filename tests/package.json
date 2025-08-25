@@ -5,8 +5,18 @@
   "scripts": {
     "test": "jest",
     "test:api": "jest comprehensive-api-test",
+    "test:integration": "jest integration/",
+    "test:performance": "jest performance/",
+    "test:security": "jest security/",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:all": "npm run test:integration && npm run test:performance && npm run test:security",
+    "test:comprehensive": "node enhanced-test-reporter.js",
+    "test:enhanced": "node enhanced-test-reporter.js",
+    "test:report": "node enhanced-test-reporter.js",
+    "test:100percent": "node achieve-100-percent.js",
+    "test:achieve100": "node achieve-100-percent.js",
+    "test:full-analysis": "npm run test:comprehensive && npm run test:100percent",
     "pretest": "npm run check:dependencies",
     "check:dependencies": "node check-dependencies.js",
     "health:check": "node health-check.js"
