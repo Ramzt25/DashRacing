@@ -1,0 +1,57 @@
+{
+  "expo": {
+    "name": "Dash",
+    "slug": "gridghost-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a1a1a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyCKBUC9ZTb7Dp-LHSgNh212EBBj6rmFauI"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1a1a1a"
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "package": "com.dash.mobile",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCKBUC9ZTb7Dp-LHSgNh212EBBj6rmFauI"
+        }
+      }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Dash to use your location to show nearby races and events."
+        }
+      ]
+    ],
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "834ee6a0-1edf-49c7-bf37-2bfcea6f14b3"
+      },
+      "googleApiKey": "AIzaSyCKBUC9ZTb7Dp-LHSgNh212EBBj6rmFauI"
+    },
+    "owner": "ramzt25"
+  }
+}

@@ -1,0 +1,55 @@
+# GridGhost Racing Platform - Azure Configuration
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/refs/heads/main/schemas/v1.0/azure.yaml.json
+
+name: gridghost
+metadata:
+  template: gridghost-racing-platform@1.0.0
+
+infra:
+  provider: bicep
+  path: infra
+
+services:
+  gridghost-api:
+    project: src
+    host: containerapp
+    language: ts
+    docker:
+      path: ./Dockerfile
+      context: .
+    env:
+      NODE_ENV: production
+      CORS_ORIGIN: "*"
+  
+  gridghost-mobile:
+    project: gridghost-mobile-v2
+    host: staticwebapp
+    language: ts
+    dist: dist
+
+# Hooks for build and deployment
+hooks:
+  preprovision:
+    shell: pwsh
+    run: |
+      Write-Host "Preparing GridGhost for deployment..."
+      npm install
+      npm run db:generate
+      
+  postprovision:
+    shell: pwsh
+    run: |
+      Write-Host "GridGhost infrastructure provisioned successfully!"
+      
+  predeploy:
+    shell: pwsh
+    run: |
+      Write-Host "Building GridGhost applications..."
+      npm run build
+      
+  postdeploy:
+    shell: pwsh
+    run: |
+      Write-Host "GridGhost deployed successfully!"
+      Write-Host "Backend API: $env:GRIDGHOST_API_URL"
+      Write-Host "Mobile App: $env:GRIDGHOST_MOBILE_URL"

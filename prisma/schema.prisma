@@ -1,0 +1,304 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  handle       String   @unique
+  displayName  String?
+  firstName    String?
+  lastName     String?
+  role         String   @default("user")
+  presenceMode String   @default("METRO") // OFF | METRO | VENUE
+  
+  // Subscription fields
+  isPro        Boolean  @default(false)
+  subscriptionTier String? // 'monthly' | 'yearly' | null
+  subscriptionStart DateTime?
+  subscriptionEnd   DateTime?
+  subscriptionId    String? // For payment processor
+
+  // Relationships
+  cars             Car[]
+  attendances      Attendance[]
+  createdRaces     Race[]
+  raceParticipants RaceParticipant[]
+  raceSessions     RaceSession[]
+  raceResults      RaceResult[] @relation("RaceResults")
+  follows          Follow[] @relation("Follower")
+  followers        Follow[] @relation("Following")
+  posts            Post[]
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Car {
+  id               String    @id @default(cuid())
+  userId           String
+  name             String
+  make             String?
+  model            String?
+  year             Int?
+  color            String?
+  class            String?
+  owned            Boolean   @default(false)
+  estimatedValue   Float?
+  imageUrl         String?
+  
+  // Physical specs
+  weightKg         Int?      // Weight in kg
+  whp              Int?      // Wheel horsepower
+  drivetrain       String?   // RWD, FWD, AWD
+  
+  // AI Performance Analysis
+  basePower        Float?    // Stock horsepower
+  baseTorque       Float?    // Stock torque
+  baseWeight       Float?    // Stock weight
+  currentPower     Float?    // Current horsepower after mods
+  currentTorque    Float?    // Current torque after mods
+  currentWeight    Float?    // Current weight after mods
+  performanceScore Float?    // AI-calculated overall performance score
+  aiAnalysisDate   DateTime? // Last AI analysis update
+  
+  // Relationships
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  modifications    Modification[]
+  raceResults      RaceResult[]
+  raceParticipants RaceParticipant[]
+  raceSessions     RaceSession[]
+  attendances      Attendance[]
+  
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Modification {
+  id       String  @id @default(cuid())
+  carId    String
+  category String
+  name     String
+  brand    String?
+  notes    String?
+  
+  // AI Enhancement Data
+  powerGain       Float?    // HP gain from this mod
+  torqueGain      Float?    // Torque gain from this mod
+  weightChange    Float?    // Weight change (negative = lighter)
+  reliabilityImpact Float? // AI-predicted reliability impact (0-1)
+  compatibilityScore Float? // AI-calculated compatibility with other mods
+  performanceGain Float?    // Overall performance improvement percentage
+  aiConfidence    Float?    // AI prediction confidence (0-1)
+  
+  // Web Scraped Data
+  marketPrice     Float?    // Current market price
+  availability    String?   // In stock, backorder, discontinued
+  vendorUrl       String?   // Where to buy
+  reviews         Json?     // Scraped review data
+  lastPriceUpdate DateTime? // Last price scraping update
+  
+  car Car @relation(fields: [carId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Race {
+  id              String   @id @default(cuid())
+  createdById     String
+  name            String?
+  raceType        String   // drag | circuit | street | track
+  status          String   @default("pending") // pending | starting | active | completed | cancelled
+  maxParticipants Int      @default(8)
+  startTime       DateTime
+  endTime         DateTime?
+  distance        Float?   // in miles
+  entryFee        Float?
+  prizePayout     Float?
+  locationName    String?
+  locationAddress String?
+  locationLat     Float?
+  locationLon     Float?
+  rules           Json?    // Store race rules as JSON
+  weather         Json?    // Store weather conditions as JSON
+  trackConditions Json?    // Store track conditions as JSON
+  safetyFeatures  Json?    // Store safety features as JSON
+
+  createdBy    User              @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  participants RaceParticipant[]
+  sessions     RaceSession[]
+  results      RaceResult[]
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model RaceParticipant {
+  id       String @id @default(cuid())
+  raceId   String
+  racerId  String
+  carId    String?
+  position Int?
+  time     Float?
+  
+  race Race @relation(fields: [raceId], references: [id], onDelete: Cascade)
+  racer User @relation(fields: [racerId], references: [id], onDelete: Cascade)
+  car Car? @relation(fields: [carId], references: [id], onDelete: SetNull)
+  
+  @@unique([raceId, racerId])
+}
+
+model RaceResult {
+  id           String  @id @default(cuid())
+  raceId       String
+  participantId String  // Racer ID
+  carId        String?
+  position     Int?    // Final position (1st, 2nd, etc.)
+  timeSeconds  Float?  // Race time in seconds
+  topSpeed     Float?  // Top speed achieved
+  lapTimes     Json?   // Array of lap times
+  
+  // AI Performance Analysis
+  performanceScore  Float?  // AI-calculated performance rating
+  accelerationScore Float?  // 0-60, quarter mile analysis
+  handlingScore     Float?  // Cornering analysis
+  consistencyScore  Float?  // Lap time consistency
+  skillRating       Float?  // AI-estimated driver skill
+  carPotential      Float?  // How much car potential was utilized
+  
+  // Detailed Telemetry
+  telemetryData     Json?   // Comprehensive race data
+  weatherConditions String? // Weather during race
+  trackCondition    String? // Track surface conditions
+  
+  race Race @relation(fields: [raceId], references: [id], onDelete: Cascade)
+  racer User @relation("RaceResults", fields: [participantId], references: [id], onDelete: Cascade)
+  car Car? @relation(fields: [carId], references: [id], onDelete: SetNull)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([raceId, participantId])
+}
+
+model RaceSession {
+  id              String   @id @default(cuid())
+  raceId          String?  // Optional - can be standalone session
+  userId          String
+  carId           String?
+  startTime       DateTime
+  endTime         DateTime?
+  isCompleted     Boolean  @default(false)
+  sessionType     String   @default("practice") // practice | qualifying | race
+  totalDistance   Float?   // in miles
+  maxSpeed        Float?   // in mph
+  averageSpeed    Float?   // in mph
+  zeroToSixty     Float?   // in seconds
+  quarterMile     Float?   // in seconds
+  halfMile        Float?   // in seconds
+  lapTimes        Json?    // Store lap times as JSON array
+  gForces         Json?    // Store g-force data as JSON
+  
+  // AI Performance Analysis
+  performanceScore Float?  // AI-calculated session performance
+  drivingStyle     String? // AI-analyzed driving style (aggressive, smooth, etc.)
+  improvementTips  Json?   // AI-generated improvement suggestions
+  
+  race            Race?    @relation(fields: [raceId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  car             Car?     @relation(fields: [carId], references: [id], onDelete: SetNull)
+  gpsPoints       GPSPoint[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model GPSPoint {
+  id            String   @id @default(cuid())
+  sessionId     String
+  latitude      Float
+  longitude     Float
+  altitude      Float?
+  timestamp     DateTime
+  accuracy      Float?
+  speed         Float?   // in mph
+  heading       Float?   // in degrees
+  sequenceIndex Int      // Order in the route
+
+  session RaceSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, sequenceIndex])
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  eventType   String   // meetup | race | show | cruise
+  startTime   DateTime
+  endTime     DateTime?
+  locationName String?
+  locationAddress String?
+  locationLat Float?
+  locationLon Float?
+  maxAttendees Int?
+  entryFee    Float?
+  requirements Json?   // Store requirements as JSON
+  tags        String[] // Store tags as array
+  imageUrl    String?
+  isPublic    Boolean  @default(true)
+  status      String   @default("upcoming") // upcoming | active | completed | cancelled
+  
+  attendances Attendance[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Attendance {
+  id      String @id @default(cuid())
+  eventId String
+  userId  String
+  carId   String?
+  status  String @default("going") // going | maybe | not_going
+  notes   String?
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  car   Car?  @relation(fields: [carId], references: [id], onDelete: SetNull)
+
+  @@unique([eventId, userId])
+}
+
+model Follow {
+  id          String @id @default(cuid())
+  followerId  String
+  followingId String
+
+  follower  User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  authorId  String
+  content   String
+  imageUrls String[] // Store multiple image URLs
+  tags      String[] // Store hashtags as array
+  likes     Int      @default(0)
+  shares    Int      @default(0)
+  isPublic  Boolean  @default(true)
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

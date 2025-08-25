@@ -1,0 +1,67 @@
+### Signup
+POST http://localhost:4000/auth/signup
+Content-Type: application/json
+
+{
+  "email": "taylor@example.com",
+  "password": "supersecure123",
+  "handle": "taylor"
+}
+
+### Login
+POST http://localhost:4000/auth/login
+Content-Type: application/json
+
+{
+  "email": "taylor@example.com",
+  "password": "supersecure123"
+}
+
+### Set token from login response:
+# @name login
+# Use VSCode REST Client: set variable `@token={{login.response.body.$.token}}`
+
+### Me
+GET http://localhost:4000/me
+Authorization: Bearer {{token}}
+
+### Create car
+POST http://localhost:4000/cars
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Red Ghost",
+  "year": 2020,
+  "make": "Dodge",
+  "model": "Charger",
+  "whp": 520,
+  "drivetrain": "RWD"
+}
+
+### Get my cars
+GET http://localhost:4000/cars
+Authorization: Bearer {{token}}
+
+### List venues
+GET http://localhost:4000/venues
+
+### List events (all)
+GET http://localhost:4000/events
+
+### RSVP to first event (replace :id)
+POST http://localhost:4000/events/:id/rsvp
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+### Check-in (requires your lat/lon inside polygon & current time within event window)
+POST http://localhost:4000/events/:id/checkin
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "lat": 32.5620,
+  "lon": -96.9530
+}
