@@ -5,7 +5,6 @@ import {
   Car, 
   Trophy, 
   Calendar,
-  TrendingUp,
   AlertTriangle,
   Activity,
   Clock
