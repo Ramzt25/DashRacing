@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
 
 class ApiError extends Error {
   status: number;
@@ -24,6 +24,8 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
     ...options.headers,
   };
 
+  console.log(`API Request: ${url} with token: ${token ? 'present' : 'missing'}`);
+
   const response = await fetch(url, {
     ...options,
     headers,
@@ -31,6 +33,7 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ error: 'Network error' })) as { error?: string };
+    console.error(`API Error: ${response.status} - ${errorData.error || 'Unknown error'}`);
     throw new ApiError(errorData.error || 'API request failed', response.status);
   }
 
@@ -38,40 +41,40 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
 }
 
 export const ApiService = {
-  // Vehicle endpoints
+  // Car endpoints (matching backend /cars routes)
   async getVehicles() {
-    return fetchWithAuth('/vehicles');
+    return fetchWithAuth('/cars');
   },
 
   async createVehicle(vehicleData: any) {
-    return fetchWithAuth('/vehicles', {
+    return fetchWithAuth('/cars', {
       method: 'POST',
       body: JSON.stringify(vehicleData),
     });
   },
 
   async updateVehicle(vehicleId: string, updates: any) {
-    return fetchWithAuth(`/vehicles/${vehicleId}`, {
-      method: 'PUT',
+    return fetchWithAuth(`/cars/${vehicleId}`, {
+      method: 'PATCH',
       body: JSON.stringify(updates),
     });
   },
 
   async deleteVehicle(vehicleId: string) {
-    return fetchWithAuth(`/vehicles/${vehicleId}`, {
+    return fetchWithAuth(`/cars/${vehicleId}`, {
       method: 'DELETE',
     });
   },
 
   async addModification(vehicleId: string, modification: any) {
-    return fetchWithAuth(`/vehicles/${vehicleId}/modifications`, {
+    return fetchWithAuth(`/cars/${vehicleId}/mods`, {
       method: 'POST',
       body: JSON.stringify(modification),
     });
   },
 
   async updatePerformance(vehicleId: string, raceStats: any) {
-    return fetchWithAuth(`/vehicles/${vehicleId}/performance`, {
+    return fetchWithAuth(`/cars/${vehicleId}/performance`, {
       method: 'POST',
       body: JSON.stringify({ raceStats }),
     });
@@ -124,42 +127,57 @@ export const ApiService = {
     };
   },
 
-  // Race endpoints
-  async saveRaceSession(sessionData: any) {
-    return fetchWithAuth('/races/sessions', {
+  // Race endpoints - Fixed to match backend routes
+  async saveRaceSession(raceId: string, sessionData: any) {
+    return fetchWithAuth(`/races/${raceId}/sessions`, {
       method: 'POST',
       body: JSON.stringify(sessionData),
     });
   },
 
-  async loadRaceSession(sessionId: string) {
-    return fetchWithAuth(`/races/sessions/${sessionId}`);
-  },
-
-  async getUserRaceSessions() {
-    return fetchWithAuth('/races/sessions');
-  },
-
-  async updateRaceSession(sessionId: string, updates: any) {
-    return fetchWithAuth(`/races/sessions/${sessionId}`, {
-      method: 'PUT',
-      body: JSON.stringify(updates),
-    });
-  },
-
-  async deleteRaceSession(sessionId: string) {
-    return fetchWithAuth(`/races/sessions/${sessionId}`, {
-      method: 'DELETE',
+  async endRaceSession(sessionId: string, sessionData: any) {
+    return fetchWithAuth(`/races/sessions/${sessionId}/end`, {
+      method: 'PATCH',
+      body: JSON.stringify(sessionData),
     });
   },
 
   async getUserRaceStats() {
-    return fetchWithAuth('/races/stats');
+    return fetchWithAuth('/userstats/overview');
   },
 
-  // Live Map endpoints
+  // Race management
+  async getRaces() {
+    return fetchWithAuth('/races');
+  },
+
+  async getRace(raceId: string) {
+    return fetchWithAuth(`/races/${raceId}`);
+  },
+
+  async createRace(raceData: any) {
+    return fetchWithAuth('/races', {
+      method: 'POST',
+      body: JSON.stringify(raceData),
+    });
+  },
+
+  async joinRace(raceId: string, carId?: string) {
+    return fetchWithAuth(`/races/${raceId}/join`, {
+      method: 'POST',
+      body: JSON.stringify({ carId }),
+    });
+  },
+
+  async leaveRace(raceId: string) {
+    return fetchWithAuth(`/races/${raceId}/leave`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Live Map endpoints - Fixed to match backend response structure
   async updatePresence(presence: any) {
-    return fetchWithAuth('/live/presence', {
+    return fetchWithAuth('/livemap/location', {
       method: 'POST',
       body: JSON.stringify(presence),
     });
@@ -168,7 +186,13 @@ export const ApiService = {
   async getNearbyPlayers(lat: number, lng: number, radius?: number) {
     const params = new URLSearchParams({ lat: lat.toString(), lng: lng.toString() });
     if (radius) params.append('radius', radius.toString());
-    return fetchWithAuth(`/live/players?${params}`);
+    const response = await fetchWithAuth(`/live/players?${params}`) as any;
+    // Backend returns { users, count, location } but mobile expects players
+    return {
+      players: response.users || [],
+      count: response.count || 0,
+      location: response.location
+    };
   },
 
   async getNearbyEvents(lat: number, lng: number, radius?: number) {
@@ -190,7 +214,7 @@ export const ApiService = {
   },
 
   async getLiveStatus() {
-    return fetchWithAuth('/live/status');
+    return fetchWithAuth('/livemap/nearby');
   }
 };
 

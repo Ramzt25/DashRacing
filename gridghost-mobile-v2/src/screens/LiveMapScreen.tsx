@@ -1500,7 +1500,7 @@ const styles = StyleSheet.create({
   // Speed Display
   speedContainer: {
     position: 'absolute',
-    top: 60,
+    top: 120,
     left: spacing.lg,
     right: spacing.lg,
     borderRadius: 20,
@@ -1534,7 +1534,7 @@ const styles = StyleSheet.create({
   // Activity Counter
   activityContainer: {
     position: 'absolute',
-    top: 160,
+    top: 240,
     left: spacing.lg,
     right: spacing.lg,
     borderRadius: 16,

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Animated, Image, SafeAreaView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface SplashScreenProps {
   onFinish: () => void;
@@ -8,68 +8,130 @@ interface SplashScreenProps {
 
 export function SplashScreen({ onFinish }: SplashScreenProps) {
   const fadeAnim = new Animated.Value(0);
-  const scaleAnim = new Animated.Value(0.3);
+  const scaleAnim = new Animated.Value(0.8);
+  const glowAnim = new Animated.Value(0);
 
   useEffect(() => {
     // Start animations
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        tension: 50,
-        friction: 7,
-        useNativeDriver: true,
-      }),
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          tension: 40,
+          friction: 8,
+          useNativeDriver: true,
+        }),
+      ]),
+      // Add pulsing glow effect
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(glowAnim, {
+            toValue: 1,
+            duration: 1500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(glowAnim, {
+            toValue: 0,
+            duration: 1500,
+            useNativeDriver: true,
+          }),
+        ])
+      ),
     ]).start();
 
-    // Auto finish after 2.5 seconds
-    const timer = setTimeout(() => {
-      onFinish();
-    }, 2500);
-
-    return () => clearTimeout(timer);
+    // Don't auto-finish - wait for onFinish to be called from parent when auth is ready
   }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-      <Animated.View
-        style={[
-          styles.content,
-          {
-            opacity: fadeAnim,
-            transform: [{ scale: scaleAnim }],
-          },
-        ]}
-      >
-        <View style={styles.logoContainer}>
-          <Image 
-            source={require('../../assets/dash-icons/Dash.png')} 
-            style={styles.dashLogo}
-            resizeMode="contain"
-          />
-          <View style={styles.speedLines}>
-            <View style={[styles.speedLine, styles.speedLine1]} />
-            <View style={[styles.speedLine, styles.speedLine2]} />
-            <View style={[styles.speedLine, styles.speedLine3]} />
+        {/* Background gradient */}
+        <LinearGradient
+          colors={['#000000', '#1a0000', '#000000']}
+          style={styles.gradientOverlay}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        />
+        
+        {/* Main content */}
+        <Animated.View
+          style={[
+            styles.content,
+            {
+              opacity: fadeAnim,
+              transform: [{ scale: scaleAnim }],
+            },
+          ]}
+        >
+          {/* Logo container with glass effect */}
+          <View style={styles.logoContainer}>
+            <View style={styles.glassCard}>
+              <Animated.View 
+                style={[
+                  styles.logoWrapper,
+                  {
+                    shadowOpacity: glowAnim,
+                  }
+                ]}
+              >
+                <Image 
+                  source={require('../../assets/dash-icons/Dash.png')} 
+                  style={styles.dashLogo}
+                  resizeMode="contain"
+                />
+              </Animated.View>
+              
+              {/* Speed lines */}
+              <Animated.View 
+                style={[
+                  styles.speedLines,
+                  {
+                    opacity: glowAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.6, 1],
+                    }),
+                  }
+                ]}
+              >
+                <View style={[styles.speedLine, styles.speedLine1]} />
+                <View style={[styles.speedLine, styles.speedLine2]} />
+                <View style={[styles.speedLine, styles.speedLine3]} />
+                <View style={[styles.speedLine, styles.speedLine4]} />
+              </Animated.View>
+            </View>
           </View>
-        </View>
+          
+          {/* Text content */}
+          <View style={styles.textContainer}>
+            <Text style={styles.subtitle}>Street Racing Revolution</Text>
+            
+            <View style={styles.taglineContainer}>
+              <Text style={styles.tagline}>Track • Race • Dominate</Text>
+            </View>
+          </View>
+        </Animated.View>
         
-        <Text style={styles.title}>DASH</Text>
-        <Text style={styles.subtitle}>Street Racing Revolution</Text>
-        
-        <View style={styles.taglineContainer}>
-          <Text style={styles.tagline}>Track • Race • Dominate</Text>
+        {/* Loading indicator */}
+        <View style={styles.footer}>
+          <Animated.View 
+            style={[
+              styles.loadingContainer,
+              {
+                opacity: glowAnim,
+              }
+            ]}
+          >
+            <View style={styles.loadingDot} />
+            <View style={[styles.loadingDot, { marginLeft: 8 }]} />
+            <View style={[styles.loadingDot, { marginLeft: 8 }]} />
+          </Animated.View>
+          <Text style={styles.footerText}>Initializing...</Text>
         </View>
-      </Animated.View>
-      
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Powered by GPS Technology</Text>
-      </View>
       </View>
     </SafeAreaView>
   );
@@ -86,6 +148,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  gradientOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+  },
   content: {
     alignItems: 'center',
     flex: 1,
@@ -95,69 +164,137 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginBottom: 40,
   },
+  glassCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 0, 0, 0.3)',
+    padding: 30,
+    shadowColor: '#FF0000',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  logoWrapper: {
+    shadowColor: '#FF0000',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowRadius: 20,
+    elevation: 8,
+  },
   dashLogo: {
-    width: 120,
-    height: 120,
+    width: 200,  // Much bigger as requested
+    height: 200,
   },
   speedLines: {
     position: 'absolute',
-    right: -40,
-    top: 20,
+    right: -50,
+    top: 40,
   },
   speedLine: {
-    height: 2,
+    height: 3,
     backgroundColor: '#FF0000',
-    marginVertical: 3,
-    borderRadius: 1,
+    marginVertical: 4,
+    borderRadius: 2,
+    shadowColor: '#FF0000',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+    elevation: 4,
   },
   speedLine1: {
-    width: 30,
-    opacity: 0.8,
+    width: 40,
+    opacity: 1,
   },
   speedLine2: {
-    width: 25,
-    opacity: 0.6,
+    width: 35,
+    opacity: 0.8,
   },
   speedLine3: {
-    width: 20,
+    width: 30,
+    opacity: 0.6,
+  },
+  speedLine4: {
+    width: 25,
     opacity: 0.4,
   },
-  title: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 8,
-    letterSpacing: 2,
+  textContainer: {
+    alignItems: 'center',
+    marginTop: 20,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 22,
     color: '#FF0000',
-    marginBottom: 60,
-    fontWeight: '500',
-    letterSpacing: 1,
+    marginBottom: 40,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+    textShadowColor: 'rgba(255, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
   },
   taglineContainer: {
     backgroundColor: 'rgba(255, 0, 0, 0.1)',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 20,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    borderRadius: 25,
     borderWidth: 1,
-    borderColor: '#FF0000',
+    borderColor: 'rgba(255, 0, 0, 0.4)',
+    shadowColor: '#FF0000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   tagline: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#FF0000',
-    fontWeight: '600',
-    letterSpacing: 0.5,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textShadowColor: 'rgba(255, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
   footer: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 80,
     alignItems: 'center',
   },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  loadingDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#FF0000',
+    marginHorizontal: 4,
+    shadowColor: '#FF0000',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+    elevation: 4,
+  },
   footerText: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#888',
-    fontWeight: '500',
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
 });

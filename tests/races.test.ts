@@ -1,5 +1,6 @@
 import { test, expect } from '@jest/globals';
 import { buildServer } from '../src/plugins';
+import { registerAuthRoutes } from '../src/auth';
 
 describe('Races API', () => {
   let app: any;
@@ -8,6 +9,7 @@ describe('Races API', () => {
 
   beforeAll(async () => {
     app = buildServer();
+    await registerAuthRoutes(app);
     await app.ready();
 
     // Create test user and get auth token

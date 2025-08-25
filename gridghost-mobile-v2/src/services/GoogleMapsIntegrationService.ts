@@ -139,7 +139,7 @@ export class GoogleMapsIntegrationService {
       }
 
       const data = await response.json();
-      return data.location;
+      return (data as any).location;
     } catch (error) {
       console.error('Geocoding error:', error);
       return null;
@@ -161,7 +161,7 @@ export class GoogleMapsIntegrationService {
       }
 
       const data = await response.json();
-      return data.location;
+      return (data as any).location;
     } catch (error) {
       console.error('Reverse geocoding error:', error);
       return null;

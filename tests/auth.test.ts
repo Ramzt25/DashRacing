@@ -1,6 +1,9 @@
-import { test, expect, describe, beforeAll, afterAll } from '@jest/globals';
+import { test, expect, describe, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import { buildServer } from '../src/plugins';
 import { registerAuthRoutes } from '../src/auth';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 describe('Authentication API Tests', () => {
   let app: any;
@@ -11,7 +14,27 @@ describe('Authentication API Tests', () => {
     await app.ready();
   });
 
+  beforeEach(async () => {
+    // Clean up test data before each test
+    await prisma.user.deleteMany({
+      where: {
+        email: {
+          contains: 'gridghost.com'
+        }
+      }
+    });
+  });
+
   afterAll(async () => {
+    // Final cleanup
+    await prisma.user.deleteMany({
+      where: {
+        email: {
+          contains: 'gridghost.com'
+        }
+      }
+    });
+    await prisma.$disconnect();
     await app.close();
   });
 
@@ -60,7 +83,7 @@ describe('Authentication API Tests', () => {
         }
       });
 
-      expect(response.statusCode).toBe(400);
+      expect(response.statusCode).toBe(409);
     });
   });
 
@@ -171,13 +194,13 @@ describe('Authentication API Tests', () => {
           authorization: `Bearer ${token}`
         },
         payload: {
-          subscriptionTier: 'pro'
+          subscriptionTier: 'monthly'
         }
       });
 
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
-      expect(body.subscriptionTier).toBe('pro');
+      expect(body.user.subscriptionTier).toBe('monthly');
     });
   });
 });

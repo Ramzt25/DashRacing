@@ -4,7 +4,7 @@ import { beforeAll, afterAll } from '@jest/globals';
 // Set test environment variables
 process.env.NODE_ENV = 'test';
 process.env.JWT_SECRET = 'test-jwt-secret-for-testing-only';
-process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/dash_test';
+process.env.DATABASE_URL = 'file:./test.db';
 process.env.PORT = '3001';
 process.env.ORIGIN = 'http://localhost:3000';
 

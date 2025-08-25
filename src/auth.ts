@@ -25,33 +25,56 @@ const upgradeSchema = z.object({
 export async function registerAuthRoutes(app: FastifyInstance) {
   // Register route (alias for signup to match tests)
   app.post('/auth/register', async (req, reply) => {
-    const body = signupSchema.parse(req.body);
-    const exists = await prisma.user.findFirst({ where: { OR: [{ email: body.email }, { handle: body.handle }] } });
-    if (exists) return reply.badRequest('Email or handle already in use');
-    const passwordHash = await argon.hash(body.password);
-    const user = await prisma.user.create({
-      data: { 
-        email: body.email, 
-        passwordHash, 
-        handle: body.handle || `user_${Date.now()}`, // Generate handle if not provided
-        displayName: body.displayName ?? null,
-        firstName: body.firstName ?? null,
-        lastName: body.lastName ?? null,
+    try {
+      const body = signupSchema.parse(req.body);
+      const exists = await prisma.user.findFirst({ where: { OR: [{ email: body.email }, { handle: body.handle }] } });
+      if (exists) return reply.status(409).send({ error: 'Email or handle already in use' });
+      const passwordHash = await argon.hash(body.password);
+      
+      // Set pro subscription for all new users during development
+      const subscriptionStart = new Date();
+      const subscriptionEnd = new Date();
+      subscriptionEnd.setFullYear(subscriptionEnd.getFullYear() + 1); // 1 year pro access
+      
+      const user = await prisma.user.create({
+        data: { 
+          email: body.email, 
+          passwordHash, 
+          handle: body.handle || `user_${Date.now()}`, // Generate handle if not provided
+          displayName: body.displayName ?? null,
+          firstName: body.firstName ?? null,
+          lastName: body.lastName ?? null,
+          isPro: true, // Default to pro during development
+          subscriptionTier: 'yearly',
+          subscriptionStart,
+          subscriptionEnd,
+          subscriptionId: `dev_pro_${Date.now()}`, // Development pro subscription
+        }
+      });
+      const token = app.jwt.sign({ sub: user.id });
+      reply.status(201).send({ 
+        token, 
+        user: { 
+          id: user.id, 
+          email: user.email, 
+          handle: user.handle, 
+          displayName: user.displayName,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          isPro: user.isPro,
+          subscriptionTier: user.subscriptionTier,
+        } 
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ 
+          error: 'Validation failed',
+          details: error.issues.map(e => ({ field: e.path.join('.'), message: e.message }))
+        });
       }
-    });
-    const token = app.jwt.sign({ sub: user.id });
-    reply.status(201).send({ 
-      token, 
-      user: { 
-        id: user.id, 
-        email: user.email, 
-        handle: user.handle, 
-        displayName: user.displayName,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        isPro: user.isPro,
-      } 
-    });
+      console.error('Registration error:', error);
+      return reply.status(500).send({ error: 'Internal server error' });
+    }
   });
 
   app.post('/auth/signup', async (req, reply) => {
@@ -59,6 +82,12 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     const exists = await prisma.user.findFirst({ where: { OR: [{ email: body.email }, { handle: body.handle }] } });
     if (exists) return reply.badRequest('Email or handle already in use');
     const passwordHash = await argon.hash(body.password);
+    
+    // Set pro subscription for all new users during development
+    const subscriptionStart = new Date();
+    const subscriptionEnd = new Date();
+    subscriptionEnd.setFullYear(subscriptionEnd.getFullYear() + 1); // 1 year pro access
+    
     const user = await prisma.user.create({
       data: { 
         email: body.email, 
@@ -67,29 +96,13 @@ export async function registerAuthRoutes(app: FastifyInstance) {
         displayName: body.displayName ?? null,
         firstName: body.firstName ?? null,
         lastName: body.lastName ?? null,
+        isPro: true, // Default to pro during development
+        subscriptionTier: 'yearly',
+        subscriptionStart,
+        subscriptionEnd,
+        subscriptionId: `dev_pro_${Date.now()}`, // Development pro subscription
       }
     });
-    const token = app.jwt.sign({ sub: user.id });
-    reply.send({ 
-      token, 
-      user: { 
-        id: user.id, 
-        email: user.email, 
-        handle: user.handle, 
-        displayName: user.displayName,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        isPro: user.isPro,
-      } 
-    });
-  });
-
-  app.post('/auth/login', async (req, reply) => {
-    const body = loginSchema.parse(req.body);
-    const user = await prisma.user.findUnique({ where: { email: body.email } });
-    if (!user) return reply.unauthorized('Invalid credentials');
-    const ok = await argon.verify(user.passwordHash, body.password);
-    if (!ok) return reply.unauthorized('Invalid credentials');
     const token = app.jwt.sign({ sub: user.id });
     reply.send({ 
       token, 
@@ -104,6 +117,39 @@ export async function registerAuthRoutes(app: FastifyInstance) {
         subscriptionTier: user.subscriptionTier,
       } 
     });
+  });
+
+  app.post('/auth/login', async (req, reply) => {
+    try {
+      const body = loginSchema.parse(req.body);
+      const user = await prisma.user.findUnique({ where: { email: body.email } });
+      if (!user) return reply.status(401).send({ error: 'Invalid credentials' });
+      const ok = await argon.verify(user.passwordHash, body.password);
+      if (!ok) return reply.status(401).send({ error: 'Invalid credentials' });
+      const token = app.jwt.sign({ sub: user.id });
+      reply.send({ 
+        token, 
+        user: { 
+          id: user.id, 
+          email: user.email, 
+          handle: user.handle, 
+          displayName: user.displayName,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          isPro: user.isPro,
+          subscriptionTier: user.subscriptionTier,
+        } 
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ 
+          error: 'Validation failed',
+          details: error.issues.map(e => ({ field: e.path.join('.'), message: e.message }))
+        });
+      }
+      console.error('Login error:', error);
+      return reply.status(500).send({ error: 'Internal server error' });
+    }
   });
 
   app.get('/me', { preHandler: [authGuard] }, async (req: any) => {

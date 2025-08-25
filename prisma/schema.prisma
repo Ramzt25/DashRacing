@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -250,7 +250,7 @@ model Event {
   maxAttendees Int?
   entryFee    Float?
   requirements Json?   // Store requirements as JSON
-  tags        String[] // Store tags as array
+  tags        String? // Store tags as JSON string
   imageUrl    String?
   isPublic    Boolean  @default(true)
   status      String   @default("upcoming") // upcoming | active | completed | cancelled
@@ -291,8 +291,8 @@ model Post {
   id        String   @id @default(cuid())
   authorId  String
   content   String
-  imageUrls String[] // Store multiple image URLs
-  tags      String[] // Store hashtags as array
+  imageUrls String? // Store multiple image URLs as JSON string
+  tags      String? // Store hashtags as JSON string
   likes     Int      @default(0)
   shares    Int      @default(0)
   isPublic  Boolean  @default(true)

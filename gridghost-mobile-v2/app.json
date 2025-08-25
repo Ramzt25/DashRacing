@@ -4,31 +4,38 @@
     "slug": "gridghost-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/dash-icons/icon.png",
     "userInterfaceStyle": "light",
+    "platforms": ["ios", "android", "web"],
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/dash-icons/Dash.png",
       "resizeMode": "contain",
       "backgroundColor": "#1a1a1a"
     },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.gridghost.mobile",
       "config": {
         "googleMapsApiKey": "AIzaSyCKBUC9ZTb7Dp-LHSgNh212EBBj6rmFauI"
       }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/dash-icons/adaptive-icon.png",
         "backgroundColor": "#1a1a1a"
       },
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION"
+        "CAMERA",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE"
       ],
-      "package": "com.dash.mobile",
+      "package": "com.gridghost.mobile",
+      "versionCode": 1,
+      "compileSdkVersion": 34,
+      "targetSdkVersion": 34,
+      "buildToolsVersion": "34.0.0",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyCKBUC9ZTb7Dp-LHSgNh212EBBj6rmFauI"

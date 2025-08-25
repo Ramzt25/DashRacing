@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ScreenHeader } from '../components/common/ScreenHeader';
+import { useAuth } from '../context/AuthContext';
 import { colors, typography, spacing, shadows } from '../utils/theme';
 
 export function ProfileScreen({ navigation }: any) {
+  const { user, refreshUser } = useAuth();
+
+  // Refresh user data when screen opens
+  useEffect(() => {
+    refreshUser();
+  }, []);
+
   const userStats = {
     level: 25,
     experience: 8750,
@@ -57,7 +65,26 @@ export function ProfileScreen({ navigation }: any) {
         <View style={styles.avatar}>
           <Ionicons name="person" size={48} color={colors.primary} />
         </View>
-        <Text style={styles.username}>GridGhost Racer</Text>
+        <Text style={styles.username}>
+          {user?.displayName || user?.handle || 'GridGhost Racer'}
+        </Text>
+        <Text style={styles.handle}>@{user?.handle || 'unknown'}</Text>
+        
+        {/* Pro Status Badge */}
+        {user?.isPro && (
+          <View style={styles.proBadge}>
+            <LinearGradient
+              colors={['#FFD700', '#FFA500']}
+              style={styles.proBadgeGradient}
+            >
+              <Ionicons name="diamond" size={16} color="#000" />
+              <Text style={styles.proText}>
+                PRO {user.subscriptionTier?.toUpperCase() || 'MEMBER'}
+              </Text>
+            </LinearGradient>
+          </View>
+        )}
+        
         <Text style={styles.level}>Level {userStats.level}</Text>
         
         {/* Experience Bar */}
@@ -197,6 +224,29 @@ const styles = StyleSheet.create({
     ...typography.h2,
     color: colors.textPrimary,
     marginBottom: 4,
+  },
+  handle: {
+    ...typography.body,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
+  },
+  proBadge: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    marginBottom: spacing.sm,
+    ...shadows.sm,
+  },
+  proBadgeGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    gap: spacing.xs,
+  },
+  proText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#000',
   },
   level: {
     ...typography.body,
