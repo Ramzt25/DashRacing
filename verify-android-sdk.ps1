@@ -166,6 +166,35 @@ if (Test-Path $platformsPath) {
     Write-Status "Platforms directory not found" "FAIL"
 }
 
+# Check Node.js installation
+Write-Host "`n🟢 Node.js Installation:" -ForegroundColor $Cyan
+try {
+    $nodeVersion = & node --version 2>&1
+    if ($nodeVersion -match "v(\d+)\.") {
+        $majorVersion = [int]$matches[1]
+        if ($majorVersion -ge 16) {
+            Write-Status "Node.js $nodeVersion (compatible with React Native 0.79.5)" "OK"
+        } else {
+            Write-Status "Node.js $nodeVersion (requires v16+ for React Native 0.79.5)" "FAIL"
+            $missingComponents += "Node.js 16+"
+        }
+    } else {
+        Write-Status "Node.js version: $nodeVersion" "OK"
+    }
+} catch {
+    Write-Status "Node.js not found in PATH" "FAIL"
+    $missingComponents += "Node.js"
+}
+
+# Check NPM installation
+try {
+    $npmVersion = & npm --version 2>&1
+    Write-Status "npm $npmVersion" "OK"
+} catch {
+    Write-Status "npm not found in PATH" "FAIL"
+    $missingComponents += "npm"
+}
+
 # Check Java installation
 Write-Host "`n☕ Java Installation:" -ForegroundColor $Cyan
 try {
