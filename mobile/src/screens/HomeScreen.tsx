@@ -10,11 +10,11 @@ import {
   Dimensions,
   Animated,
   ActivityIndicator,
-  SafeAreaView 
+  SafeAreaView,
+  StatusBar
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar } from 'expo-status-bar';
-import { Ionicons } from '@expo/vector-icons';
+import LinearGradient from 'react-native-linear-gradient';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
@@ -113,18 +113,22 @@ export function HomeScreen({ navigation }: any) {
 
   const loadLiveMapData = async () => {
     try {
+      console.log('🗺️ Loading live map data...');
       // Week 4 Backend Integration - Enhanced Live Map Data
       const userLocation = location ? { latitude: location.latitude, longitude: location.longitude } : undefined;
       const liveStats = await RaceStatsService.getLiveMapStats(userLocation);
+      console.log('✅ Live map data loaded:', liveStats);
       
       setLiveMapData(liveStats);
       
       // Update user presence if location is available
       if (userLocation && user) {
+        console.log('📍 Updating user presence...');
         await RaceStatsService.updatePresence(userLocation, 'online');
+        console.log('✅ User presence updated');
       }
     } catch (error) {
-      console.error('Failed to load live map data:', error);
+      console.error('❌ Failed to load live map data:', error);
       setBackendConnected(false);
       
       // Fallback to mock data if backend is unavailable
@@ -141,8 +145,10 @@ export function HomeScreen({ navigation }: any) {
 
   const loadUserStats = async () => {
     try {
+      console.log('📊 Loading user stats...');
       // Week 4 Backend Integration - Enhanced User Statistics
       const stats = await RaceStatsService.getUserRaceStats();
+      console.log('✅ User stats loaded:', stats);
       const convertedMaxSpeed = convertSpeed(stats.maxSpeed, 'mph');
       
       setUserStats({
@@ -151,18 +157,21 @@ export function HomeScreen({ navigation }: any) {
       });
       
       setBackendConnected(true);
+      console.log('🔗 Backend connected');
       
       // Load AI insights if user ID is available
       if (user?.id) {
         try {
+          console.log('🤖 Loading AI insights...');
           const insights = await RaceStatsService.getUserInsights(user.id);
           setUserInsights(insights);
+          console.log('✅ AI insights loaded');
         } catch (error) {
-          console.warn('AI insights unavailable:', error);
+          console.warn('⚠️ AI insights unavailable:', error);
         }
       }
     } catch (error) {
-      console.error('Failed to load user stats:', error);
+      console.error('❌ Failed to load user stats:', error);
       setBackendConnected(false);
       
       // Fallback to mock data when backend is unavailable
@@ -651,7 +660,7 @@ export function HomeScreen({ navigation }: any) {
                     description="Starting in 5 minutes"
                   >
                     <View style={styles.eventMarkerPreview}>
-                      <Text style={styles.eventMarkerIcon}>🏁</Text>
+                      <Text style={styles.eventMarkerIcon}></Text>
                     </View>
                   </Marker>
                   <Marker

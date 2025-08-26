@@ -64,7 +64,7 @@ interface LiveStatus {
 
 export class LiveMapService {
   static async updatePresence(presence: UserPresence): Promise<{ success: boolean }> {
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000';
     
     // Get auth token from AsyncStorage
     const AsyncStorage = require('@react-native-async-storage/async-storage').default;
@@ -93,7 +93,7 @@ export class LiveMapService {
   }
 
   static async getNearbyPlayers(latitude: number, longitude: number, radius: number = 10): Promise<{ players: LivePlayer[] }> {
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000';
     
     // Get auth token from AsyncStorage
     const AsyncStorage = require('@react-native-async-storage/async-storage').default;
@@ -127,7 +127,7 @@ export class LiveMapService {
   }
 
   static async getNearbyEvents(latitude: number, longitude: number, radius: number = 10): Promise<{ events: LiveEvent[] }> {
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000';
     
     // Get auth token from AsyncStorage
     const AsyncStorage = require('@react-native-async-storage/async-storage').default;
@@ -161,7 +161,7 @@ export class LiveMapService {
   }
 
   static async joinEvent(eventId: string): Promise<{ success: boolean; error?: string }> {
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000';
     
     // Get auth token from AsyncStorage
     const AsyncStorage = require('@react-native-async-storage/async-storage').default;
@@ -188,7 +188,7 @@ export class LiveMapService {
   }
 
   static async leaveEvent(eventId: string): Promise<{ success: boolean; error?: string }> {
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000';
     
     // Get auth token from AsyncStorage
     const AsyncStorage = require('@react-native-async-storage/async-storage').default;
@@ -215,7 +215,7 @@ export class LiveMapService {
   }
 
   static async getLiveStatus(): Promise<LiveStatus> {
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000';
     
     // Get auth token from AsyncStorage
     const AsyncStorage = require('@react-native-async-storage/async-storage').default;

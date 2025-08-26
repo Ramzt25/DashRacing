@@ -7,11 +7,11 @@ import {
   TouchableOpacity, 
   RefreshControl,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  StatusBar
 } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, typography, shadows } from '../utils/theme';
 import { DashIcon } from '../components/DashIcon';
 import { ScreenHeader } from '../components/common/ScreenHeader';
@@ -146,7 +146,7 @@ export function MeetupsScreen({ navigation }: any) {
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <StatusBar style="light" />
+        <StatusBar barStyle="light-content" backgroundColor="#000" />
         <ScreenHeader title="Meetups" onBackPress={() => navigation.goBack()} />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
@@ -158,7 +158,7 @@ export function MeetupsScreen({ navigation }: any) {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar barStyle="light-content" backgroundColor="#000" />
       <ScreenHeader title="Meetups" onBackPress={() => navigation.goBack()} />
       
       <ScrollView 

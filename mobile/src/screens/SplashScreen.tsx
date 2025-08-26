@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Animated, Image, SafeAreaView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 
 interface SplashScreenProps {
   onFinish: () => void;
@@ -48,7 +48,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
 
     // Call onFinish after animations have had time to show
     const finishTimer = setTimeout(() => {
-      console.log('🏁 SplashScreen calling onFinish');
+      console.log(' SplashScreen calling onFinish');
       onFinish();
     }, 1200); // Let the initial animations complete
     

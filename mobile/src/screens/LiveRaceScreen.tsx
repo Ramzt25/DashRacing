@@ -8,8 +8,8 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { StatusBar } from 'expo-status-bar';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { StatusBar } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { ScreenHeader } from '../components/common/ScreenHeader';
 import { RaceService } from '../services/RaceService';

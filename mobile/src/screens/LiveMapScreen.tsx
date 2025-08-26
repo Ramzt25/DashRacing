@@ -12,12 +12,12 @@ import {
   Dimensions,
   TextInput 
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ScreenHeader } from '../components/common/ScreenHeader';
-import * as Location from 'expo-location';
-import { StatusBar } from 'expo-status-bar';
+import Geolocation from 'react-native-geolocation-service';
+import { StatusBar } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
-import { LinearGradient } from 'expo-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
 import { colors, spacing, typography, shadows } from '../utils/theme';
@@ -441,12 +441,12 @@ export function LiveMapScreen({ navigation }: any) {
 
   const getEventIcon = (type: string) => {
     switch (type) {
-      case 'drag_race': return '🏁';
-      case 'street_race': return '🏎️';
-      case 'time_trial': return '⏱️';
-      case 'drift_competition': return '🌪️';
-      case 'car_meet': return '🚗';
-      case 'custom_race': return '🎯';
+      case 'drag_race': return '';
+      case 'street_race': return '';
+      case 'time_trial': return '';
+      case 'drift_competition': return '';
+      case 'car_meet': return '';
+      case 'custom_race': return '';
       default: return '📍';
     }
   };
@@ -472,7 +472,7 @@ export function LiveMapScreen({ navigation }: any) {
     }
   };
 
-  // Handle map press - CREATE ANYTHING ANYWHERE! 🎯
+  // Handle map press - CREATE ANYTHING ANYWHERE! 
   const handleMapPress = (event: any) => {
     const coordinate = event.nativeEvent.coordinate;
     setSelectedMapLocation({
@@ -492,14 +492,14 @@ export function LiveMapScreen({ navigation }: any) {
       [
         { text: 'Cancel', style: 'cancel' },
         { 
-          text: '🏎️ Create Race', 
+          text: ' Create Race', 
           onPress: () => {
             setSelectedCreationType('race');
             setShowCreateRaceModal(true);
           }
         },
         { 
-          text: '🎉 Create Event', 
+          text: ' Create Event', 
           onPress: () => {
             setSelectedCreationType('event');
             setShowCreateEventModal(true);
@@ -763,7 +763,7 @@ export function LiveMapScreen({ navigation }: any) {
             latitudeDelta: 0.02,
             longitudeDelta: 0.02,
           }}
-          onPress={handleMapPress} // 🎯 TAP ANYWHERE TO CREATE A RACE!
+          onPress={handleMapPress} //  TAP ANYWHERE TO CREATE A RACE!
           showsUserLocation={true}
           showsMyLocationButton={false}
           showsCompass={true}
@@ -832,7 +832,7 @@ export function LiveMapScreen({ navigation }: any) {
               onPress={() => {
                 Alert.alert(
                   friend.profile.displayName,
-                  `${friend.profile.racerId}\n\n🏁 ${friend.profile.stats.totalRaces} races • ${friend.profile.stats.winRate.toFixed(1)}% win rate\n⭐ ${friend.profile.stats.skillRating}/10 skill\n\nStatus: ${friend.status}${friend.currentActivity ? `\nActivity: ${friend.currentActivity.eventName}` : ''}`,
+                  `${friend.profile.racerId}\n\n ${friend.profile.stats.totalRaces} races • ${friend.profile.stats.winRate.toFixed(1)}% win rate\n⭐ ${friend.profile.stats.skillRating}/10 skill\n\nStatus: ${friend.status}${friend.currentActivity ? `\nActivity: ${friend.currentActivity.eventName}` : ''}`,
                   [
                     { text: 'Cancel', style: 'cancel' },
                     ...(friend.currentActivity?.canJoin ? [{
@@ -1295,7 +1295,7 @@ export function LiveMapScreen({ navigation }: any) {
           />
           
           <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
-            <Text style={styles.modalTitle}>🎯 Race Anywhere!</Text>
+            <Text style={styles.modalTitle}> Race Anywhere!</Text>
             <Text style={styles.modalSubtitle}>
               Create a custom race at your selected location. No venue restrictions!
             </Text>
@@ -1408,7 +1408,7 @@ export function LiveMapScreen({ navigation }: any) {
           />
           
           <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
-            <Text style={styles.modalTitle}>🎉 Create Event Anywhere!</Text>
+            <Text style={styles.modalTitle}> Create Event Anywhere!</Text>
             <Text style={styles.modalSubtitle}>
               Create a car meetup or event at your selected location. Connect with fellow car enthusiasts!
             </Text>

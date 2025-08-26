@@ -13,7 +13,7 @@ import {
   Image,
   SafeAreaView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../context/AuthContext';
 
 interface LoginScreenProps {
@@ -52,11 +52,11 @@ export function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
     setIsLoading(true);
     try {
       const success = await login(email, password);
-      console.log('🎯 Login result:', success ? 'SUCCESS' : 'FAILED');
+      console.log(' Login result:', success ? 'SUCCESS' : 'FAILED');
       if (!success) {
         Alert.alert('Login Failed', 'Invalid email or password. Please check your credentials and try again.');
       } else {
-        console.log('🎉 Login successful! User should be redirected to main app.');
+        console.log(' Login successful! User should be redirected to main app.');
       }
     } catch (error) {
       console.error('Login error:', error);

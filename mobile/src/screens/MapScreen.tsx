@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, SafeAreaView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import * as Location from 'expo-location';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Geolocation from 'react-native-geolocation-service';
 
 export function MapScreen() {
   const [currentSpeed, setCurrentSpeed] = useState(0);
@@ -120,7 +120,7 @@ export function MapScreen() {
             {currentDrive.isActive && (
               <View style={styles.driveStatus}>
                 <Text style={styles.driveStatusText}>
-                  {currentDrive.isVisible ? '👁️ Visible' : '🔒 Private'}
+                  {currentDrive.isVisible ? ' Visible' : ' Private'}
                 </Text>
               </View>
             )}

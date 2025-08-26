@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Switch 
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 import { useSettings, SpeedUnit } from '../context/SettingsContext';
 import { colors, spacing, typography, shadows } from '../utils/theme';
 import { DashIcon } from '../components/DashIcon';

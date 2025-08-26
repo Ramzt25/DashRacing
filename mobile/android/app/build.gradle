@@ -79,6 +79,15 @@ android {
 
     namespace 'com.gridghost.mobile'
     
+    configurations.all {
+        resolutionStrategy {
+            force "com.google.android.gms:play-services-location:21.3.0"
+            force "com.google.android.gms:play-services-maps:19.0.0"
+            force "com.google.android.gms:play-services-base:18.5.0"
+            force "com.google.android.gms:play-services-tasks:18.2.0"
+        }
+    }
+    
     defaultConfig {
         applicationId 'com.gridghost.mobile'
         minSdkVersion 24
@@ -128,6 +137,11 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
+    // Force specific Google Play Services versions to avoid conflicts
+    implementation "com.google.android.gms:play-services-location:21.3.0"
+    implementation "com.google.android.gms:play-services-maps:19.0.0"
+    implementation "com.google.android.gms:play-services-base:18.5.0"
+    
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.squareup.okhttp3', module:'okhttp'

@@ -61,7 +61,7 @@ export class CarStorageService {
           console.log('✅ Car updated in API');
         }
       } catch (apiError) {
-        console.warn('⚠️ API sync failed, but car saved locally:', apiError);
+        console.warn(' API sync failed, but car saved locally:', apiError);
         // Don't return false - local save was successful
       }
       
