@@ -33,9 +33,6 @@
       ],
       "package": "com.gridghost.mobile",
       "versionCode": 1,
-      "compileSdkVersion": 34,
-      "targetSdkVersion": 34,
-      "buildToolsVersion": "34.0.0",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyCKBUC9ZTb7Dp-LHSgNh212EBBj6rmFauI"
