@@ -42,6 +42,7 @@ Write-Host @"
 # Check environment variables
 Write-Host "`n📋 Environment Variables:" -ForegroundColor $Cyan
 $androidHome = $env:ANDROID_HOME
+$androidSdkRoot = $env:ANDROID_SDK_ROOT
 $javaHome = $env:JAVA_HOME
 
 if ($androidHome) {
@@ -52,10 +53,19 @@ if ($androidHome) {
     Write-Warning "Using default path: $androidHome"
 }
 
+if ($androidSdkRoot) {
+    Write-Status "ANDROID_SDK_ROOT is set: $androidSdkRoot" "OK"
+} else {
+    Write-Status "ANDROID_SDK_ROOT is not set" "FAIL"
+    Write-Warning "ANDROID_SDK_ROOT should be set to the same path as ANDROID_HOME"
+    $missingComponents += "ANDROID_SDK_ROOT"
+}
+
 if ($javaHome) {
     Write-Status "JAVA_HOME is set: $javaHome" "OK"
 } else {
     Write-Status "JAVA_HOME is not set" "FAIL"
+    $missingComponents += "JAVA_HOME"
 }
 
 # Check Android SDK directory structure
