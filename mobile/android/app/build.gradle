@@ -75,7 +75,7 @@ def hermesEnabled = (findProperty('hermesEnabled') ?: true).toBoolean()
 android {
     ndkVersion "27.1.12297006"
     compileSdk 35
-    buildToolsVersion "35.0.0"
+    buildToolsVersion "35.0.1"
 
     namespace 'com.gridghost.mobile'
     

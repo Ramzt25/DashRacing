@@ -5,6 +5,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+// Debug import to test environment variables
+import './src/debug-test';
+
 // Auth Context and Screens
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { SettingsProvider } from './src/context/SettingsContext';

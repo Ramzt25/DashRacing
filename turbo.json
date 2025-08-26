@@ -5,13 +5,13 @@
     "**/.env.local",
     "**/.env.production"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": ["^build", "db:generate"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"],
       "env": ["NODE_ENV", "DATABASE_URL"]
     },
-    "dev": {
+    "dev:backend": {
       "cache": false,
       "persistent": true,
       "dependsOn": ["db:generate"]
