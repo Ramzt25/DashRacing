@@ -133,8 +133,14 @@ cd ..
 
 #### **Step 6: Verify Installation**
 ```powershell
-# Run the environment check
-npx react-native doctor
+# Run the comprehensive Android SDK verification
+.\verify-android-sdk.ps1
+
+# Test React Native doctor functionality  
+.\test-react-native-doctor.ps1
+
+# Test the complete build process (interactive)
+.\test-android-build.ps1
 
 # Test the setup scripts
 .\start-full-dev.ps1 -MetroOnly
@@ -406,6 +412,39 @@ cd ..
 - **Admin Portal:** http://localhost:5173 (when started separately)
 
 ## 🚨 Troubleshooting
+
+### 🔍 **Diagnostic Scripts**
+
+If you're having Android SDK or build issues, use these diagnostic scripts:
+
+#### **1. Comprehensive SDK Verification**
+```powershell
+.\verify-android-sdk.ps1
+```
+- Checks all environment variables (JAVA_HOME, ANDROID_HOME, ANDROID_SDK_ROOT)
+- Verifies Android SDK component installation
+- Tests essential tools (ADB, emulator)
+- Runs React Native doctor and provides actionable fixes
+
+#### **2. React Native Doctor Deep Dive**
+```powershell
+.\test-react-native-doctor.ps1
+```
+- Shows detailed React Native info and doctor output
+- Tests ADB device connection
+- Verifies Java version compatibility
+- Provides step-by-step analysis of React Native detection
+
+#### **3. Complete Build Process Test**
+```powershell
+.\test-android-build.ps1
+```
+- Tests each step of the Android build pipeline
+- Verifies project structure and dependencies
+- Tests Gradle configuration
+- Optionally attempts a full build with detailed feedback
+
+### 🚨 **Common Issues & Solutions**
 
 ### Common Issues
 
