@@ -297,6 +297,7 @@ cd ../mobile && npm list --depth=0
 #### **System Environment Variables** (Set by scripts automatically)
 - `JAVA_HOME` → `C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot`
 - `ANDROID_HOME` → `C:\Users\tramsey\AppData\Local\Android\Sdk`
+- `ANDROID_SDK_ROOT` → `C:\Users\tramsey\AppData\Local\Android\Sdk`
 - `PATH` additions:
   - `%ANDROID_HOME%\platform-tools`
   - `%ANDROID_HOME%\emulator`
@@ -355,6 +356,7 @@ If the scripts don't work automatically, you can manually set environment variab
 ```powershell
 $env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot"
 $env:ANDROID_HOME="C:\Users\tramsey\AppData\Local\Android\Sdk"
+$env:ANDROID_SDK_ROOT="C:\Users\tramsey\AppData\Local\Android\Sdk"
 $env:PATH = "$env:PATH;$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\emulator;$env:ANDROID_HOME\tools;$env:ANDROID_HOME\tools\bin"
 ```
 
