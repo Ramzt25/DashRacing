@@ -337,28 +337,30 @@ export function HomeScreen({ navigation }: any) {
           </View>
         </View>
 
-        {/* Pro Upgrade Banner */}
+        {/* Pro Upgrade Banner - Only show if user is NOT Pro */}
         {!user?.isPro && (
-          <TouchableOpacity 
-            style={styles.proBanner}
-            onPress={() => navigation.navigate('ProUpgrade')}
-          >
-            <LinearGradient
-              colors={[colors.warning + '30', colors.warning + '60']}
-              style={styles.proBannerGradient}
+          <View style={styles.proBanner}>
+            <TouchableOpacity 
+              onPress={() => navigation.navigate('ProUpgrade')}
+              style={styles.proBannerTouchable}
             >
-              <View style={styles.proBannerContent}>
-                <View style={styles.proBannerIcon}>
-                  <Ionicons name="star" size={24} color={colors.warning} />
+              <LinearGradient
+                colors={['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.1)']}
+                style={styles.proBannerGradient}
+              >
+                <View style={styles.proBannerContent}>
+                  <View style={styles.proBannerIcon}>
+                    <Ionicons name="diamond" size={24} color={colors.warning} />
+                  </View>
+                  <View style={styles.proBannerText}>
+                    <Text style={styles.proBannerTitle}>Upgrade to GridGhost Pro</Text>
+                    <Text style={styles.proBannerSubtitle}>Unlimited cars, advanced mods & AI insights</Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={20} color={colors.warning} />
                 </View>
-                <View style={styles.proBannerText}>
-                  <Text style={styles.proBannerTitle}>Upgrade to DASH Pro</Text>
-                  <Text style={styles.proBannerSubtitle}>Unlock advanced racing features & analytics</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color={colors.warning} />
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
         )}
 
         {/* Live Map Preview Card */}
@@ -710,7 +712,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingTop: 25, // Extra padding for status bar content
+    paddingTop: 50, // Standardized padding to match garage page
     paddingBottom: 40,
   },
   container: {
@@ -796,6 +798,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     minHeight: 100,
     justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 0, 0, 0.3)',
+    borderRadius: 16,
   },
   statValue: {
     ...typography.h1,
@@ -948,6 +954,9 @@ const styles = StyleSheet.create({
   },
   liveMapPreviewGradient: {
     padding: spacing.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 0, 0, 0.3)',
   },
   liveMapPreviewHeader: {
     flexDirection: 'row',
@@ -1048,6 +1057,9 @@ const styles = StyleSheet.create({
     minHeight: 140,
     justifyContent: 'space-between',
     position: 'relative',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 0, 0, 0.2)',
   },
   navigationCardHeader: {
     flexDirection: 'row',
@@ -1220,16 +1232,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // Pro Banner Styles
+  // Pro Banner Styles - Dark Glass Theme
   proBanner: {
-    margin: spacing.md,
+    margin: spacing.lg,
     marginTop: spacing.sm,
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: 'hidden',
-    ...shadows.md,
+    ...shadows.lg,
+  },
+  proBannerTouchable: {
+    flex: 1,
   },
   proBannerGradient: {
-    padding: spacing.md,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 215, 0, 0.3)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   proBannerContent: {
     flexDirection: 'row',

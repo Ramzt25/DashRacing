@@ -28,26 +28,35 @@ export function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
   const { login } = useAuth();
 
   const handleLogin = async () => {
+    console.log('🔐 Starting login process...', { email, passwordLength: password.length });
+    
     if (!email || !password) {
+      console.log('❌ Login validation failed: missing fields');
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
 
     if (!email.includes('@')) {
+      console.log('❌ Login validation failed: invalid email');
       Alert.alert('Error', 'Please enter a valid email address');
       return;
     }
 
     if (password.length < 8) {
+      console.log('❌ Login validation failed: password too short');
       Alert.alert('Error', 'Password must be at least 8 characters long');
       return;
     }
 
+    console.log('✅ Login validation passed, attempting login...');
     setIsLoading(true);
     try {
       const success = await login(email, password);
+      console.log('🎯 Login result:', success ? 'SUCCESS' : 'FAILED');
       if (!success) {
         Alert.alert('Login Failed', 'Invalid email or password. Please check your credentials and try again.');
+      } else {
+        console.log('🎉 Login successful! User should be redirected to main app.');
       }
     } catch (error) {
       console.error('Login error:', error);

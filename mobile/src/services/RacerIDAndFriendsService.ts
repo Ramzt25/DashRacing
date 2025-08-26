@@ -222,7 +222,8 @@ class RacerIDAndFriendsService {
       const response = await fetch(`${this.apiBaseUrl}/friends/map-markers`);
       if (!response.ok) return [];
       
-      const markers = await response.json() as FriendMapMarker[];
+      const data = await response.json() as { markers: FriendMapMarker[]; count: number };
+      const markers = data.markers || [];
       
       // Filter out offline friends and respect privacy settings
       return markers.filter(marker => 

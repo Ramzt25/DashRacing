@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/dash-icons/icon.png",
     "userInterfaceStyle": "light",
-    "platforms": ["ios", "android", "web"],
+    "platforms": ["ios", "android"],
     "splash": {
       "image": "./assets/dash-icons/Dash.png",
       "resizeMode": "contain",

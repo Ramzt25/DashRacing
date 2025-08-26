@@ -79,42 +79,86 @@ function AuthFlow() {
   const [showFirstTimeModal, setShowFirstTimeModal] = useState(false);
   const [showTermsGate, setShowTermsGate] = useState(false);
 
+  // Log state changes
   useEffect(() => {
+    console.log('🔄 AuthFlow state:', {
+      user: user ? `Logged in as ${user.email}` : 'No user',
+      isLoading,
+      isFirstTime,
+      showSplash,
+      authScreen
+    });
+  }, [user, isLoading, isFirstTime, showSplash, authScreen]);
+
+  useEffect(() => {
+    console.log('🎯 FirstTimeModal check:', { isLoading, user: !!user, isFirstTime });
     if (!isLoading && user && isFirstTime) {
+      console.log('✅ Showing FirstTimeModal');
       setShowFirstTimeModal(true);
     }
   }, [isLoading, user, isFirstTime]);
 
-  if (showSplash || isLoading) {
-    return <SplashScreen onFinish={() => setShowSplash(false)} />;
+  // Auto-hide splash when auth loading is complete
+  useEffect(() => {
+    if (!isLoading) {
+      console.log('⏰ Auth loading complete, hiding splash screen');
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+      }, 1500); // Give splash screen time to complete its animation
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
+
+  console.log('🎬 Render decision:', { showSplash, isLoading, hasUser: !!user });
+  
+  if (showSplash) {
+    console.log('📱 Showing splash screen');
+    return <SplashScreen onFinish={() => {
+      console.log('✅ Splash onFinish called - but controlled by timer');
+      // Don't immediately hide - let the timer handle it for consistent timing
+    }} />;
   }
 
   if (!user) {
+    console.log('🔐 Showing auth screens - no user found');
     if (authScreen === 'login') {
+      console.log('📝 Rendering LoginScreen');
       return (
         <LoginScreen 
-          onNavigateToRegister={() => setAuthScreen('register')}
+          onNavigateToRegister={() => {
+            console.log('➡️ Navigating to register screen');
+            setAuthScreen('register');
+          }}
         />
       );
     } else {
+      console.log('📝 Rendering RegisterScreen');
       return (
         <RegisterScreen 
-          onNavigateToLogin={() => setAuthScreen('login')}
+          onNavigateToLogin={() => {
+            console.log('⬅️ Navigating to login screen');
+            setAuthScreen('login');
+          }}
         />
       );
     }
   }
 
+  console.log('🏠 Rendering main app for user:', user?.email);
   return (
     <>
       <AppNavigator />
       <FirstTimeUserModal 
         visible={showFirstTimeModal}
-        onClose={() => setShowFirstTimeModal(false)}
+        onClose={() => {
+          console.log('❌ FirstTimeModal closed');
+          setShowFirstTimeModal(false);
+        }}
       />
       <TermsGate 
         userId={user?.id || ''}
-        onAgreed={() => console.log('Terms accepted')}
+        onAgreed={() => console.log('✅ Terms accepted')}
       />
     </>
   );

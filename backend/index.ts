@@ -42,6 +42,7 @@ await registerAuthRoutes(app);
 await registerCarRoutes(app);
 await registerEventRoutes(app);
 await registerMeetupRoutes(app);
+app.register(registerMeetupRoutes, { prefix: '/api' });
 await registerRaceRoutes(app);
 await registerLiveMapRoutes(app);
 await registerAIRoutes(app);

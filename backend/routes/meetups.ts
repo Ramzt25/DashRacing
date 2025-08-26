@@ -180,6 +180,8 @@ export async function registerMeetupRoutes(app: FastifyInstance) {
       const meetup = await prisma.event.create({
         data: {
           ...data,
+          startTime: data.startTime || new Date(),
+          tags: JSON.stringify(data.tags),
           status: 'upcoming',
         },
       });

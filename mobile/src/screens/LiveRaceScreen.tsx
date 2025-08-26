@@ -13,7 +13,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../context/AuthContext';
 import { ScreenHeader } from '../components/common/ScreenHeader';
 import { RaceService } from '../services/RaceService';
-import { useLocation } from '../hooks/useLocation';
 
 interface RaceConfig {
   type: '1/4-mile' | 'rolling';
@@ -22,6 +21,7 @@ interface RaceConfig {
 }
 
 export function LiveRaceScreen({ navigation }: any) {
+  const { user } = useAuth();
   const [raceConfig, setRaceConfig] = useState<RaceConfig>({
     type: '1/4-mile',
     startSpeed: 40,
@@ -31,8 +31,6 @@ export function LiveRaceScreen({ navigation }: any) {
   const [isSettingUpRace, setIsSettingUpRace] = useState(false);
   const [availableRacers, setAvailableRacers] = useState<any[]>([]);
   const [isLoadingRacers, setIsLoadingRacers] = useState(false);
-  const { user } = useAuth();
-  const { location } = useLocation();
 
   // Speed options for rolling races
   const speedOptions = [20, 30, 40, 50, 60, 70, 80];
@@ -69,8 +67,8 @@ export function LiveRaceScreen({ navigation }: any) {
           raceType: raceConfig.type,
         },
         location: {
-          latitude: location.latitude,
-          longitude: location.longitude,
+          latitude: 40.7128, // Default to NYC, should be replaced with actual location
+          longitude: -74.0060,
         },
       };
 

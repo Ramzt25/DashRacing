@@ -91,10 +91,10 @@ export class RealTimeRaceManager {
       const decoded = jwt.verify(token, jwtSecret) as any;
       const user = await prisma.user.findUnique({
         where: { id: decoded.userId },
-        select: { id: true, isActive: true }
+        select: { id: true, role: true }
       });
 
-      return user?.isActive || false;
+      return user !== null;
     } catch (error) {
       console.error('WebSocket auth error:', error);
       return false;
@@ -231,11 +231,11 @@ export class RealTimeRaceManager {
       data: {
         id: raceId,
         name: race.name,
-        hostId,
+        createdById: hostId,
         status: 'WAITING',
         startTime: new Date(race.startTime),
-        route: JSON.stringify(race.route),
-        settings: JSON.stringify(race.settings)
+        raceType: 'circuit',
+        maxParticipants: race.settings.maxParticipants || 8
       }
     });
 
@@ -272,7 +272,7 @@ export class RealTimeRaceManager {
     // Get user info
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { username: true }
+      select: { handle: true }
     });
 
     if (!user) {
@@ -287,7 +287,7 @@ export class RealTimeRaceManager {
     const participant: RaceParticipant = {
       id: `${raceId}_${userId}`,
       userId,
-      username: user.username,
+      username: user.handle,
       vehicleId,
       currentPosition: {
         latitude: 0,
@@ -501,9 +501,8 @@ export class RealTimeRaceManager {
     await prisma.race.update({
       where: { id: raceId },
       data: {
-        status: 'FINISHED',
-        endTime: new Date(race.endTime!),
-        results: JSON.stringify(results)
+        status: 'completed',
+        endTime: new Date(race.endTime!)
       }
     });
 

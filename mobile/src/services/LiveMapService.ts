@@ -115,10 +115,10 @@ export class LiveMapService {
       throw new Error(errorData.error || 'Failed to load nearby players');
     }
 
-    const data = await response.json() as { players: any[] };
+    const data = await response.json() as { users: any[]; count: number; location: any };
     
     // Transform the data to ensure dates are parsed correctly
-    const players: LivePlayer[] = data.players.map(player => ({
+    const players: LivePlayer[] = (data.users || []).map(player => ({
       ...player,
       lastSeen: new Date(player.lastSeen),
     }));
@@ -149,10 +149,10 @@ export class LiveMapService {
       throw new Error(errorData.error || 'Failed to load nearby events');
     }
 
-    const data = await response.json() as { events: any[] };
+    const data = await response.json() as { events: any[]; count: number; location: any };
     
     // Transform the data to ensure dates are parsed correctly
-    const events: LiveEvent[] = data.events.map(event => ({
+    const events: LiveEvent[] = (data.events || []).map(event => ({
       ...event,
       startTime: new Date(event.startTime),
     }));
