@@ -7,7 +7,7 @@ import {
   Alert,
   Dimensions,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, typography, shadows } from '../../utils/theme';
 import { DashIcon } from '../DashIcon';
 import { useRaceData } from '../../hooks/useRaceData';

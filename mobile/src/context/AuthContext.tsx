@@ -40,17 +40,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuthState = async () => {
     try {
-      console.log('🔍 Starting auth state check...');
+      console.log('Starting auth state check...');
       setIsLoading(true);
       
-      console.log('📱 Getting saved data from AsyncStorage...');
+      console.log('Getting saved data from AsyncStorage...');
       const [savedUser, firstTimeFlag] = await Promise.all([
         AsyncStorage.getItem('user'),
         AsyncStorage.getItem('isFirstTime')
       ]);
 
       console.log('💾 Saved user data:', savedUser ? 'Found' : 'None');
-      console.log('🚀 First time flag:', firstTimeFlag);
+      console.log(' First time flag:', firstTimeFlag);
 
       if (savedUser) {
         const userData = JSON.parse(savedUser) as User;
@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             console.log('✅ Token validation result:', isValidToken);
             if (isValidToken) {
               setUser(userData);
-              console.log('👍 User authenticated successfully');
+              console.log(' User authenticated successfully');
             } else {
               // Token is invalid, clear stored user
               console.log('❌ Token invalid, clearing stored user');
@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         } else {
           setUser(userData); // For backward compatibility with old stored users
-          console.log('👍 User set without token (backward compatibility)');
+          console.log(' User set without token (backward compatibility)');
         }
       }
 
@@ -91,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('🚨 Auth state check error:', error);
     } finally {
       setIsLoading(false);
-      console.log('🏁 Auth loading finished');
+      console.log(' Auth loading finished');
     }
   };
 
@@ -123,7 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      console.log('🚀 AuthContext.login starting:', { email, passwordLength: password.length });
+      console.log(' AuthContext.login starting:', { email, passwordLength: password.length });
       
       console.log('📡 Calling AuthService.login...');
       const authResponse = await AuthService.login({ email, password });
@@ -152,7 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       console.log('👤 Setting user in context...');
       setUser(user);
-      console.log('🎉 Login completed successfully!');
+      console.log(' Login completed successfully!');
       return true;
     } catch (error) {
       console.error('🚨 Login error:', error);

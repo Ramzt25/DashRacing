@@ -10,7 +10,7 @@ import {
   RefreshControl,
   Switch,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import RacerIDAndFriendsService, { 
   RacerProfile, 
   FriendRequest, 
@@ -152,7 +152,7 @@ const FriendsScreen: React.FC<FriendsScreenProps> = ({
           </View>
           
           <Text style={styles.friendStats}>
-            🏁 {friendProfile.stats.totalRaces} races • {friendProfile.stats.winRate.toFixed(1)}% win rate
+             {friendProfile.stats.totalRaces} races • {friendProfile.stats.winRate.toFixed(1)}% win rate
           </Text>
           
           <View style={styles.raceHistory}>
@@ -192,7 +192,7 @@ const FriendsScreen: React.FC<FriendsScreenProps> = ({
           <Text style={styles.requestMessage}>"{item.message}"</Text>
         )}
         <Text style={styles.requestStats}>
-          🏁 {item.fromProfile.stats.totalRaces} races • 
+           {item.fromProfile.stats.totalRaces} races • 
           {item.fromProfile.stats.winRate.toFixed(1)}% win rate • 
           ⭐ {item.fromProfile.stats.skillRating}/10
         </Text>
@@ -225,7 +225,7 @@ const FriendsScreen: React.FC<FriendsScreenProps> = ({
           <Text style={styles.friendName}>{searchResult.displayName}</Text>
           <Text style={styles.racerId}>#{searchResult.racerId}</Text>
           <Text style={styles.searchResultStats}>
-            🏁 {searchResult.stats.totalRaces} races • 
+             {searchResult.stats.totalRaces} races • 
             {searchResult.stats.winRate.toFixed(1)}% win rate • 
             ⭐ {searchResult.stats.skillRating}/10
           </Text>

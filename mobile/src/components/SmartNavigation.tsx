@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 import { NavigationSettings } from './NavigationSettings';
 import { TopNavigation } from './TopNavigation';
 import { WheelNavigation } from './WheelNavigation';

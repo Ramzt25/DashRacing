@@ -41,7 +41,7 @@ interface UpgradeRecommendation {
 }
 
 export class AIPerformanceService {
-  private static readonly API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+  private static readonly API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000';
   
   /**
    * AI-powered car performance analysis

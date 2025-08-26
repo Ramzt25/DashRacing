@@ -136,7 +136,7 @@ app.use('*', (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
-  console.log(`🏁 DASH Racing API server running on port ${PORT}`);
+  console.log(` DASH Racing API server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV}`);
   console.log(`Health check: http://localhost:${PORT}/health`);
 });

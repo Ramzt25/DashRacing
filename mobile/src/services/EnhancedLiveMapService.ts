@@ -201,7 +201,7 @@ export class EnhancedLiveMapService {
     }
   }
 
-  // CREATE A RACE ANYWHERE ON THE MAP! 🎯
+  // CREATE A RACE ANYWHERE ON THE MAP! 
   static async createCustomRace(raceData: {
     title: string;
     type: LiveEvent['type'];
@@ -251,7 +251,7 @@ export class EnhancedLiveMapService {
     }
   }
 
-  // CREATE AN EVENT/MEETUP ANYWHERE ON THE MAP! 🎉
+  // CREATE AN EVENT/MEETUP ANYWHERE ON THE MAP! 
   static async createCustomEvent(eventData: {
     title: string;
     description: string;

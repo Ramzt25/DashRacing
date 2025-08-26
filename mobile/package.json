@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npx react-native start",
     "android": "npx react-native run-android",
-    "ios": "npx react-native run-ios", 
+    "ios": "npx react-native run-ios",
     "build:android": "cd android && ./gradlew assembleRelease",
     "build:android:debug": "cd android && ./gradlew assembleDebug",
     "clean": "npx react-native clean",
@@ -16,19 +16,24 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.1.2",
+    "@react-native-community/geolocation": "^3.4.0",
     "@react-navigation/bottom-tabs": "^7.4.6",
     "@react-navigation/native": "^7.1.17",
     "@react-navigation/stack": "^7.4.7",
+    "@types/react-native-vector-icons": "^6.4.18",
     "axios": "^1.11.0",
     "react": "19.0.0",
     "react-native": "0.79.5",
+    "react-native-device-info": "^14.0.4",
+    "react-native-geolocation-service": "^5.3.1",
     "react-native-gesture-handler": "~2.24.0",
+    "react-native-linear-gradient": "^2.8.3",
     "react-native-maps": "1.20.1",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
     "react-native-svg": "15.11.2",
-    "react-native-vector-icons": "^10.0.3"
+    "react-native-vector-icons": "^10.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -36,6 +41,7 @@
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
     "@react-native/babel-preset": "^0.80.2",
+    "@react-native/metro-config": "^0.80.2",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^12.9.0",
     "@types/jest": "^29.5.14",

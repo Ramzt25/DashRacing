@@ -83,7 +83,7 @@ class RealTimeRaceTelemetryService {
 
       if (this.wsConnection) {
         this.wsConnection.onopen = () => {
-          console.log('🏁 Race telemetry WebSocket connected');
+          console.log(' Race telemetry WebSocket connected');
           this.startTelemetryStream();
         };
 
@@ -96,7 +96,7 @@ class RealTimeRaceTelemetryService {
         };
 
         this.wsConnection.onclose = () => {
-          console.log('🏁 Race telemetry WebSocket disconnected');
+          console.log(' Race telemetry WebSocket disconnected');
           this.stopTelemetryStream();
         };
       }
@@ -293,7 +293,7 @@ class RealTimeRaceTelemetryService {
 
   // Handle race finished
   private static handleRaceFinished(data: any): void {
-    console.log('🏁 Race finished!', data);
+    console.log(' Race finished!', data);
     this.leaveLiveRace();
   }
 

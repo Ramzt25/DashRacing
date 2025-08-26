@@ -2,7 +2,7 @@ import { ApiService } from './ApiService';
 
 // Add a generic API helper since ApiService doesn't have a get method
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
-  const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+  const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000/api';
   const url = `${API_BASE_URL}${endpoint}`;
   
   // Get auth token from AsyncStorage
@@ -223,7 +223,7 @@ export class UserStatsService {
         id: 'first_race',
         title: 'First Victory',
         description: 'Win your first race',
-        icon: '🏆',
+        icon: '',
         category: 'racing' as const,
         rarity: 'common' as const,
       },
@@ -231,7 +231,7 @@ export class UserStatsService {
         id: 'speed_demon',
         title: 'Speed Demon',
         description: 'Reach 150 MPH in a race',
-        icon: '⚡',
+        icon: '',
         category: 'racing' as const,
         rarity: 'rare' as const,
       },
@@ -239,7 +239,7 @@ export class UserStatsService {
         id: 'car_collector',
         title: 'Car Collector',
         description: 'Own 5 different vehicles',
-        icon: '🚗',
+        icon: '',
         category: 'garage' as const,
         rarity: 'epic' as const,
       },
@@ -247,7 +247,7 @@ export class UserStatsService {
         id: 'mod_master',
         title: 'Modification Master',
         description: 'Install 25 modifications',
-        icon: '🔧',
+        icon: '',
         category: 'garage' as const,
         rarity: 'rare' as const,
       },
@@ -334,7 +334,7 @@ export class UserStatsService {
         type: 'race' as const,
         title: 'Won Street Race',
         description: 'Victory on Sunset Strip',
-        icon: '🏁',
+        icon: '',
         timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
       },
       {
@@ -342,7 +342,7 @@ export class UserStatsService {
         type: 'mod' as const,
         title: 'Installed Cold Air Intake',
         description: '+15 HP to Honda Civic',
-        icon: '🔧',
+        icon: '',
         timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
       },
       {
@@ -350,7 +350,7 @@ export class UserStatsService {
         type: 'achievement' as const,
         title: 'Speed Demon Unlocked',
         description: 'Reached 150 MPH in race',
-        icon: '⚡',
+        icon: '',
         timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
       },
       {
@@ -366,7 +366,7 @@ export class UserStatsService {
         type: 'race' as const,
         title: 'Participated in Drag Race',
         description: 'Quarter mile time: 12.8s',
-        icon: '🏁',
+        icon: '',
         timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
       },
     ];

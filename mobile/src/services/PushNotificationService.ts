@@ -1,19 +1,11 @@
-import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
-import Constants from 'expo-constants';
-import { Platform } from 'react-native';
+import { Platform, Alert } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// Note: For full push notification support, you would install:
+// npm install @react-native-async-storage/async-storage react-native-push-notification
+// import PushNotification from 'react-native-push-notification';
 
-// Configure how notifications are handled when app is foregrounded
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+// For now, we'll provide a mock implementation to maintain app structure
 
 export interface RaceNotification {
   type: 'race_invite' | 'race_start' | 'race_finish' | 'friend_request' | 'event_invite';
@@ -242,7 +234,7 @@ export class PushNotificationService {
 export const NotificationTemplates = {
   raceInvite: (friendName: string, raceType: string): RaceNotification => ({
     type: 'race_invite',
-    title: `🏁 Race Challenge!`,
+    title: ` Race Challenge!`,
     body: `${friendName} challenged you to a ${raceType} race!`,
     data: { action: 'open_race_invite' },
   }),
@@ -256,7 +248,7 @@ export const NotificationTemplates = {
 
   raceResults: (position: number, totalRacers: number): RaceNotification => ({
     type: 'race_finish',
-    title: `🏆 Race Complete!`,
+    title: ` Race Complete!`,
     body: `You finished ${position}${getOrdinalSuffix(position)} out of ${totalRacers} racers!`,
     data: { action: 'view_results' },
   }),
@@ -270,7 +262,7 @@ export const NotificationTemplates = {
 
   eventInvite: (eventName: string, eventType: string): RaceNotification => ({
     type: 'event_invite',
-    title: `🎉 Event Invitation`,
+    title: ` Event Invitation`,
     body: `You're invited to ${eventName} - ${eventType}`,
     data: { action: 'view_event' },
   }),

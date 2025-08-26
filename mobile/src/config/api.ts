@@ -6,7 +6,7 @@
 // API Base URL Configuration
 export const API_CONFIG = {
   // Backend server URL (updated for Week 4 integration)
-  BASE_URL: process.env.EXPO_PUBLIC_API_URL || 'http://192.168.18.27:4000',
+  BASE_URL: process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000',
   
   // API Endpoints
   ENDPOINTS: {

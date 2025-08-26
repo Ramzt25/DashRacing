@@ -38,7 +38,7 @@ interface RaceStats {
 
 export class RaceService {
   static async saveRaceSession(sessionData: RaceSessionData): Promise<{ success: boolean; sessionId: string }> {
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000';
     
     // Get auth token from AsyncStorage
     const AsyncStorage = require('@react-native-async-storage/async-storage').default;
@@ -67,7 +67,7 @@ export class RaceService {
   }
 
   static async loadRaceSession(sessionId: string): Promise<RaceSession> {
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000';
     
     // Get auth token from AsyncStorage
     const AsyncStorage = require('@react-native-async-storage/async-storage').default;
@@ -93,7 +93,7 @@ export class RaceService {
   }
 
   static async getUserRaceSessions(): Promise<RaceSession[]> {
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000';
     
     // Get auth token from AsyncStorage
     const AsyncStorage = require('@react-native-async-storage/async-storage').default;
@@ -119,7 +119,7 @@ export class RaceService {
   }
 
   static async updateRaceSession(sessionId: string, updates: Partial<RaceSessionData>): Promise<{ success: boolean }> {
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000';
     
     // Get auth token from AsyncStorage
     const AsyncStorage = require('@react-native-async-storage/async-storage').default;
@@ -148,7 +148,7 @@ export class RaceService {
   }
 
   static async deleteRaceSession(sessionId: string): Promise<{ success: boolean }> {
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000';
     
     // Get auth token from AsyncStorage
     const AsyncStorage = require('@react-native-async-storage/async-storage').default;
@@ -175,7 +175,7 @@ export class RaceService {
   }
 
   static async getUserRaceStats(): Promise<RaceStats> {
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000';
     
     // Get auth token from AsyncStorage
     const AsyncStorage = require('@react-native-async-storage/async-storage').default;

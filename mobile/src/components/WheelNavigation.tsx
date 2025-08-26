@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, TouchableOpacity, StyleSheet, Animated, PanResponder, Dimensions } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 import { DashIcon } from './DashIcon';
 import { colors, spacing } from '../utils/theme';
 

@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { TermsGate } from '../components/legal/TermsGate';

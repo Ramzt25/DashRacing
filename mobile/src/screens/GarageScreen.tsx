@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, TextInput, ActivityIndicator, Image, FlatList } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar } from 'expo-status-bar';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import LinearGradient from 'react-native-linear-gradient';
+import { StatusBar } from 'react-native';
 import { ScreenHeader } from '../components/common/ScreenHeader';
 import ScreenContainer from '../components/layout/ScreenContainer';
 import { CarStorageService } from '../services/CarStorageService';
@@ -436,7 +436,7 @@ export function GarageScreen({ navigation }: any) {
             <View style={styles.userInfo}>
               <Text style={styles.welcomeText}>Welcome to your garage!</Text>
               <Text style={styles.userType}>
-                {user?.isPro ? '🏆 Pro Racer' : '🚗 Free User'} • {ownedCars.length} car{ownedCars.length !== 1 ? 's' : ''}
+                {user?.isPro ? ' Pro Racer' : ' Free User'} • {ownedCars.length} car{ownedCars.length !== 1 ? 's' : ''}
               </Text>
               {!user?.isPro && (
                 <TouchableOpacity 

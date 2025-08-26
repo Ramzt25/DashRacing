@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import * as Location from 'expo-location';
+import Geolocation from 'react-native-geolocation-service';
+import { PermissionsAndroid, Platform } from 'react-native';
 import { GPSCoordinate } from '../types/racing';
 
 interface LocationHookOptions {
@@ -13,7 +14,7 @@ interface LocationState {
   location: GPSCoordinate | null;
   isLoading: boolean;
   error: string | null;
-  permissionStatus: Location.PermissionStatus | null;
+  permissionStatus: 'granted' | 'denied' | 'restricted' | 'undetermined' | null;
 }
 
 export function useLocation(options: LocationHookOptions = {}) {
@@ -31,29 +32,37 @@ export function useLocation(options: LocationHookOptions = {}) {
     permissionStatus: null,
   });
 
-  const watcherRef = useRef<Location.LocationSubscription | null>(null);
+  const watcherRef = useRef<number | null>(null);
 
   // Request location permissions
   const requestPermissions = async () => {
     try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      setState(prev => ({ ...prev, permissionStatus: status }));
-      
-      if (status !== 'granted') {
-        setState(prev => ({
-          ...prev,
-          error: 'Location permission denied',
-          isLoading: false,
-        }));
-        return false;
-      }
-
-      // Request background permissions for racing
-      if (watchPosition) {
-        const bgStatus = await Location.requestBackgroundPermissionsAsync();
-        if (bgStatus.status !== 'granted') {
-          console.warn('Background location permission denied');
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Permission',
+            message: 'Allow Dash to access your location to show nearby races and events.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          }
+        );
+        
+        const status = granted === PermissionsAndroid.RESULTS.GRANTED ? 'granted' : 'denied';
+        setState(prev => ({ ...prev, permissionStatus: status }));
+        
+        if (status !== 'granted') {
+          setState(prev => ({
+            ...prev,
+            error: 'Location permission denied',
+            isLoading: false,
+          }));
+          return false;
         }
+      } else {
+        // iOS permissions are handled automatically by Geolocation
+        setState(prev => ({ ...prev, permissionStatus: 'granted' }));
       }
 
       return true;
@@ -75,28 +84,38 @@ export function useLocation(options: LocationHookOptions = {}) {
       const hasPermission = await requestPermissions();
       if (!hasPermission) return;
 
-      const location = await Location.getCurrentPositionAsync({
-        accuracy: enableHighAccuracy 
-          ? Location.Accuracy.BestForNavigation 
-          : Location.Accuracy.Balanced,
-      });
+      Geolocation.getCurrentPosition(
+        (position) => {
+          const gpsCoordinate: GPSCoordinate = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            altitude: position.coords.altitude || undefined,
+            timestamp: position.timestamp,
+            accuracy: position.coords.accuracy || undefined,
+            speed: position.coords.speed || undefined,
+            heading: position.coords.heading || undefined,
+          };
 
-      const gpsCoordinate: GPSCoordinate = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        altitude: location.coords.altitude || undefined,
-        timestamp: location.timestamp,
-        accuracy: location.coords.accuracy || undefined,
-        speed: location.coords.speed || undefined,
-        heading: location.coords.heading || undefined,
-      };
-
-      setState(prev => ({
-        ...prev,
-        location: gpsCoordinate,
-        isLoading: false,
-        error: null,
-      }));
+          setState(prev => ({
+            ...prev,
+            location: gpsCoordinate,
+            isLoading: false,
+            error: null,
+          }));
+        },
+        (error) => {
+          setState(prev => ({
+            ...prev,
+            error: `Location error: ${error.message}`,
+            isLoading: false,
+          }));
+        },
+        {
+          enableHighAccuracy,
+          timeout: 15000,
+          maximumAge: 10000,
+        }
+      );
     } catch (error) {
       setState(prev => ({
         ...prev,
@@ -113,26 +132,19 @@ export function useLocation(options: LocationHookOptions = {}) {
       if (!hasPermission) return;
 
       if (watcherRef.current) {
-        await watcherRef.current.remove();
+        Geolocation.clearWatch(watcherRef.current);
       }
 
-      watcherRef.current = await Location.watchPositionAsync(
-        {
-          accuracy: enableHighAccuracy 
-            ? Location.Accuracy.BestForNavigation 
-            : Location.Accuracy.Balanced,
-          timeInterval,
-          distanceInterval,
-        },
-        (location) => {
+      watcherRef.current = Geolocation.watchPosition(
+        (position) => {
           const gpsCoordinate: GPSCoordinate = {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-            altitude: location.coords.altitude || undefined,
-            timestamp: location.timestamp,
-            accuracy: location.coords.accuracy || undefined,
-            speed: location.coords.speed || undefined,
-            heading: location.coords.heading || undefined,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            altitude: position.coords.altitude || undefined,
+            timestamp: position.timestamp,
+            accuracy: position.coords.accuracy || undefined,
+            speed: position.coords.speed || undefined,
+            heading: position.coords.heading || undefined,
           };
 
           setState(prev => ({
@@ -141,6 +153,17 @@ export function useLocation(options: LocationHookOptions = {}) {
             isLoading: false,
             error: null,
           }));
+        },
+        (error) => {
+          setState(prev => ({
+            ...prev,
+            error: `Watch error: ${error.message}`,
+            isLoading: false,
+          }));
+        },
+        {
+          enableHighAccuracy,
+          distanceFilter: distanceInterval,
         }
       );
     } catch (error) {
@@ -155,7 +178,7 @@ export function useLocation(options: LocationHookOptions = {}) {
   // Stop watching location
   const stopWatching = async () => {
     if (watcherRef.current) {
-      await watcherRef.current.remove();
+      Geolocation.clearWatch(watcherRef.current);
       watcherRef.current = null;
     }
   };

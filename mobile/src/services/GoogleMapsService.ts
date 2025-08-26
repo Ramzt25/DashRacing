@@ -1,4 +1,4 @@
-import * as Location from 'expo-location';
+import Geolocation from 'react-native-geolocation-service';
 
 export interface MapCoordinate {
   latitude: number;
@@ -126,7 +126,7 @@ export class GoogleMapsService {
     radius: number = 5 // miles
   ): Promise<RacerLocation[]> {
     try {
-      const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+      const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000/api';
       
       const response = await fetch(
         `${API_BASE_URL}/livemap/nearby-racers?lat=${location.latitude}&lng=${location.longitude}&radius=${radius}`

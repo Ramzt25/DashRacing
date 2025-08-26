@@ -42,7 +42,7 @@ interface ApiError {
 }
 
 export class AuthService {
-  private static readonly API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+  private static readonly API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.168.28:4000';
 
   static async login(credentials: LoginRequest): Promise<AuthResponse> {
     console.log('🌐 AuthService.login called:', { 

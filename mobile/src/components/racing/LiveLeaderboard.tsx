@@ -8,7 +8,7 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, typography, shadows } from '../../utils/theme';
 import { DashIcon } from '../DashIcon';
 import { LiveRaceData } from '../../types/racing';
@@ -92,7 +92,7 @@ export function LiveLeaderboard({
   // Get position icon
   const getPositionIcon = (position: number): string => {
     switch (position) {
-      case 1: return '🏆';
+      case 1: return '';
       case 2: return '🥈';
       case 3: return '🥉';
       default: return '';

@@ -7,7 +7,7 @@ import {
   Easing,
   Dimensions,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, typography } from '../../utils/theme';
 
 interface LoadingSpinnerProps {
@@ -202,7 +202,7 @@ export function RaceLoadingSpinner({
               },
             ]}
           >
-            <Text style={styles.raceCarIcon}>🏎️</Text>
+            <Text style={styles.raceCarIcon}></Text>
           </Animated.View>
           
           {/* Track */}

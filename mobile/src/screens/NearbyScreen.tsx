@@ -8,9 +8,9 @@ import {
   ScrollView,
   ActivityIndicator,
   RefreshControl,
+  StatusBar,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { StatusBar } from 'expo-status-bar';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../context/AuthContext';
 import { useLocation } from '../hooks/useLocation';
 import { LiveMapService } from '../services/LiveMapService';
@@ -185,7 +185,7 @@ export function NearbyScreen({ navigation }: any) {
   if (locationLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <StatusBar style="light" />
+        <StatusBar barStyle="light-content" backgroundColor="#000" />
         <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.loadingText}>Getting your location...</Text>
       </View>

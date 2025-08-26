@@ -1,5 +1,5 @@
 import { Platform, Dimensions, InteractionManager } from 'react-native';
-import * as Device from 'expo-device';
+import DeviceInfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface PerformanceMetrics {
