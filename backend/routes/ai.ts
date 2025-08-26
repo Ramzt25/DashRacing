@@ -114,21 +114,13 @@ class BackendAIService {
 
   static async getUpgradeRecommendations(carId: string, budget?: number, goals: string[] = [], experience: string = 'intermediate'): Promise<any> {
     try {
-      // Try external AI API first
-      const response = await fetch(`${process.env.AI_API_URL}/upgrade-recommendations`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.AI_API_KEY}`,
-        },
-        body: JSON.stringify({ carId, budget, goals, experience }),
-      });
-
-      if (response.ok) {
-        return await response.json();
+      // Try OpenAI for intelligent upgrade recommendations
+      const openAIResponse = await this.getOpenAIUpgradeRecommendations(carId, budget, goals, experience);
+      if (openAIResponse) {
+        return openAIResponse;
       }
     } catch (error) {
-      console.warn('AI API unavailable, using local recommendations:', error);
+      console.warn('OpenAI API unavailable for upgrades, using local recommendations:', error);
     }
 
     // Fallback to local recommendations
@@ -154,6 +146,173 @@ class BackendAIService {
       priorityOrder: this.prioritizeUpgrades(recommendations, goals, experience),
       estimatedResults: this.estimateUpgradeResults(currentAnalysis, recommendations),
     };
+  }
+
+  /**
+   * Use OpenAI to get intelligent, personalized upgrade recommendations
+   */
+  private static async getOpenAIUpgradeRecommendations(
+    carId: string, 
+    budget?: number, 
+    goals: string[] = [], 
+    experience: string = 'intermediate'
+  ): Promise<any> {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('OpenAI API key not configured');
+    }
+
+    // Get car details
+    const car = await prisma.car.findUnique({
+      where: { id: carId },
+      include: { modifications: true },
+    });
+
+    if (!car) {
+      throw new Error('Car not found');
+    }
+
+    const currentAnalysis = await this.analyzeCarPerformance(carId);
+
+    const prompt = `As an automotive performance expert, analyze this vehicle and provide intelligent upgrade recommendations:
+
+Vehicle Details:
+- ${car.year || 'Unknown Year'} ${car.make || 'Unknown Make'} ${car.model || 'Unknown Model'}
+- Current Horsepower: ${car.whp || currentAnalysis.currentPower || 'Unknown'}
+- Weight: ${car.weightKg || 'Unknown'}kg
+- Drivetrain: ${car.drivetrain || 'Unknown'}
+- Current Modifications: ${car.modifications.length > 0 ? car.modifications.map(m => `${m.name} (${m.category})`).join(', ') : 'Stock'}
+
+User Parameters:
+- Budget: ${budget ? `$${budget}` : 'No specific budget'}
+- Goals: ${goals.length > 0 ? goals.join(', ') : 'General performance improvement'}
+- Experience Level: ${experience}
+- Current Performance Score: ${currentAnalysis.performanceScore || 'N/A'}
+
+Please provide personalized upgrade recommendations in this exact JSON format:
+{
+  "carId": "${carId}",
+  "currentPerformance": {
+    "horsepower": ${currentAnalysis.currentPower || car.whp || 200},
+    "performanceScore": ${currentAnalysis.performanceScore || 250},
+    "powerToWeight": ${currentAnalysis.analysis?.powerToWeightRatio || 0.1}
+  },
+  "recommendations": [
+    {
+      "name": "Specific modification name",
+      "category": "Engine/Exhaust/Intake/Turbo/Suspension/Brakes/Electronics",
+      "powerGain": 25,
+      "torqueGain": 20,
+      "cost": 500,
+      "difficulty": "Easy/Moderate/Hard/Expert",
+      "priority": "High/Medium/Low",
+      "compatibility": "Direct fit/Minor modifications/Major modifications",
+      "reliability": "Excellent/Good/Fair/Poor",
+      "description": "Detailed explanation of the modification and its benefits",
+      "installTime": "2-4 hours",
+      "requiredTools": ["Socket set", "Wrench set"],
+      "performanceGain": {
+        "acceleration": "0.2s improvement in 0-60",
+        "topSpeed": "5 mph increase",
+        "throttleResponse": "Improved"
+      },
+      "pros": ["Benefit 1", "Benefit 2"],
+      "cons": ["Drawback 1", "Drawback 2"],
+      "bestForGoals": ["power", "acceleration"]
+    }
+  ],
+  "priorityOrder": [
+    {
+      "modification": "Name of highest priority mod",
+      "reasoning": "Why this should be done first",
+      "bang_for_buck": 9.5
+    }
+  ],
+  "estimatedResults": {
+    "totalPowerGain": 50,
+    "totalCost": 1500,
+    "newPerformanceScore": 300,
+    "paybackValue": "High performance gain for cost",
+    "timeframe": "2-3 months for all modifications"
+  },
+  "expertInsights": [
+    "Professional insight about the upgrade path",
+    "Warning about potential issues",
+    "Tip for maximizing performance"
+  ],
+  "nextSteps": [
+    "Step 1: Start with highest priority modification",
+    "Step 2: Monitor performance gains",
+    "Step 3: Plan next upgrade phase"
+  ]
+}
+
+Focus on:
+1. Realistic power gains and costs based on the specific vehicle
+2. Appropriate difficulty level for the user's experience
+3. Modifications that align with stated goals
+4. Budget-conscious recommendations if budget is specified
+5. Sequential upgrade path for best results
+6. Real-world compatibility and reliability considerations
+
+Only return valid JSON, no additional text.`;
+
+    try {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a professional automotive performance tuner and modification expert with 20+ years of experience. Provide accurate, safe, and cost-effective upgrade recommendations based on real-world experience. Consider vehicle-specific compatibility, reliability impacts, and realistic performance gains.'
+            },
+            {
+              role: 'user',
+              content: prompt
+            }
+          ],
+          temperature: 0.4,
+          max_tokens: 3000,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI API error: ${response.status}`);
+      }
+
+      const data = await response.json() as any;
+      const content = data.choices[0]?.message?.content;
+
+      if (!content) {
+        throw new Error('No content received from OpenAI');
+      }
+
+      // Parse the JSON response
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No valid JSON found in OpenAI response');
+      }
+
+      const upgradeData = JSON.parse(jsonMatch[0]);
+      
+      // Add metadata
+      upgradeData.confidence = 0.92; // High confidence for OpenAI recommendations
+      upgradeData.dataSource = 'OpenAI Expert Analysis';
+      upgradeData.generatedAt = new Date().toISOString();
+      upgradeData.budget = budget;
+      upgradeData.goals = goals;
+      upgradeData.experience = experience;
+
+      return upgradeData;
+
+    } catch (error) {
+      console.error('OpenAI upgrade recommendations failed:', error);
+      throw error;
+    }
   }
 
   static async predictRacePerformance(carId: string, trackType: string, conditions: any): Promise<any> {
@@ -383,6 +542,204 @@ class BackendAIService {
     }
     
     return tips;
+  }
+
+  static async estimateModificationCost(modification: any): Promise<any> {
+    try {
+      // Try OpenAI for intelligent cost estimation
+      const openAICost = await this.getOpenAIModificationCost(modification);
+      if (openAICost) {
+        return openAICost;
+      }
+    } catch (error) {
+      console.warn('OpenAI API unavailable for cost estimation, using local calculation:', error);
+    }
+
+    // Fallback to local cost estimation
+    const baseCost = this.calculateBaseCost(modification);
+    const laborCost = this.calculateLaborCost(modification);
+    const partsCost = this.calculatePartsCost(modification);
+
+    return {
+      totalCost: baseCost + laborCost + partsCost,
+      breakdown: {
+        parts: partsCost,
+        labor: laborCost,
+        miscellaneous: baseCost * 0.1,
+      },
+      confidence: 0.75,
+      dataSource: 'Local Estimation',
+      priceRange: {
+        min: (baseCost + laborCost + partsCost) * 0.8,
+        max: (baseCost + laborCost + partsCost) * 1.3,
+      },
+    };
+  }
+
+  /**
+   * Use OpenAI to get intelligent, real-world cost estimation
+   */
+  private static async getOpenAIModificationCost(modification: any): Promise<any> {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('OpenAI API key not configured');
+    }
+
+    const prompt = `As an automotive modification cost expert, provide accurate cost estimation for this modification:
+
+Modification Details:
+- Name: ${modification.name || 'Unknown'}
+- Category: ${modification.category || 'Unknown'}
+- Brand: ${modification.brand || 'Generic'}
+- Vehicle: ${modification.vehicleInfo || 'Unknown vehicle'}
+- Difficulty: ${modification.difficulty || 'Moderate'}
+- Installation Time: ${modification.installTime || 'Unknown'}
+
+Please provide a detailed cost breakdown in this exact JSON format:
+{
+  "totalCost": 850,
+  "breakdown": {
+    "parts": 600,
+    "labor": 200,
+    "miscellaneous": 50
+  },
+  "confidence": 0.88,
+  "dataSource": "OpenAI Expert Analysis",
+  "priceRange": {
+    "min": 680,
+    "max": 1100
+  },
+  "marketAnalysis": {
+    "averagePrice": 850,
+    "budgetOption": 500,
+    "premiumOption": 1200,
+    "bestValue": "OEM equivalent parts with professional installation"
+  },
+  "costFactors": [
+    "Part quality affects 30% of total cost",
+    "Labor rates vary by region ($80-150/hour)",
+    "Installation complexity increases labor time"
+  ],
+  "savingTips": [
+    "DIY installation can save $200 in labor",
+    "Buying during sales periods saves 10-20%",
+    "OEM equivalent parts offer best value"
+  ],
+  "regionalVariation": {
+    "description": "Costs vary by location",
+    "factorRange": "±25%"
+  },
+  "timeline": {
+    "partsDelivery": "3-7 business days",
+    "installation": "2-4 hours",
+    "totalTime": "1-2 weeks including parts sourcing"
+  }
+}
+
+Consider:
+1. Current market prices for automotive parts
+2. Regional labor rate variations
+3. Part quality tiers (budget, OEM, premium)
+4. Installation complexity and time requirements
+5. Seasonal price fluctuations
+6. Brand reputation and reliability factors
+
+Only return valid JSON, no additional text.`;
+
+    try {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a professional automotive cost estimator with extensive knowledge of parts pricing, labor rates, and market trends across different regions and vehicle types. Provide accurate, realistic cost estimates based on current market conditions.'
+            },
+            {
+              role: 'user',
+              content: prompt
+            }
+          ],
+          temperature: 0.3,
+          max_tokens: 1500,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI API error: ${response.status}`);
+      }
+
+      const data = await response.json() as any;
+      const content = data.choices[0]?.message?.content;
+
+      if (!content) {
+        throw new Error('No content received from OpenAI');
+      }
+
+      // Parse the JSON response
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No valid JSON found in OpenAI response');
+      }
+
+      const costData = JSON.parse(jsonMatch[0]);
+      
+      // Add metadata
+      costData.generatedAt = new Date().toISOString();
+      costData.modificationId = modification.id;
+
+      return costData;
+
+    } catch (error) {
+      console.error('OpenAI cost estimation failed:', error);
+      throw error;
+    }
+  }
+
+  private static calculateBaseCost(modification: any): number {
+    // Basic cost calculation based on category
+    const baseCosts: { [key: string]: number } = {
+      'Engine': 1500,
+      'Exhaust': 800,
+      'Intake': 400,
+      'Turbo': 3000,
+      'Suspension': 1200,
+      'Brakes': 900,
+      'Electronics': 600,
+    };
+    
+    return baseCosts[modification.category] || 500;
+  }
+
+  private static calculateLaborCost(modification: any): number {
+    // Labor cost based on difficulty
+    const laborRates: { [key: string]: number } = {
+      'Easy': 150,
+      'Moderate': 300,
+      'Hard': 600,
+      'Expert': 1000,
+    };
+    
+    return laborRates[modification.difficulty] || 300;
+  }
+
+  private static calculatePartsCost(modification: any): number {
+    // Parts cost based on brand tier
+    const brandMultipliers: { [key: string]: number } = {
+      'Budget': 0.7,
+      'OEM': 1.0,
+      'Performance': 1.5,
+      'Premium': 2.0,
+    };
+    
+    const baseCost = this.calculateBaseCost(modification);
+    const multiplier = brandMultipliers[modification.brand] || 1.0;
+    
+    return Math.round(baseCost * 0.6 * multiplier);
   }
 }
 
@@ -653,6 +1010,16 @@ export async function registerAIRoutes(fastify: FastifyInstance) {
       };
     } catch (error: any) {
       reply.status(400).send({ error: error?.message || 'Insights failed' });
+    }
+  });
+
+  // AI-powered cost estimation for modifications
+  fastify.post('/ai/estimate-cost', async (request, reply) => {
+    try {
+      const costData = await BackendAIService.estimateModificationCost(request.body);
+      return costData;
+    } catch (error: any) {
+      reply.status(400).send({ error: error?.message || 'Cost estimation failed' });
     }
   });
 }
