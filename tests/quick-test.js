@@ -4,8 +4,8 @@
  * Runs essential tests to verify system functionality
  */
 
-const axios = require('axios');
-const WebSocket = require('ws');
+import axios from 'axios';
+import WebSocket from 'ws';
 
 const BASE_URL = 'http://localhost:4000';
 const WEBSOCKET_URL = 'ws://localhost:3001';
