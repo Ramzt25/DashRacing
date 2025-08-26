@@ -45,6 +45,14 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow Dash to use your location to show nearby races and events."
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "2.1.0"
+          }
+        }
       ]
     ],
     "web": {
