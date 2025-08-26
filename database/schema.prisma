@@ -47,6 +47,7 @@ model Car {
   make             String?
   model            String?
   year             Int?
+  trim             String?   // Engine/trim variant (GT, Premium, Base, etc.)
   color            String?
   class            String?
   owned            Boolean   @default(false)
@@ -68,6 +69,10 @@ model Car {
   performanceScore Float?    // AI-calculated overall performance score
   aiAnalysisDate   DateTime? // Last AI analysis update
   
+  // Vehicle Database Reference
+  vehicleDataId    String?   // Reference to VehicleDatabase entry
+  vehicleData      VehicleDatabase? @relation(fields: [vehicleDataId], references: [id])
+  
   // Relationships
   user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   modifications    Modification[]
@@ -75,6 +80,7 @@ model Car {
   raceParticipants RaceParticipant[]
   raceSessions     RaceSession[]
   attendances      Attendance[]
+  dynoResults      DynoResult[]  // Dyno results for this car
   
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
@@ -104,9 +110,17 @@ model Modification {
   reviews         Json?     // Scraped review data
   lastPriceUpdate DateTime? // Last price scraping update
   
-  car Car @relation(fields: [carId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  // Learning System Links
+  modDatabaseId   String?   // Link to ModificationDatabase entry
+  predictedGains  Json?     // Original AI predictions for comparison
+  
+  // Relationships
+  car             Car       @relation(fields: [carId], references: [id], onDelete: Cascade)
+  modDatabase     ModificationDatabase? @relation(fields: [modDatabaseId], references: [id])
+  dynoResults     DynoResult[] // Real-world results for this specific installation
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 model Race {
@@ -301,4 +315,223 @@ model Post {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Generative Vehicle Database - Our growing AI-powered knowledge base
+model VehicleDatabase {
+  id                String   @id @default(cuid())
+  
+  // Vehicle Identification (Composite Key)
+  year              Int
+  make              String
+  model             String
+  trim              String?
+  generation        String?   // e.g., "F80", "E46", "S550"
+  
+  // Vehicle Classification
+  category          String?   // Sports Car, Sedan, SUV, etc.
+  bodyStyle         String?   // Coupe, Sedan, Hatchback, etc.
+  vehicleClass      String?   // Compact, Mid-size, Full-size, etc.
+  segment           String?   // Entry-level, Luxury, Performance, etc.
+  
+  // Engine Specifications
+  engineDisplacement Float?   // Displacement in liters
+  engineConfiguration String? // V8, I4, H6, etc.
+  aspiration        String?   // Naturally Aspirated, Turbocharged, Supercharged
+  fuelType          String?   // Gasoline, Diesel, Hybrid, Electric
+  
+  // Performance Data
+  horsepower        Int?      // HP at crank
+  horsepowerWheel   Int?      // HP at wheels (if available)
+  torque            Int?      // lb-ft
+  acceleration0to60 Float?    // 0-60 mph time in seconds
+  quarterMile       Float?    // Quarter mile time in seconds
+  topSpeed          Int?      // Top speed in mph
+  powerToWeight     Float?    // HP per pound ratio
+  
+  // Physical Specifications
+  weight            Int?      // Weight in pounds
+  weightKg          Int?      // Weight in kg
+  length            Float?    // Length in inches
+  width             Float?    // Width in inches  
+  height            Float?    // Height in inches
+  wheelbase         Float?    // Wheelbase in inches
+  
+  // Drivetrain
+  drivetrain        String?   // RWD, FWD, AWD
+  transmission      String?   // Manual, Automatic, CVT, etc.
+  gears             Int?      // Number of gears
+  
+  // Market Data
+  originalMSRP      Int?      // Original MSRP when new
+  currentMarketValue Int?     // Current estimated market value
+  productionYears   String?   // Production span e.g., "2015-2023"
+  productionNumbers Int?      // Total units produced
+  
+  // AI-Generated Insights
+  aiInsights        Json?     // Array of AI-generated insights
+  commonModifications Json?   // Array of popular modifications
+  reliabilityScore  Float?    // AI-predicted reliability (0-1)
+  performanceScore  Float?    // AI-calculated performance score
+  valueScore        Float?    // AI-calculated value proposition score
+  
+  // Data Quality & Metadata
+  dataSource        String    @default("AI-Generated") // AI-Generated, User-Submitted, Manual
+  confidence        Float     @default(0.8) // AI confidence in the data (0-1)
+  aiModel           String?   // Which AI model generated this data
+  generatedBy       String?   // User ID who triggered the generation
+  verifiedBy        String?   // User ID who verified the data
+  isVerified        Boolean   @default(false) // Has this data been human-verified?
+  verificationDate  DateTime? // When was this verified?
+  
+  // Usage Statistics
+  lookupCount       Int       @default(1) // How many times this vehicle was looked up
+  lastUsed          DateTime  @default(now()) // Last time this data was used
+  popularityScore   Float     @default(0) // Calculated popularity based on usage
+  
+  // Relationships
+  cars              Car[]     // Cars that reference this vehicle data
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Composite index for fast vehicle lookups
+  @@unique([year, make, model, trim])
+  @@index([make, model])
+  @@index([category, bodyStyle])
+  @@index([year, make])
+  @@index([popularityScore])
+  @@index([lookupCount])
+  @@index([dataSource, isVerified])
+}
+
+// Modification Learning Database - Learns from real-world results
+model ModificationDatabase {
+  id                String   @id @default(cuid())
+  
+  // Modification Identification
+  name              String   // e.g., "Cold Air Intake", "Turbo Kit"
+  category          String   // Engine, Exhaust, Intake, Turbo, etc.
+  brand             String?  // Garrett, K&N, etc.
+  partNumber        String?  // Specific part number
+  
+  // Vehicle Compatibility
+  compatibleWith    Json     // Array of compatible vehicles {year, make, model, trim}
+  restrictedTo      Json?    // Specific restrictions or requirements
+  
+  // AI Predictions vs Real Results
+  predictedPowerGain    Float?   // AI's original prediction
+  actualPowerGain       Float?   // Average from real dyno results
+  predictedTorqueGain   Float?   // AI's original prediction  
+  actualTorqueGain      Float?   // Average from real dyno results
+  predictedCost         Float?   // AI's predicted cost
+  actualCost            Float?   // Average from real purchases
+  
+  // Learning Statistics
+  totalInstalls         Int      @default(0)  // How many times installed
+  dynoResultCount       Int      @default(0)  // How many dyno confirmations
+  accuracy              Float?   // Prediction accuracy (0-1)
+  confidenceLevel       Float    @default(0.5) // How confident we are
+  
+  // Performance Metrics
+  reliabilityScore      Float?   // Based on user feedback
+  popularityScore       Float    @default(0)   // How popular this mod is
+  valueScore            Float?   // Performance per dollar
+  
+  // Installation Data
+  avgInstallTime        Float?   // Average installation time in hours
+  difficultyRating      Float?   // Average difficulty (1-10)
+  toolsRequired         Json?    // Common tools needed
+  
+  // Market Data
+  priceHistory          Json?    // Price tracking over time
+  availability          String?  // In Stock, Backorder, Discontinued
+  
+  // Learning System Metadata
+  lastLearningUpdate    DateTime? // Last time we updated from real data
+  dataSource            String   @default("AI-Generated") // AI-Generated, User-Verified, Dyno-Confirmed
+  aiModel               String?  // Which AI model made predictions
+  
+  // Relationships
+  modifications         Modification[] // Individual installations
+  dynoResults           DynoResult[]   // Real-world performance results
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  // Indexes for fast lookups
+  @@index([category, brand])
+  @@index([popularityScore])
+  @@index([accuracy])
+  @@index([totalInstalls])
+  @@index([confidenceLevel])
+}
+
+// Real-world dyno results that teach our AI
+model DynoResult {
+  id                    String   @id @default(cuid())
+  
+  // Link to car and modification
+  carId                 String
+  modificationId        String?  // Optional - can be standalone dyno
+  modDatabaseId         String?  // Link to ModificationDatabase entry
+  
+  // Dyno Session Info
+  dynoType              String?  // Dynojet, Mustang, etc.
+  dynoShop              String?  // Shop name/location
+  operator              String?  // Dyno operator
+  
+  // Before Modification (Baseline)
+  baselinePower         Float?   // HP before mod
+  baselineTorque        Float?   // Torque before mod
+  baselineRPM           Int?     // RPM of peak power
+  
+  // After Modification (Results)
+  resultPower           Float    // HP after mod
+  resultTorque          Float    // Torque after mod
+  resultRPM             Int?     // RPM of peak power
+  
+  // Calculated Gains
+  powerGain             Float    // Actual power gain
+  torqueGain            Float    // Actual torque gain
+  percentGain           Float?   // Percentage increase
+  
+  // Environmental Conditions
+  temperature           Float?   // Ambient temp
+  humidity              Float?   // Humidity percentage
+  barometricPressure    Float?   // Atmospheric pressure
+  correctionFactor      String?  // SAE, STD, etc.
+  
+  // Modification Details
+  modificationCost      Float?   // What user paid
+  installationTime      Float?   // Hours to install
+  installationNotes     String?  // Any special notes
+  
+  // User Feedback
+  satisfactionRating    Int?     // 1-10 user satisfaction
+  wouldRecommend        Boolean? // Would recommend this mod
+  notes                 String?  // User notes about the mod
+  
+  // Learning System Integration
+  usedForLearning       Boolean  @default(false) // Has this been integrated into learning?
+  confidenceScore       Float?   // How confident are we in this data?
+  
+  // Verification
+  isVerified            Boolean  @default(false) // Has this been verified?
+  verifiedBy            String?  // Who verified this result
+  verificationDate      DateTime?
+  
+  // Relationships
+  car                   Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+  modification          Modification? @relation(fields: [modificationId], references: [id])
+  modDatabase           ModificationDatabase? @relation(fields: [modDatabaseId], references: [id])
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  @@index([carId])
+  @@index([modDatabaseId])
+  @@index([powerGain])
+  @@index([isVerified])
+  @@index([usedForLearning])
 }
