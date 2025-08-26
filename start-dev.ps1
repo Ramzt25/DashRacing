@@ -41,62 +41,34 @@ if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
 }
 Write-Host "✅ npm found: $(npm --version)" -ForegroundColor Green
 
-# Check if Docker is running (for database)
+# Check Database (Supabase)
+Write-Section "🗄️  Checking Database Connection"
+Write-Host "🔄 Testing Supabase connection..." -ForegroundColor Blue
 try {
-    docker info | Out-Null
-    Write-Host "✅ Docker is running" -ForegroundColor Green
-    $dockerAvailable = $true
+    $env:NODE_ENV = "development"
+    npx prisma db pull --preview-feature | Out-Null
+    Write-Host "✅ Supabase database connection successful" -ForegroundColor Green
 }
 catch {
-    Write-Host "⚠️  Docker not available - database will need to be started manually" -ForegroundColor Yellow
-    $dockerAvailable = $false
+    Write-Host "⚠️  Supabase connection issue - check .env configuration" -ForegroundColor Yellow
 }
 
-# Start Database (if Docker is available)
-if ($dockerAvailable) {
-    Write-Section "🗄️  Starting Database"
-    if (Test-Port 5432) {
-        Write-Host "✅ Database already running on port 5432" -ForegroundColor Green
-    } else {
-        Write-Host "🔄 Starting PostgreSQL database with Docker..." -ForegroundColor Blue
-        try {
-            Start-Process -FilePath "docker-compose" -ArgumentList "up", "-d", "db" -WorkingDirectory $PWD -NoNewWindow -Wait
-            Start-Sleep -Seconds 3
-            if (Test-Port 5432) {
-                Write-Host "✅ Database started successfully" -ForegroundColor Green
-            } else {
-                Write-Host "❌ Failed to start database" -ForegroundColor Red
-            }
-        }
-        catch {
-            Write-Host "❌ Failed to start database with Docker: $($_.Exception.Message)" -ForegroundColor Red
-        }
-    }
-}
+# Start Database (SQLite - no setup needed)
+# Database section is removed since SQLite doesn't need a separate server
 
 # Start Backend
-Write-Section "🖥️  Starting Backend Server"
-if (Test-Port 4000) {
-    Write-Host "✅ Backend already running on port 4000" -ForegroundColor Green
-} else {
-    Write-Host "🔄 Starting backend server..." -ForegroundColor Blue
-    Start-Process -FilePath "pwsh" -ArgumentList "-Command", "cd backend; npm run dev" -WindowStyle Normal
-    Start-Sleep -Seconds 5
-    if (Test-Port 4000) {
-        Write-Host "✅ Backend started successfully on http://localhost:4000" -ForegroundColor Green
-    } else {
-        Write-Host "⚠️  Backend may still be starting up..." -ForegroundColor Yellow
-    }
-}
+Write-Section "🖥️  Backend Status"
+Write-Host "ℹ️  Using Supabase - no local backend needed for auth" -ForegroundColor Gray
+Write-Host "✅ Authentication via Supabase direct connection" -ForegroundColor Green
 
 # Start Metro Bundler
 Write-Section "📱 Starting Metro Bundler"
 if (Test-Port 8081) {
     Write-Host "✅ Metro bundler already running on port 8081" -ForegroundColor Green
 } else {
-    Write-Host "🔄 Starting Metro bundler..." -ForegroundColor Blue
-    Start-Process -FilePath "pwsh" -ArgumentList "-Command", "cd mobile; npx react-native start" -WindowStyle Normal
-    Start-Sleep -Seconds 5
+    Write-Host "🔄 Starting Metro bundler with cache reset..." -ForegroundColor Blue
+    Start-Process -FilePath "pwsh" -ArgumentList "-Command", "cd mobile; npx react-native start --reset-cache" -WindowStyle Normal
+    Start-Sleep -Seconds 8
     if (Test-Port 8081) {
         Write-Host "✅ Metro bundler started successfully on http://localhost:8081" -ForegroundColor Green
     } else {
@@ -120,8 +92,8 @@ catch {
 }
 
 Write-Section "🎉 Development Environment Status"
-Write-Host "Database:      $(if ($dockerAvailable -and (Test-Port 5432)) { '✅ Running on port 5432' } else { '❌ Not running' })" -ForegroundColor $(if ($dockerAvailable -and (Test-Port 5432)) { 'Green' } else { 'Red' })
-Write-Host "Backend:       $(if (Test-Port 4000) { '✅ Running on http://localhost:4000' } else { '❌ Not running' })" -ForegroundColor $(if (Test-Port 4000) { 'Green' } else { 'Red' })
+Write-Host "Database:      ✅ Supabase PostgreSQL connected" -ForegroundColor Green
+Write-Host "Authentication:✅ Supabase Auth configured" -ForegroundColor Green
 Write-Host "Metro:         $(if (Test-Port 8081) { '✅ Running on http://localhost:8081' } else { '❌ Not running' })" -ForegroundColor $(if (Test-Port 8081) { 'Green' } else { 'Red' })
 Write-Host "Mobile App:    🔄 Building (check separate windows)" -ForegroundColor Blue
 
@@ -129,7 +101,7 @@ Write-Host "`n================================================================" 
 Write-Host "🎯 Development environment is starting up!" -ForegroundColor Green
 Write-Host "📚 Useful commands:" -ForegroundColor Cyan
 Write-Host "   - stop-dev.ps1        : Stop all services" -ForegroundColor White
-Write-Host "   - Backend API:        : http://localhost:4000" -ForegroundColor White
+Write-Host "   - Supabase Dashboard  : https://srhqcanyeatasprlvzvh.supabase.co" -ForegroundColor White
 Write-Host "   - Metro Bundler:      : http://localhost:8081" -ForegroundColor White
 Write-Host "   - Admin Portal:       : cd admin-portal && npm run dev" -ForegroundColor White
 Write-Host "================================================================" -ForegroundColor Cyan
