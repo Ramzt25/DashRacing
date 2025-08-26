@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
+import ScreenContainer from '../components/layout/ScreenContainer';
 import { colors, spacing, typography, shadows } from '../utils/theme';
 import { DashIcon } from '../components/DashIcon';
 import { CustomButton } from '../components/common/CustomButton';
@@ -301,8 +302,7 @@ export function HomeScreen({ navigation }: any) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar style="light" backgroundColor="#000000" translucent={false} />
+    <ScreenContainer>
       <LinearGradient
         colors={[colors.background, colors.surface]}
         style={styles.container}
@@ -318,8 +318,6 @@ export function HomeScreen({ navigation }: any) {
           />
         }
       >
-        <StatusBar style="light" />
-        
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.welcomeContainer}>
@@ -704,17 +702,11 @@ export function HomeScreen({ navigation }: any) {
         </View>
       </Modal>
       </LinearGradient>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-    paddingTop: 50, // Standardized padding to match garage page
-    paddingBottom: 40,
-  },
   container: {
     flex: 1,
   },

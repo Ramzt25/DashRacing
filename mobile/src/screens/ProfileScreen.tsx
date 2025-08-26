@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ScreenHeader } from '../components/common/ScreenHeader';
 import { useAuth } from '../context/AuthContext';
 import { colors, typography, spacing, shadows } from '../utils/theme';
+import ScreenContainer from '../components/layout/ScreenContainer';
 
 export function ProfileScreen({ navigation }: any) {
   const { user, refreshUser } = useAuth();
@@ -49,7 +50,7 @@ export function ProfileScreen({ navigation }: any) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScreenContainer hideTopInset={true}>
       <ScreenHeader 
         title="Profile"
         onBackPress={() => navigation.goBack()}
@@ -190,7 +191,7 @@ export function ProfileScreen({ navigation }: any) {
         </TouchableOpacity>
       </View>
     </ScrollView>
-    </View>
+    </ScreenContainer>
   );
 }
 

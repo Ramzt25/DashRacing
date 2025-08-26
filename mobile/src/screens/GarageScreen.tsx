@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { ScreenHeader } from '../components/common/ScreenHeader';
+import ScreenContainer from '../components/layout/ScreenContainer';
 import { CarStorageService } from '../services/CarStorageService';
 import { CarInfoService, CarTrim, COMMON_CAR_COLORS, MOD_CATEGORIES } from '../services/CarInfoService';
 import { EnhancedEdmundsService, EnhancedVehicleData, VehicleSearchParams, VehicleCategory } from '../services/EnhancedEdmundsService';
@@ -405,7 +406,6 @@ export function GarageScreen({ navigation }: any) {
 
   return (
     <>
-      <StatusBar style="light" backgroundColor="#000000" translucent={false} />
       <ScreenHeader 
         title="My Garage" 
         onBackPress={() => navigation.goBack()} 
@@ -424,14 +424,14 @@ export function GarageScreen({ navigation }: any) {
         }
       />
       
-      <View style={styles.container}>
+      <ScreenContainer hideTopInset={true}>
         {isLoading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.primary} />
             <Text style={styles.loadingText}>Loading your garage...</Text>
           </View>
         ) : (
-          <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+          <>
             {/* User Info with Week 5 Enhancements */}
             <View style={styles.userInfo}>
               <Text style={styles.welcomeText}>Welcome to your garage!</Text>
@@ -510,8 +510,9 @@ export function GarageScreen({ navigation }: any) {
                 ownedCars.map(renderCarCard)
               )}
             </View>
-          </ScrollView>
+          </>
         )}
+      </ScreenContainer>
 
         {/* Add Car Modal */}
         <Modal
@@ -955,7 +956,6 @@ export function GarageScreen({ navigation }: any) {
             </View>
           </View>
         </Modal>
-      </View>
     </>
   );
 }
@@ -979,7 +979,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: 20,
+    paddingBottom: spacing.lg, // Only bottom padding, ScreenContainer handles the rest
   },
   // Week 5 Enhanced Header Styles
   headerActions: {

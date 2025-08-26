@@ -12,6 +12,7 @@ import { useSettings, SpeedUnit } from '../context/SettingsContext';
 import { colors, spacing, typography, shadows } from '../utils/theme';
 import { DashIcon } from '../components/DashIcon';
 import { ScreenHeader } from '../components/common/ScreenHeader';
+import ScreenContainer from '../components/layout/ScreenContainer';
 
 export function SettingsScreen({ navigation }: any) {
   const { 
@@ -129,7 +130,7 @@ export function SettingsScreen({ navigation }: any) {
   );
 
   return (
-    <View style={styles.container}>
+    <ScreenContainer hideTopInset={true}>
       <ScreenHeader 
         title="Settings"
         onBackPress={() => navigation.goBack()}
@@ -184,7 +185,7 @@ export function SettingsScreen({ navigation }: any) {
         </View>
         </ScrollView>
       </LinearGradient>
-    </View>
+    </ScreenContainer>
   );
 }
 

@@ -9,7 +9,8 @@ import {
   ScrollView,
   ActivityIndicator,
   Animated,
-  Dimensions 
+  Dimensions,
+  TextInput 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ScreenHeader } from '../components/common/ScreenHeader';
@@ -25,6 +26,7 @@ import { LiveMapService } from '../services/LiveMapService';
 import { EnhancedLiveMapService } from '../services/EnhancedLiveMapService';
 import { GoogleMapsIntegrationService } from '../services/GoogleMapsIntegrationService';
 import RacerIDAndFriendsService, { FriendMapMarker } from '../services/RacerIDAndFriendsService';
+import ScreenContainer from '../components/layout/ScreenContainer';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -97,6 +99,16 @@ export function LiveMapScreen({ navigation }: any) {
   const [showCreateEventModal, setShowCreateEventModal] = useState(false);
   const [selectedMapLocation, setSelectedMapLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [selectedCreationType, setSelectedCreationType] = useState<'race' | 'event' | null>(null);
+  
+  // New features
+  const [destination, setDestination] = useState<{ latitude: number; longitude: number; address?: string } | null>(null);
+  const [policeMarkers, setPoliceMarkers] = useState<Array<{ id: string; latitude: number; longitude: number; timestamp: Date }>>([]);
+  const [showDestinationSearch, setShowDestinationSearch] = useState(false);
+  const [showDestinationModal, setShowDestinationModal] = useState(false);
+  const [destinationInput, setDestinationInput] = useState('');
+  const [isMarkingPolice, setIsMarkingPolice] = useState(false);
+  const [isSearchingAddress, setIsSearchingAddress] = useState(false);
+  
   const [mapFilters, setMapFilters] = useState<MapFilters>({
     showPlayers: true,
     showRaces: true,
@@ -468,10 +480,15 @@ export function LiveMapScreen({ navigation }: any) {
       longitude: coordinate.longitude
     });
     
-    // Show options: Create race OR event here
+    if (isMarkingPolice) {
+      handleMarkPolice(coordinate);
+      return;
+    }
+    
+    // Show options: Create race, event, set destination, or mark police
     Alert.alert(
-      'Create at This Location?',
-      'What would you like to create here?',
+      'Map Actions',
+      'What would you like to do at this location?',
       [
         { text: 'Cancel', style: 'cancel' },
         { 
@@ -487,9 +504,99 @@ export function LiveMapScreen({ navigation }: any) {
             setSelectedCreationType('event');
             setShowCreateEventModal(true);
           }
+        },
+        {
+          text: '📍 Set Destination',
+          onPress: () => handleSetDestination(coordinate)
+        },
+        {
+          text: '🚔 Mark Police',
+          onPress: () => handleMarkPolice(coordinate)
         }
       ]
     );
+  };
+
+  // New handler functions for destination and police marking
+  const handleSetDestination = async (coordinate: { latitude: number; longitude: number }, address?: string) => {
+    try {
+      setDestination({ ...coordinate, address: address || 'Selected Location' });
+      Alert.alert('Destination Set', address ? `Destination set to: ${address}` : 'Destination has been set on the map.');
+    } catch (error) {
+      console.error('Set destination error:', error);
+      Alert.alert('Error', 'Failed to set destination.');
+    }
+  };
+
+  const handleSetDestinationFromEvent = (event: LiveEvent) => {
+    handleSetDestination(event.location, event.title);
+  };
+
+  const handleAddressSearch = async () => {
+    if (!destinationInput.trim()) {
+      Alert.alert('Error', 'Please enter an address to search for.');
+      return;
+    }
+
+    setIsSearchingAddress(true);
+    try {
+      // Simple geocoding simulation - in a real app, you'd use Google Geocoding API
+      // For now, we'll just simulate a search result
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      
+      // Mock coordinates for demo - replace with actual geocoding
+      const mockResults = [
+        { lat: 34.0522, lng: -118.2437, address: "Los Angeles, CA" },
+        { lat: 40.7128, lng: -74.0060, address: "New York, NY" },
+        { lat: 41.8781, lng: -87.6298, address: "Chicago, IL" }
+      ];
+      
+      const searchTerm = destinationInput.toLowerCase();
+      const result = mockResults.find(r => r.address.toLowerCase().includes(searchTerm)) || mockResults[0];
+      
+      const coordinate = { latitude: result.lat, longitude: result.lng };
+      await handleSetDestination(coordinate, result.address);
+      setDestinationInput('');
+      setShowDestinationModal(false);
+      
+      // Center map on destination
+      if (mapRef.current) {
+        mapRef.current.animateToRegion({
+          latitude: result.lat,
+          longitude: result.lng,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Address search error:', error);
+      Alert.alert('Search Failed', 'Could not find the specified address. Please try again.');
+    } finally {
+      setIsSearchingAddress(false);
+    }
+  };
+
+  const handleMarkPolice = (coordinate: { latitude: number; longitude: number }) => {
+    const newPoliceMarker = {
+      id: Date.now().toString(),
+      latitude: coordinate.latitude,
+      longitude: coordinate.longitude,
+      timestamp: new Date(),
+    };
+    
+    setPoliceMarkers(prev => [...prev, newPoliceMarker]);
+    setIsMarkingPolice(false);
+    Alert.alert('Police Marked', 'Police location has been marked for other users.');
+    
+    // Remove police marker after 30 minutes
+    setTimeout(() => {
+      setPoliceMarkers(prev => prev.filter(marker => marker.id !== newPoliceMarker.id));
+    }, 30 * 60 * 1000);
+  };
+
+  const clearDestination = () => {
+    setDestination(null);
+    Alert.alert('Destination Cleared', 'Destination has been removed.');
   };
 
   // Create custom race at selected location
@@ -628,7 +735,7 @@ export function LiveMapScreen({ navigation }: any) {
   }
 
   return (
-    <View style={styles.container}>
+    <ScreenContainer hideTopInset={true}>
       <ScreenHeader 
         title="Live Map" 
         onBackPress={() => navigation.goBack()}
@@ -777,8 +884,24 @@ export function LiveMapScreen({ navigation }: any) {
               title={event.title}
               description={`${event.participants}/${event.maxParticipants} players • ${formatTimeUntilStart(event.startTime)}`}
               onPress={() => {
-                setSelectedEvent(event);
-                setShowEventModal(true);
+                Alert.alert(
+                  event.title,
+                  'What would you like to do?',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'View Details',
+                      onPress: () => {
+                        setSelectedEvent(event);
+                        setShowEventModal(true);
+                      }
+                    },
+                    {
+                      text: 'Set as Destination',
+                      onPress: () => handleSetDestinationFromEvent(event)
+                    }
+                  ]
+                );
               }}
             >
               <View style={[
@@ -819,47 +942,77 @@ export function LiveMapScreen({ navigation }: any) {
               lineDashPattern={[5, 5]}
             />
           ))}
+
+          {/* Destination Marker */}
+          {destination && (
+            <Marker
+              coordinate={destination}
+              title="Destination"
+              description={destination.address || 'Selected destination'}
+              pinColor={colors.accent}
+            >
+              <View style={styles.destinationMarker}>
+                <Ionicons name="flag" size={20} color={colors.accent} />
+              </View>
+            </Marker>
+          )}
+
+          {/* Police Markers */}
+          {policeMarkers.map((police) => (
+            <Marker
+              key={`police-${police.id}`}
+              coordinate={{ latitude: police.latitude, longitude: police.longitude }}
+              title="Police Spotted"
+              description={`Reported ${Math.floor((new Date().getTime() - police.timestamp.getTime()) / 60000)} min ago`}
+            >
+              <View style={styles.policeMarker}>
+                <Ionicons name="shield" size={16} color="#ff4444" />
+              </View>
+            </Marker>
+          ))}
+
+          {/* Destination Route Polyline */}
+          {destination && currentLocation && (
+            <Polyline
+              coordinates={[
+                {
+                  latitude: currentLocation.coords.latitude,
+                  longitude: currentLocation.coords.longitude,
+                },
+                destination
+              ]}
+              strokeColor={colors.accent}
+              strokeWidth={3}
+              lineDashPattern={[10, 5]}
+            />
+          )}
         </MapView>
       )}
 
-      {/* Speed Display */}
-      <View style={styles.speedContainer}>
+      {/* Compact Speed Display */}
+      <View style={styles.compactSpeedContainer}>
         <LinearGradient
-          colors={[colors.background + 'DD', colors.surface + 'DD']}
-          style={styles.speedGradient}
+          colors={[colors.background + 'EE', colors.surface + 'EE']}
+          style={styles.compactSpeedGradient}
         >
-          <View style={styles.speedMain}>
-            <Text style={styles.speedValue}>{currentSpeed.toFixed(0)}</Text>
-            <Text style={styles.speedUnit}>{getSpeedUnitLabel()}</Text>
-          </View>
-          <Text style={styles.speedLabel}>Current Speed</Text>
+          <Text style={styles.compactSpeedValue}>{currentSpeed.toFixed(0)}</Text>
+          <Text style={styles.compactSpeedUnit}>{getSpeedUnitLabel()}</Text>
         </LinearGradient>
       </View>
 
-      {/* Live Activity Counter */}
-      <View style={styles.activityContainer}>
+      {/* Compact Activity Counter - Moved to side */}
+      <View style={styles.compactActivityContainer}>
         <LinearGradient
-          colors={[colors.primary + '20', colors.secondary + '20']}
-          style={styles.activityGradient}
+          colors={[colors.primary + '30', colors.secondary + '30']}
+          style={styles.compactActivityGradient}
         >
-          <View style={styles.activityRow}>
-            <View style={styles.activityItem}>
-              <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-                <Ionicons name="people" size={16} color={colors.primary} />
-              </Animated.View>
-              <Text style={styles.activityCount}>{filteredPlayers.length}</Text>
-              <Text style={styles.activityLabel}>Online</Text>
-            </View>
-            <View style={styles.activityItem}>
-              <Ionicons name="flag" size={16} color={colors.warning} />
-              <Text style={styles.activityCount}>{filteredEvents.filter(e => e.status === 'active').length}</Text>
-              <Text style={styles.activityLabel}>Racing</Text>
-            </View>
-            <View style={styles.activityItem}>
-              <Ionicons name="calendar" size={16} color={colors.accent} />
-              <Text style={styles.activityCount}>{filteredEvents.filter(e => e.status === 'starting_soon').length}</Text>
-              <Text style={styles.activityLabel}>Upcoming</Text>
-            </View>
+          <View style={styles.compactActivityItem}>
+            <Ionicons name="people" size={12} color={colors.primary} />
+            <Text style={styles.compactActivityCount}>{filteredPlayers.length}</Text>
+          </View>
+          <View style={styles.compactActivityItem}>
+            <Ionicons name="flag" size={12} color={colors.warning} />
+            <Text style={styles.compactActivityCount}>{filteredEvents.filter(e => e.status === 'active').length}</Text>
           </View>
         </LinearGradient>
       </View>
@@ -883,6 +1036,34 @@ export function LiveMapScreen({ navigation }: any) {
             <Text style={styles.buttonText}>{mapMode.toUpperCase()}</Text>
           </LinearGradient>
         </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.filtersButton}
+          onPress={() => setShowDestinationModal(true)}
+        >
+          <LinearGradient
+            colors={[colors.accent + '80', colors.accent]}
+            style={styles.buttonGradient}
+          >
+            <Ionicons name="navigate" size={20} color="#fff" />
+            <Text style={styles.buttonText}>DESTINATION</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {destination && (
+          <TouchableOpacity 
+            style={styles.filtersButton}
+            onPress={clearDestination}
+          >
+            <LinearGradient
+              colors={[colors.warning + '80', colors.warning]}
+              style={styles.buttonGradient}
+            >
+              <Ionicons name="close" size={20} color="#fff" />
+              <Text style={styles.buttonText}>CLEAR</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity 
           style={styles.filtersButton}
@@ -1325,7 +1506,76 @@ export function LiveMapScreen({ navigation }: any) {
           </ScrollView>
         </View>
       </Modal>
-    </View>
+
+      {/* Destination Search Modal */}
+      <Modal
+        visible={showDestinationModal}
+        animationType="slide"
+        presentationStyle="formSheet"
+        onRequestClose={() => setShowDestinationModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={() => setShowDestinationModal(false)}>
+              <Ionicons name="close" size={24} color="#fff" />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Set Destination</Text>
+            <View style={{ width: 24 }} />
+          </View>
+
+          <ScrollView style={styles.modalContent}>
+            <Text style={styles.destinationInstructions}>
+              Enter an address or search for a location to set as your destination.
+            </Text>
+
+            <View style={styles.destinationInputContainer}>
+              <TextInput
+                style={styles.destinationInput}
+                placeholder="Enter address (e.g., Los Angeles, CA)"
+                placeholderTextColor={colors.textSecondary}
+                value={destinationInput}
+                onChangeText={setDestinationInput}
+                autoCapitalize="words"
+                autoCorrect={false}
+              />
+              <TouchableOpacity 
+                style={styles.searchButton}
+                onPress={handleAddressSearch}
+                disabled={isSearchingAddress || !destinationInput.trim()}
+              >
+                {isSearchingAddress ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Ionicons name="search" size={20} color="#fff" />
+                )}
+              </TouchableOpacity>
+            </View>
+
+            {destination && (
+              <View style={styles.currentDestinationContainer}>
+                <Text style={styles.currentDestinationTitle}>Current Destination:</Text>
+                <View style={styles.currentDestinationCard}>
+                  <Ionicons name="location" size={20} color={colors.accent} />
+                  <Text style={styles.currentDestinationText}>
+                    {destination.address || `${destination.latitude.toFixed(4)}, ${destination.longitude.toFixed(4)}`}
+                  </Text>
+                  <TouchableOpacity onPress={clearDestination}>
+                    <Ionicons name="close-circle" size={20} color={colors.warning} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+
+            <View style={styles.destinationTipsContainer}>
+              <Text style={styles.destinationTipsTitle}>💡 Pro Tips:</Text>
+              <Text style={styles.destinationTip}>• Tap on any event marker to set it as destination</Text>
+              <Text style={styles.destinationTip}>• Long press anywhere on the map for quick destination</Text>
+              <Text style={styles.destinationTip}>• Use the map actions to mark police locations</Text>
+            </View>
+          </ScrollView>
+        </View>
+      </Modal>
+    </ScreenContainer>
   );
 }
 
@@ -1633,7 +1883,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: spacing.lg,
-    paddingTop: 60,
     borderBottomWidth: 1,
     borderBottomColor: colors.surfaceSecondary,
   },
@@ -1854,5 +2103,148 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: 12,
     marginTop: spacing.lg,
+  },
+
+  // New styles for destination and police markers
+  destinationMarker: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: colors.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: colors.background,
+  },
+  policeMarker: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#ff4444',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.background,
+  },
+
+  // Compact UI styles
+  compactSpeedContainer: {
+    position: 'absolute',
+    top: 80,
+    right: spacing.lg,
+    borderRadius: 12,
+    overflow: 'hidden',
+    ...shadows.sm,
+  },
+  compactSpeedGradient: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: spacing.xs,
+  },
+  compactSpeedValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  compactSpeedUnit: {
+    fontSize: 12,
+    color: colors.textPrimary,
+  },
+
+  compactActivityContainer: {
+    position: 'absolute',
+    top: 120,
+    right: spacing.lg,
+    borderRadius: 8,
+    overflow: 'hidden',
+    ...shadows.sm,
+  },
+  compactActivityGradient: {
+    padding: spacing.xs,
+    gap: spacing.xs,
+  },
+  compactActivityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  compactActivityCount: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+    minWidth: 12,
+    textAlign: 'center',
+  },
+
+  // Destination modal styles
+  destinationInstructions: {
+    ...typography.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: spacing.lg,
+  },
+  destinationInputContainer: {
+    flexDirection: 'row',
+    marginBottom: spacing.lg,
+    gap: spacing.sm,
+  },
+  destinationInput: {
+    flex: 1,
+    backgroundColor: colors.surfaceSecondary,
+    borderRadius: 12,
+    padding: spacing.md,
+    color: colors.textPrimary,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: colors.primary + '30',
+  },
+  searchButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 12,
+    padding: spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 48,
+  },
+
+  currentDestinationContainer: {
+    marginBottom: spacing.lg,
+  },
+  currentDestinationTitle: {
+    ...typography.h3,
+    color: colors.textPrimary,
+    marginBottom: spacing.sm,
+  },
+  currentDestinationCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surfaceSecondary,
+    padding: spacing.md,
+    borderRadius: 12,
+    gap: spacing.sm,
+  },
+  currentDestinationText: {
+    flex: 1,
+    ...typography.body,
+    color: colors.textPrimary,
+  },
+
+  destinationTipsContainer: {
+    backgroundColor: colors.surfaceSecondary + '50',
+    padding: spacing.md,
+    borderRadius: 12,
+    marginTop: spacing.lg,
+  },
+  destinationTipsTitle: {
+    ...typography.h3,
+    color: colors.textPrimary,
+    marginBottom: spacing.sm,
+  },
+  destinationTip: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    marginBottom: spacing.xs,
   },
 });
