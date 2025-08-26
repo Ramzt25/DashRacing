@@ -16,6 +16,7 @@ import { useLocation } from '../hooks/useLocation';
 import { LiveMapService } from '../services/LiveMapService';
 import { ScreenHeader } from '../components/common/ScreenHeader';
 import { colors, typography, spacing, shadows } from '../utils/theme';
+import ScreenContainer from '../components/layout/ScreenContainer';
 
 interface LivePlayer {
   id: string;
@@ -192,8 +193,7 @@ export function NearbyScreen({ navigation }: any) {
   }
 
   return (
-    <>
-      <StatusBar style="light" backgroundColor="#000000" translucent={false} />
+    <ScreenContainer hideTopInset={true}>
       <ScreenHeader 
         title="Nearby Racers" 
         onBackPress={() => navigation.goBack()}
@@ -425,7 +425,7 @@ export function NearbyScreen({ navigation }: any) {
       )}
         </ScrollView>
       </View>
-    </>
+    </ScreenContainer>
   );
 }
 
@@ -447,7 +447,6 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 20,
-    paddingTop: 60,
   },
   title: {
     color: '#fff',

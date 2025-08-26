@@ -13,6 +13,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../context/AuthContext';
 import { ScreenHeader } from '../components/common/ScreenHeader';
 import { RaceService } from '../services/RaceService';
+import ScreenContainer from '../components/layout/ScreenContainer';
 
 interface RaceConfig {
   type: '1/4-mile' | 'rolling';
@@ -103,7 +104,7 @@ export function LiveRaceScreen({ navigation }: any) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScreenContainer hideTopInset={true}>
       <ScreenHeader 
         title="Live Race"
         onBackPress={() => navigation.goBack()}
@@ -300,7 +301,7 @@ export function LiveRaceScreen({ navigation }: any) {
         </Text>
       </View>
       </ScrollView>
-    </View>
+    </ScreenContainer>
   );
 }
 
@@ -314,7 +315,6 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 20,
-    paddingTop: 60,
   },
   title: {
     color: '#fff',
