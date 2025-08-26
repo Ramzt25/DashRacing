@@ -1,14 +1,15 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+  ext.kotlin_version = "1.9.25"
   repositories {
     google()
     mavenCentral()
   }
   dependencies {
-    classpath('com.android.tools.build:gradle')
+    classpath('com.android.tools.build:gradle:8.8.2')
     classpath('com.facebook.react:react-native-gradle-plugin')
-    classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
   }
 }
 
@@ -31,7 +32,32 @@ allprojects {
     mavenCentral()
     maven { url 'https://www.jitpack.io' }
   }
+  
+  configurations.all {
+    resolutionStrategy {
+      force "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+      force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+      force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+      force "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+      force "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+  }
+  
+  // Force all subprojects to use our SDK versions - NO MORE BULLSHIT!
+  afterEvaluate { project ->
+    if (project.hasProperty('android')) {
+      project.android {
+        compileSdk 35
+        if (project.android.hasProperty('defaultConfig')) {
+          project.android.defaultConfig {
+            minSdkVersion 24
+            targetSdkVersion 35
+          }
+        }
+      }
+    }
+  }
 }
 
-apply plugin: "expo-root-project"
+// REMOVED: apply plugin: "expo-root-project" - FUCK EXPO!
 apply plugin: "com.facebook.react.rootproject"
