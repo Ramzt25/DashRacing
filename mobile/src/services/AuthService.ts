@@ -45,20 +45,44 @@ export class AuthService {
   private static readonly API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
 
   static async login(credentials: LoginRequest): Promise<AuthResponse> {
-    const response = await fetch(`${this.API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials),
+    console.log('🌐 AuthService.login called:', { 
+      email: credentials.email, 
+      url: `${this.API_BASE_URL}/auth/login`,
+      passwordLength: credentials.password.length 
     });
+    
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: 'Login failed' })) as ApiError;
-      throw new Error(errorData.error || errorData.message || 'Login failed');
+      console.log('📡 Login response received:', { 
+        status: response.status, 
+        statusText: response.statusText,
+        ok: response.ok 
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Login failed' })) as ApiError;
+        console.error('❌ Login failed:', errorData);
+        throw new Error(errorData.error || errorData.message || 'Login failed');
+      }
+
+      const result = await response.json() as AuthResponse;
+      console.log('✅ Login successful:', { 
+        userId: result.user.id, 
+        userEmail: result.user.email,
+        hasToken: !!result.token 
+      });
+      return result;
+    } catch (error) {
+      console.error('🚨 AuthService.login error:', error);
+      throw error;
     }
-
-    return response.json() as Promise<AuthResponse>;
   }
 
   static async signup(userData: SignupRequest): Promise<AuthResponse> {

@@ -29,47 +29,46 @@ export class CarStorageService {
   // Save car to database and local storage
   static async saveCar(car: Car, userId: string): Promise<boolean> {
     try {
-      // Transform to API format
-      const apiCarData = this.transformCarToApiFormat(car, userId);
-      
-      if (car.id.startsWith('temp_')) {
-        // New car - create in API
-        const response = await ApiService.createVehicle(apiCarData) as { vehicle: { id: string } };
-        car.id = response.vehicle.id; // Update with real ID
-      } else {
-        // Existing car - update in API
-        await ApiService.updateVehicle(car.id, apiCarData);
-      }
-      
-      // Update local storage
+      // Always save to local storage first
       const localCars = await this.getFromLocal();
       const carIndex = localCars.findIndex(c => c.id === car.id);
+      
       if (carIndex >= 0) {
         localCars[carIndex] = car;
       } else {
         localCars.push(car);
       }
       await this.saveToLocal(localCars);
+      console.log('✅ Car saved to local storage successfully');
+      
+      try {
+        // Transform to API format and try to sync
+        const apiCarData = this.transformCarToApiFormat(car, userId);
+        
+        if (car.id.startsWith('temp_')) {
+          // New car - create in API
+          const response = await ApiService.createVehicle(apiCarData) as { vehicle: { id: string } };
+          
+          // Update the car with the real ID
+          const updatedCar = { ...car, id: response.vehicle.id };
+          const updatedLocalCars = localCars.map(c => c.id === car.id ? updatedCar : c);
+          await this.saveToLocal(updatedLocalCars);
+          
+          console.log('✅ Car synced to API with ID:', response.vehicle.id);
+        } else {
+          // Existing car - update in API
+          await ApiService.updateVehicle(car.id, apiCarData);
+          console.log('✅ Car updated in API');
+        }
+      } catch (apiError) {
+        console.warn('⚠️ API sync failed, but car saved locally:', apiError);
+        // Don't return false - local save was successful
+      }
       
       return true;
     } catch (error) {
-      console.error('Failed to save car:', error);
-      
-      // Save locally even if API fails
-      if (car.id.startsWith('temp_')) {
-        car.id = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      }
-      
-      const localCars = await this.getFromLocal();
-      const carIndex = localCars.findIndex(c => c.id === car.id);
-      if (carIndex >= 0) {
-        localCars[carIndex] = car;
-      } else {
-        localCars.push(car);
-      }
-      await this.saveToLocal(localCars);
-      
-      return false; // Indicate API save failed
+      console.error('❌ Failed to save car locally:', error);
+      return false;
     }
   }
 

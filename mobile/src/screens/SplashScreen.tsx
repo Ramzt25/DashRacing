@@ -12,6 +12,8 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
   const glowAnim = new Animated.Value(0);
 
   useEffect(() => {
+    console.log('🎬 SplashScreen starting animations');
+    
     // Start animations
     Animated.sequence([
       Animated.parallel([
@@ -44,8 +46,14 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
       ),
     ]).start();
 
-    // Don't auto-finish - wait for onFinish to be called from parent when auth is ready
-  }, []);
+    // Call onFinish after animations have had time to show
+    const finishTimer = setTimeout(() => {
+      console.log('🏁 SplashScreen calling onFinish');
+      onFinish();
+    }, 1200); // Let the initial animations complete
+    
+    return () => clearTimeout(finishTimer);
+  }, [onFinish]);
 
   return (
     <SafeAreaView style={styles.safeArea}>

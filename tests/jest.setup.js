@@ -3,6 +3,9 @@
  * Global configuration and setup for test environment
  */
 
+// Import extended Jest matchers
+require('jest-extended');
+
 // Increase timeout for all tests
 jest.setTimeout(30000);
 

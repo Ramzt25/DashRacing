@@ -40,34 +40,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuthState = async () => {
     try {
+      console.log('🔍 Starting auth state check...');
       setIsLoading(true);
+      
+      console.log('📱 Getting saved data from AsyncStorage...');
       const [savedUser, firstTimeFlag] = await Promise.all([
         AsyncStorage.getItem('user'),
         AsyncStorage.getItem('isFirstTime')
       ]);
 
+      console.log('💾 Saved user data:', savedUser ? 'Found' : 'None');
+      console.log('🚀 First time flag:', firstTimeFlag);
+
       if (savedUser) {
         const userData = JSON.parse(savedUser) as User;
+        console.log('👤 Parsed user data:', { 
+          id: userData.id, 
+          email: userData.email, 
+          hasToken: !!userData.token 
+        });
         
         // Validate token if it exists
         if (userData.token) {
-          const isValidToken = await AuthService.validateToken(userData.token);
-          if (isValidToken) {
-            setUser(userData);
-          } else {
-            // Token is invalid, clear stored user
+          console.log('🔐 Validating token...');
+          try {
+            const isValidToken = await AuthService.validateToken(userData.token);
+            console.log('✅ Token validation result:', isValidToken);
+            if (isValidToken) {
+              setUser(userData);
+              console.log('👍 User authenticated successfully');
+            } else {
+              // Token is invalid, clear stored user
+              console.log('❌ Token invalid, clearing stored user');
+              await AsyncStorage.removeItem('user');
+            }
+          } catch (tokenError) {
+            console.error('🚨 Token validation error:', tokenError);
+            // Clear invalid stored data
             await AsyncStorage.removeItem('user');
           }
         } else {
           setUser(userData); // For backward compatibility with old stored users
+          console.log('👍 User set without token (backward compatibility)');
         }
       }
 
       setIsFirstTime(firstTimeFlag === null);
+      console.log('✅ Auth state check completed');
     } catch (error) {
-      console.error('Auth state check error:', error);
+      console.error('🚨 Auth state check error:', error);
     } finally {
       setIsLoading(false);
+      console.log('🏁 Auth loading finished');
     }
   };
 
@@ -99,7 +123,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
+      console.log('🚀 AuthContext.login starting:', { email, passwordLength: password.length });
+      
+      console.log('📡 Calling AuthService.login...');
       const authResponse = await AuthService.login({ email, password });
+      console.log('✅ AuthService.login success:', { 
+        userId: authResponse.user.id, 
+        userEmail: authResponse.user.email,
+        hasToken: !!authResponse.token 
+      });
       
       const user: User = {
         id: authResponse.user.id,
@@ -114,11 +146,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         subscriptionEnd: authResponse.user.subscriptionEnd,
       };
       
+      console.log('💾 Saving user to AsyncStorage...');
       await AsyncStorage.setItem('user', JSON.stringify(user));
+      console.log('✅ User saved to AsyncStorage');
+      
+      console.log('👤 Setting user in context...');
       setUser(user);
+      console.log('🎉 Login completed successfully!');
       return true;
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('🚨 Login error:', error);
       return false;
     }
   };

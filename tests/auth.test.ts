@@ -1,6 +1,6 @@
 import { test, expect, describe, beforeAll, afterAll, beforeEach } from '@jest/globals';
-import { buildServer } from '../backend/plugins';
-import { registerAuthRoutes } from '../backend/auth';
+import { buildServer } from '../backend/plugins.js';
+import { registerAuthRoutes } from '../backend/auth.js';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();

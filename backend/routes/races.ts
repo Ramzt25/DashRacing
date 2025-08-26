@@ -51,6 +51,63 @@ export async function registerRaceRoutes(app: FastifyInstance) {
     return races;
   });
 
+  // Get nearby races by location
+  app.get('/races/nearby', { preHandler: [authGuard] }, async (req: any, reply) => {
+    const { latitude, longitude, radius = 10 } = req.query as { 
+      latitude: string; 
+      longitude: string; 
+      radius?: string; 
+    };
+
+    if (!latitude || !longitude) {
+      return reply.status(400).send({ error: 'latitude and longitude are required' });
+    }
+
+    const lat = parseFloat(latitude);
+    const lon = parseFloat(longitude);
+    const radiusKm = parseFloat(radius as string);
+
+    // For now, we'll do a simple bounding box search
+    // In a real app, you'd use PostGIS or similar for proper geo queries
+    const latRange = radiusKm / 111; // Rough conversion: 1 degree ≈ 111 km
+    const lonRange = radiusKm / (111 * Math.cos(lat * Math.PI / 180));
+
+    const races = await prisma.race.findMany({
+      where: {
+        AND: [
+          { locationLat: { gte: lat - latRange, lte: lat + latRange } },
+          { locationLon: { gte: lon - lonRange, lte: lon + lonRange } },
+          { status: { in: ['pending', 'starting', 'active'] } }
+        ]
+      },
+      include: {
+        createdBy: {
+          select: {
+            id: true,
+            handle: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+        participants: {
+          include: {
+            racer: {
+              select: {
+                id: true,
+                handle: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { startTime: 'asc' },
+    });
+
+    return races;
+  });
+
   // Get race by ID
   app.get('/races/:id', async (req, reply) => {
     const { id } = req.params as { id: string };
@@ -146,7 +203,8 @@ export async function registerRaceRoutes(app: FastifyInstance) {
       const race = await prisma.race.create({
         data: {
           ...data,
-          createdById: req.user.sub,
+          startTime: data.startTime || new Date(),
+          createdById: String(req.user.sub),
         },
         include: {
           createdBy: {
@@ -172,7 +230,7 @@ export async function registerRaceRoutes(app: FastifyInstance) {
         },
       });
 
-      return { success: true, race };
+      return reply.status(201).send(race);
     } catch (error) {
       console.error('Error creating race:', error);
       return reply.status(500).send({ error: 'Failed to create race' });
@@ -266,6 +324,68 @@ export async function registerRaceRoutes(app: FastifyInstance) {
     } catch (error) {
       console.error('Error leaving race:', error);
       return reply.status(500).send({ error: 'Failed to leave race' });
+    }
+  });
+
+  // Cancel a race (only by organizer)
+  app.delete('/races/:id', { preHandler: [authGuard] }, async (req: any, reply) => {
+    try {
+      const { id: raceId } = req.params as { id: string };
+
+      // Check if user is the race organizer
+      const race = await prisma.race.findUnique({
+        where: { id: raceId },
+        select: { createdById: true, status: true }
+      });
+
+      if (!race) {
+        return reply.status(404).send({ error: 'Race not found' });
+      }
+
+      if (race.createdById !== req.user.sub) {
+        return reply.status(403).send({ error: 'Only the race organizer can cancel the race' });
+      }
+
+      if (race.status === 'cancelled') {
+        return reply.status(400).send({ error: 'Race is already cancelled' });
+      }
+
+      if (race.status === 'completed') {
+        return reply.status(400).send({ error: 'Cannot cancel a completed race' });
+      }
+
+      // Update race status to cancelled
+      const updatedRace = await prisma.race.update({
+        where: { id: raceId },
+        data: { status: 'cancelled' },
+        include: {
+          createdBy: {
+            select: {
+              id: true,
+              handle: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+          participants: {
+            include: {
+              racer: {
+                select: {
+                  id: true,
+                  handle: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return updatedRace;
+    } catch (error) {
+      console.error('Error canceling race:', error);
+      return reply.status(500).send({ error: 'Failed to cancel race' });
     }
   });
 

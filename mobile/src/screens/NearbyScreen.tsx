@@ -192,25 +192,36 @@ export function NearbyScreen({ navigation }: any) {
   }
 
   return (
-    <ScrollView 
-      style={styles.container}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={colors.primary}
-        />
-      }
-    >
-      <StatusBar style="light" />
+    <>
+      <StatusBar style="light" backgroundColor="#000000" translucent={false} />
+      <ScreenHeader 
+        title="Nearby Racers" 
+        onBackPress={() => navigation.goBack()}
+        rightComponent={
+          <TouchableOpacity 
+            style={styles.searchButton}
+            onPress={searchNearbyRacers}
+            disabled={isSearching}
+          >
+            {isSearching ? (
+              <ActivityIndicator size="small" color={colors.primary} />
+            ) : (
+              <Ionicons name="search" size={24} color={colors.primary} />
+            )}
+          </TouchableOpacity>
+        }
+      />
       
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Nearby Racers</Text>
-        <Text style={styles.subtitle}>
-          {user ? `Find racers near you, ${user.displayName || user.handle}` : 'Discover racing community'}
-        </Text>
-      </View>
+      <View style={styles.container}>
+        <ScrollView 
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.primary}
+            />
+          }
+        >
 
       {/* Location Section */}
       {location && (
@@ -412,7 +423,9 @@ export function NearbyScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
       )}
-    </ScrollView>
+        </ScrollView>
+      </View>
+    </>
   );
 }
 

@@ -1,6 +1,7 @@
 import { test, expect } from '@jest/globals';
-import { buildServer } from '../backend/plugins';
-import { registerAuthRoutes } from '../backend/auth';
+import { buildServer } from '../backend/plugins.js';
+import { registerAuthRoutes } from '../backend/auth.js';
+import { registerRaceRoutes } from '../backend/routes/races.js';
 
 describe('Races API', () => {
   let app: any;
@@ -10,14 +11,16 @@ describe('Races API', () => {
   beforeAll(async () => {
     app = buildServer();
     await registerAuthRoutes(app);
+    await registerRaceRoutes(app);
     await app.ready();
 
     // Create test user and get auth token
+    const uniqueEmail = `racer-test-${Date.now()}@example.com`;
     const registerResponse = await app.inject({
       method: 'POST',
       url: '/auth/register',
       payload: {
-        email: 'racer-test@example.com',
+        email: uniqueEmail,
         password: 'TestPassword123!',
         firstName: 'Racer',
         lastName: 'Test'
@@ -25,6 +28,12 @@ describe('Races API', () => {
     });
 
     const body = JSON.parse(registerResponse.body);
+    
+    if (registerResponse.statusCode !== 201) {
+      console.log('Registration failed:', registerResponse.statusCode, body);
+      throw new Error(`Registration failed with status ${registerResponse.statusCode}`);
+    }
+    
     authToken = body.token;
     userId = body.user.id;
   });
@@ -57,8 +66,8 @@ describe('Races API', () => {
     expect(response.statusCode).toBe(201);
     const body = JSON.parse(response.body);
     expect(body.name).toBe(raceData.name);
-    expect(body.organizer.id).toBe(userId);
-    expect(body.status).toBe('scheduled');
+    expect(body.createdBy.id).toBe(userId);
+    expect(body.status).toBe('pending');
   });
 
   test('GET /races should list races', async () => {
@@ -117,11 +126,12 @@ describe('Races API', () => {
     const race = JSON.parse(raceResponse.body);
 
     // Create another user
+    const uniqueJoinerEmail = `joiner-${Date.now()}@example.com`;
     const userResponse = await app.inject({
       method: 'POST',
       url: '/auth/register',
       payload: {
-        email: 'joiner@example.com',
+        email: uniqueJoinerEmail,
         password: 'TestPassword123!',
         firstName: 'Joiner',
         lastName: 'Test'

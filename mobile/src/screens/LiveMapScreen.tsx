@@ -12,13 +12,13 @@ import {
   Dimensions 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { ScreenHeader } from '../components/common/ScreenHeader';
 import * as Location from 'expo-location';
 import { StatusBar } from 'expo-status-bar';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
-import { ScreenHeader } from '../components/common/ScreenHeader';
 import { colors, spacing, typography, shadows } from '../utils/theme';
 import { GPSCoordinate } from '../types/racing';
 import { LiveMapService } from '../services/LiveMapService';
@@ -630,8 +630,18 @@ export function LiveMapScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
       <ScreenHeader 
-        title="Live Map"
+        title="Live Map" 
         onBackPress={() => navigation.goBack()}
+        rightComponent={
+          <View style={styles.headerActions}>
+            <TouchableOpacity 
+              style={styles.headerButton}
+              onPress={() => setShowFilters(!showFilters)}
+            >
+              <Ionicons name="options" size={24} color={colors.primary} />
+            </TouchableOpacity>
+          </View>
+        }
       />
       
       {/* Map View */}
@@ -1392,6 +1402,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerButton: {
+    padding: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 0, 0, 0.3)',
   },
   loadingContainer: {
     flex: 1,
