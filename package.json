@@ -36,7 +36,8 @@
     "ts-jest": "^29.4.1",
     "tsx": "^4.20.5",
     "turbo": "^1.12.4",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "@types/react": "~19.0.10"
   },
   "dependencies": {
     "@fastify/cors": "^11.1.0",
