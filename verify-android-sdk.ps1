@@ -42,6 +42,7 @@ Write-Host @"
 # Check environment variables
 Write-Host "`n📋 Environment Variables:" -ForegroundColor $Cyan
 $androidHome = $env:ANDROID_HOME
+$androidSdkRoot = $env:ANDROID_SDK_ROOT
 $javaHome = $env:JAVA_HOME
 
 if ($androidHome) {
@@ -52,10 +53,19 @@ if ($androidHome) {
     Write-Warning "Using default path: $androidHome"
 }
 
+if ($androidSdkRoot) {
+    Write-Status "ANDROID_SDK_ROOT is set: $androidSdkRoot" "OK"
+} else {
+    Write-Status "ANDROID_SDK_ROOT is not set" "FAIL"
+    Write-Warning "ANDROID_SDK_ROOT should be set to the same path as ANDROID_HOME"
+    $missingComponents += "ANDROID_SDK_ROOT"
+}
+
 if ($javaHome) {
     Write-Status "JAVA_HOME is set: $javaHome" "OK"
 } else {
     Write-Status "JAVA_HOME is not set" "FAIL"
+    $missingComponents += "JAVA_HOME"
 }
 
 # Check Android SDK directory structure
@@ -156,6 +166,35 @@ if (Test-Path $platformsPath) {
     Write-Status "Platforms directory not found" "FAIL"
 }
 
+# Check Node.js installation
+Write-Host "`n🟢 Node.js Installation:" -ForegroundColor $Cyan
+try {
+    $nodeVersion = & node --version 2>&1
+    if ($nodeVersion -match "v(\d+)\.") {
+        $majorVersion = [int]$matches[1]
+        if ($majorVersion -ge 16) {
+            Write-Status "Node.js $nodeVersion (compatible with React Native 0.79.5)" "OK"
+        } else {
+            Write-Status "Node.js $nodeVersion (requires v16+ for React Native 0.79.5)" "FAIL"
+            $missingComponents += "Node.js 16+"
+        }
+    } else {
+        Write-Status "Node.js version: $nodeVersion" "OK"
+    }
+} catch {
+    Write-Status "Node.js not found in PATH" "FAIL"
+    $missingComponents += "Node.js"
+}
+
+# Check NPM installation
+try {
+    $npmVersion = & npm --version 2>&1
+    Write-Status "npm $npmVersion" "OK"
+} catch {
+    Write-Status "npm not found in PATH" "FAIL"
+    $missingComponents += "npm"
+}
+
 # Check Java installation
 Write-Host "`n☕ Java Installation:" -ForegroundColor $Cyan
 try {
@@ -177,16 +216,24 @@ try {
     Write-Info "Running 'npx react-native doctor'..."
     $doctorOutput = & npx react-native doctor 2>&1
     
-    if ($doctorOutput -match "Android SDK.*Not Found") {
+    # Convert to string for pattern matching
+    $outputString = $doctorOutput -join "`n"
+    
+    if ($outputString -match "Android SDK.*Not Found" -or $outputString -match "ANDROID_HOME.*not found" -or $outputString -match "ANDROID_SDK_ROOT.*not found") {
         Write-Status "React Native Doctor: Android SDK issue detected" "FAIL"
-    } elseif ($doctorOutput -match "Errors:\s+0") {
+        $missingComponents += "React Native Android SDK Detection"
+    } elseif ($outputString -match "Errors:\s*0" -or $outputString -match "✓.*Android SDK") {
         Write-Status "React Native Doctor: All checks passed" "OK"
     } else {
         Write-Warning "React Native Doctor found some issues"
-        Write-Host $doctorOutput -ForegroundColor $Yellow
+        Write-Host $outputString -ForegroundColor $Yellow
+        if ($outputString -match "✖" -or $outputString -match "✗") {
+            $missingComponents += "React Native Doctor Issues"
+        }
     }
 } catch {
-    Write-Warning "Could not run React Native doctor"
+    Write-Warning "Could not run React Native doctor: $($_.Exception.Message)"
+    $missingComponents += "React Native CLI"
 }
 
 # Summary and recommendations
@@ -202,6 +249,19 @@ if ($missingComponents.Count -eq 0) {
     }
     
     Write-Host "`n🔧 Recommended Actions:" -ForegroundColor $Cyan
+    
+    # Check if environment variables are the issue
+    if ($missingComponents -contains "ANDROID_SDK_ROOT" -or $missingComponents -contains "JAVA_HOME") {
+        Write-Host "📋 Environment Variable Issues Detected:" -ForegroundColor $Yellow
+        Write-Host "Run these commands in PowerShell to fix environment variables:" -ForegroundColor $Yellow
+        Write-Host "`$env:JAVA_HOME = `"C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot`"" -ForegroundColor $Green
+        Write-Host "`$env:ANDROID_HOME = `"C:\Users\tramsey\AppData\Local\Android\Sdk`"" -ForegroundColor $Green
+        Write-Host "`$env:ANDROID_SDK_ROOT = `"C:\Users\tramsey\AppData\Local\Android\Sdk`"" -ForegroundColor $Green
+        Write-Host "`$env:PATH = `"`$env:PATH;`$env:ANDROID_HOME\platform-tools;`$env:ANDROID_HOME\emulator`"" -ForegroundColor $Green
+        Write-Host ""
+    }
+    
+    Write-Host "📦 For missing SDK components:" -ForegroundColor $Yellow
     Write-Host "1. Open Android Studio" -ForegroundColor $Yellow
     Write-Host "2. Go to Tools > SDK Manager" -ForegroundColor $Yellow
     Write-Host "3. In 'SDK Platforms' tab: Install Android 14 (API 34)" -ForegroundColor $Yellow

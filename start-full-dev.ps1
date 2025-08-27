@@ -156,11 +156,13 @@ function Build-AndroidApp {
     # Set up Android environment variables
     $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot"
     $env:ANDROID_HOME = "C:\Users\tramsey\AppData\Local\Android\Sdk"
+    $env:ANDROID_SDK_ROOT = "C:\Users\tramsey\AppData\Local\Android\Sdk"
     $env:PATH = "$env:PATH;$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\emulator;$env:ANDROID_HOME\tools;$env:ANDROID_HOME\tools\bin"
     
     Write-Step "Environment variables set:"
     Write-Host "  JAVA_HOME: $env:JAVA_HOME" -ForegroundColor $Yellow
     Write-Host "  ANDROID_HOME: $env:ANDROID_HOME" -ForegroundColor $Yellow
+    Write-Host "  ANDROID_SDK_ROOT: $env:ANDROID_SDK_ROOT" -ForegroundColor $Yellow
     
     # Verify Java installation
     if (-not (Test-Path $env:JAVA_HOME)) {
