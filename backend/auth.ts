@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from './prisma.js';
 import { z } from 'zod';
 import * as argon from 'argon2';
+import { logger } from './lib/logger.js';
 
 const signupSchema = z.object({
   email: z.string().email(),
@@ -25,10 +26,32 @@ const upgradeSchema = z.object({
 export async function registerAuthRoutes(app: FastifyInstance) {
   // Register route (alias for signup to match tests)
   app.post('/auth/register', async (req, reply) => {
+    const userId = `temp_${Date.now()}`;
+    const requestId = (req as any).requestId;
+    
     try {
+      logger.info('AUTH_REGISTER', 'User registration attempt', {
+        requestId,
+        email: (req.body as any)?.email,
+        hasHandle: !!(req.body as any)?.handle
+      });
+
       const body = signupSchema.parse(req.body);
-      const exists = await prisma.user.findFirst({ where: { OR: [{ email: body.email }, { handle: body.handle }] } });
-      if (exists) return reply.status(409).send({ error: 'Email or handle already in use' });
+      
+      // Check if user already exists
+      const exists = await prisma.user.findFirst({ 
+        where: { OR: [{ email: body.email }, { handle: body.handle }] } 
+      });
+      
+      if (exists) {
+        logger.warn('AUTH_REGISTER', 'Registration failed - user already exists', {
+          requestId,
+          email: body.email,
+          existingUserType: exists.email === body.email ? 'email' : 'handle'
+        });
+        return reply.status(409).send({ error: 'Email or handle already in use' });
+      }
+
       const passwordHash = await argon.hash(body.password);
       
       // Set pro subscription for all new users during development
@@ -51,7 +74,17 @@ export async function registerAuthRoutes(app: FastifyInstance) {
           subscriptionId: `dev_pro_${Date.now()}`, // Development pro subscription
         }
       });
+      
       const token = app.jwt.sign({ sub: user.id });
+      
+      logger.info('AUTH_REGISTER', 'User registration successful', {
+        requestId,
+        userId: user.id,
+        email: user.email,
+        handle: user.handle,
+        isPro: user.isPro
+      });
+
       reply.status(201).send({ 
         token, 
         user: { 
@@ -67,12 +100,21 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
+        logger.warn('AUTH_REGISTER', 'Registration validation failed', {
+          requestId,
+          validationErrors: error.issues.map(e => ({ field: e.path.join('.'), message: e.message }))
+        });
         return reply.status(400).send({ 
           error: 'Validation failed',
           details: error.issues.map(e => ({ field: e.path.join('.'), message: e.message }))
         });
       }
-      console.error('Registration error:', error);
+      
+      logger.error('AUTH_REGISTER', 'Registration failed with server error', error, {
+        requestId,
+        email: (req.body as any)?.email
+      });
+      
       return reply.status(500).send({ error: 'Internal server error' });
     }
   });

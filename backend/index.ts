@@ -12,8 +12,10 @@ import { registerWebScrapingRoutes } from './routes/webscraping.js';
 import { registerUserStatsRoutes } from './routes/userstats.js';
 import { registerLiveRoutes } from './routes/live.js';
 import { registerAdminRoutes } from './routes/admin.js';
+import { registerLoggingRoutes } from './routes/logging.js';
 import registerVehicleRoutes from './routes/vehicles.js';
 import { ENV } from './env.js';
+import { logger } from './lib/logger.js';
 
 // Import new services
 import RealTimeRaceManager from './services/RealTimeRaceManager.js';
@@ -23,7 +25,84 @@ import {
   rateLimit
 } from './middleware/auth.js';
 
+// Extend FastifyRequest interface for logging
+declare module 'fastify' {
+  interface FastifyRequest {
+    requestStart?: number;
+    requestId?: string;
+  }
+}
+
 const app = buildServer();
+
+// Enhanced request logging middleware
+app.addHook('onRequest', async (request, reply) => {
+  const start = Date.now();
+  request.requestStart = start;
+  request.requestId = `req_${start}_${Math.random().toString(36).substr(2, 6)}`;
+  
+  // Log incoming request
+  logger.info('HTTP_REQUEST', `${request.method} ${request.url}`, {
+    method: request.method,
+    url: request.url,
+    userAgent: request.headers['user-agent'],
+    ip: request.ip,
+    requestId: request.requestId
+  });
+});
+
+// Enhanced response logging
+app.addHook('onSend', async (request, reply, payload) => {
+  const duration = Date.now() - (request.requestStart || 0);
+  const userId = (request as any).authenticatedUser?.id;
+  
+  logger.logRequest(
+    request.method,
+    request.url,
+    reply.statusCode,
+    duration,
+    userId,
+    request.requestId
+  );
+  
+  // Log slow requests
+  if (duration > 1000) {
+    logger.warn('SLOW_REQUEST', `Slow request detected: ${request.method} ${request.url} took ${duration}ms`, {
+      duration,
+      method: request.method,
+      url: request.url,
+      userId,
+      requestId: request.requestId
+    });
+  }
+  
+  return payload;
+});
+
+// Error handling hook
+app.setErrorHandler(async (error, request, reply) => {
+  const userId = (request as any).authenticatedUser?.id;
+  
+  logger.error('REQUEST_ERROR', `Error in ${request.method} ${request.url}`, error, {
+    method: request.method,
+    url: request.url,
+    userId,
+    requestId: request.requestId,
+    statusCode: reply.statusCode
+  });
+  
+  // Don't expose internal errors in production
+  const isProduction = process.env.NODE_ENV === 'production';
+  if (isProduction) {
+    reply.status(500).send({ error: 'Internal server error' });
+  } else {
+    reply.status(500).send({ 
+      error: error.message, 
+      stack: error.stack,
+      requestId: request.requestId
+    });
+  }
+});
 
 // Apply rate limiting only to non-live routes
 // Skip rate limiting for live map updates which happen frequently
@@ -54,6 +133,7 @@ await registerWebScrapingRoutes(app);
 await registerUserStatsRoutes(app);
 await registerLiveRoutes(app);
 await registerAdminRoutes(app);
+await registerLoggingRoutes(app);  // Add logging routes
 app.register(registerVehicleRoutes, { prefix: '/vehicles' });
 app.register(registerVehicleRoutes, { prefix: '/api/vehicles' });
 

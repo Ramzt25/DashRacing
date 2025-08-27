@@ -8,6 +8,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 // Debug import to test environment variables
 import './src/debug-test';
 
+// Logger import - initialize early
+import { mobileLogger } from './src/utils/logger';
+
 // Auth Context and Screens
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { SettingsProvider } from './src/context/SettingsContext';
@@ -49,8 +52,25 @@ type RootStackParamList = {
 const Stack = createStackNavigator<RootStackParamList>();
 
 function AppNavigator() {
+  const navigationRef = React.useRef<any>(null);
+
+  const onNavigationStateChange = (state: any) => {
+    if (state) {
+      const routeName = state.routes[state.index]?.name;
+      mobileLogger.setCurrentScreen(routeName);
+      mobileLogger.logNavigation(
+        state.routes[state.index - 1]?.name || 'Unknown',
+        routeName,
+        state.routes[state.index]?.params
+      );
+    }
+  };
+
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      ref={navigationRef}
+      onStateChange={onNavigationStateChange}
+    >
       <Stack.Navigator
         screenOptions={{
           headerShown: false, // Hide default headers since we use ScreenHeader component
@@ -82,9 +102,9 @@ function AuthFlow() {
   const [showFirstTimeModal, setShowFirstTimeModal] = useState(false);
   const [showTermsGate, setShowTermsGate] = useState(false);
 
-  // Log state changes
+  // Log state changes with mobile logger
   useEffect(() => {
-    console.log('🔄 AuthFlow state:', {
+    mobileLogger.debug('AUTH_FLOW', 'AuthFlow state changed', {
       user: user ? `Logged in as ${user.email}` : 'No user',
       isLoading,
       isFirstTime,
@@ -94,7 +114,11 @@ function AuthFlow() {
   }, [user, isLoading, isFirstTime, showSplash, authScreen]);
 
   useEffect(() => {
-    console.log('🎯 FirstTimeModal check:', { isLoading, user: !!user, isFirstTime });
+    mobileLogger.debug('FIRST_TIME_CHECK', 'FirstTimeModal check', { 
+      isLoading, 
+      hasUser: !!user, 
+      isFirstTime 
+    });
     if (!isLoading && user && isFirstTime) {
       console.log('✅ Showing FirstTimeModal');
       setShowFirstTimeModal(true);

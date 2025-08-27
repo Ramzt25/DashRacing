@@ -98,6 +98,42 @@ export async function registerAdminRoutes(app: FastifyInstance) {
     }
   });
 
+  // Admin Logs - Add missing endpoint that admin portal expects
+  app.get('/admin/logs', { preHandler: [adminGuard] }, async (req) => {
+    const { level = 'error', limit = 100 } = req.query as any;
+    
+    try {
+      // For now, return mock logs until proper logging infrastructure is set up
+      const mockLogs = [
+        {
+          timestamp: new Date().toISOString(),
+          level: 'info',
+          message: 'System initialized successfully',
+          category: 'SYSTEM'
+        },
+        {
+          timestamp: new Date(Date.now() - 60000).toISOString(),
+          level: 'error',
+          message: 'Mock error for testing',
+          category: 'API'
+        }
+      ];
+
+      return {
+        logs: mockLogs.filter(log => level === 'all' || log.level === level).slice(0, parseInt(limit)),
+        total: mockLogs.length,
+        level,
+        limit: parseInt(limit)
+      };
+    } catch (error) {
+      return {
+        logs: [],
+        total: 0,
+        error: 'Failed to retrieve logs'
+      };
+    }
+  });
+
   // Users Management
   app.get('/admin/users', { preHandler: [adminGuard] }, async (req) => {
     const { page = 1, limit = 50, search } = req.query as any;

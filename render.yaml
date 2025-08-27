@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: gridghost-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    region: oregon
+    branch: main
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT  
+        value: 4000
+      - key: DATABASE_URL
+        value: postgresql://postgres.srhqcanyeatasprlvzvh:DAy5BnqgJ2fHjJDw@aws-0-us-east-1.pooler.supabase.co:6543/postgres?sslmode=require
+      - key: JWT_SECRET
+        generateValue: true
+      - key: WS_PORT
+        value: 3001
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: LOG_LEVEL
+        value: info
+      - key: ENABLE_PREMIUM_FEATURES
+        value: "true"
+      - key: ENABLE_REALTIME_RACING
+        value: "true"  
+      - key: ENABLE_AI_COACHING
+        value: "true"

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "resourceGroupName": {
+      "value": "rg-${AZURE_ENV_NAME}"
+    },
+    "jwtSecret": {
+      "value": "${JWT_SECRET}"
+    },
+    "nodeEnv": {
+      "value": "production"
+    },
+    "websocketPort": {
+      "value": "3001"
+    },
+    "corsOrigin": {
+      "value": "*"
+    },
+    "googleMapsApiKey": {
+      "value": "${GOOGLE_MAPS_API_KEY}"
+    },
+    "azureMapsApiKey": {
+      "value": "${AZURE_MAPS_API_KEY}"
+    },
+    "expoPublicGoogleMapsApiKey": {
+      "value": "${EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}"
+    },
+    "expoPublicAzureMapsApiKey": {
+      "value": "${EXPO_PUBLIC_AZURE_MAPS_API_KEY}"
+    },
+    "databaseAdminLogin": {
+      "value": "gridghost"
+    },
+    "databaseAdminPassword": {
+      "value": "${DATABASE_ADMIN_PASSWORD}"
+    },
+    "databaseServerName": {
+      "value": ""
+    },
+    "databaseName": {
+      "value": "gridghost"
+    }
+  }
+}

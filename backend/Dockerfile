@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY database/schema.prisma ./database/
+COPY ../database/schema.prisma ./prisma/
 
 # Install dependencies
 RUN npm ci --only=production && npm cache clean --force
@@ -24,7 +24,7 @@ COPY --from=deps /app/node_modules ./node_modules
 RUN npm ci
 
 # Generate Prisma client
-RUN npx prisma generate --schema=database/schema.prisma
+RUN npx prisma generate
 
 # Build TypeScript
 RUN npm run build
@@ -41,16 +41,16 @@ RUN adduser --system --uid 1001 nodejs
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nodejs:nodejs /app/package*.json ./
-COPY --from=builder --chown=nodejs:nodejs /app/database ./database
+COPY --from=builder --chown=nodejs:nodejs /app/prisma ./prisma
 
 USER nodejs
 
-# Expose the port  
+# Expose the port
 EXPOSE 4000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD node healthcheck.js
+  CMD curl -f http://localhost:4000/health || exit 1
 
 # Start the application
-CMD ["npm", "start"]
+CMD ["node", "dist/index.js"]

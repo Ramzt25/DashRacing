@@ -10,7 +10,9 @@ import {
   ActivityIndicator,
   Animated,
   Dimensions,
-  TextInput 
+  TextInput,
+  PermissionsAndroid,
+  Platform 
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ScreenHeader } from '../components/common/ScreenHeader';
@@ -29,6 +31,19 @@ import RacerIDAndFriendsService, { FriendMapMarker } from '../services/RacerIDAn
 import ScreenContainer from '../components/layout/ScreenContainer';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+// Custom location types for react-native-geolocation-service
+interface LocationPosition {
+  coords: {
+    latitude: number;
+    longitude: number;
+    altitude: number | null;
+    accuracy: number;
+    speed: number | null;
+    heading: number | null;
+  };
+  timestamp: number;
+}
 
 // Live Player Interface
 interface LivePlayer {
@@ -82,7 +97,7 @@ export function LiveMapScreen({ navigation }: any) {
   const { settings, getSpeedUnitLabel } = useSettings();
   const { user } = useAuth();
   const [currentSpeed, setCurrentSpeed] = useState(0);
-  const [currentLocation, setCurrentLocation] = useState<Location.LocationObject | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<LocationPosition | null>(null);
   const [isTracking, setIsTracking] = useState(false);
   const [routeCoordinates, setRouteCoordinates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -127,8 +142,8 @@ export function LiveMapScreen({ navigation }: any) {
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
-  const locationSubscription = useRef<Location.LocationSubscription | null>(null);
-  const lastLocation = useRef<Location.LocationObject | null>(null);
+  const locationSubscription = useRef<number | null>(null);
+  const lastLocation = useRef<LocationPosition | null>(null);
   const mapRef = useRef<MapView | null>(null);
   const liveUpdateInterval = useRef<any>(null);
 
@@ -138,7 +153,7 @@ export function LiveMapScreen({ navigation }: any) {
     
     return () => {
       if (locationSubscription.current) {
-        locationSubscription.current.remove();
+        Geolocation.clearWatch(locationSubscription.current);
       }
       if (liveUpdateInterval.current) {
         clearInterval(liveUpdateInterval.current);
@@ -268,9 +283,23 @@ export function LiveMapScreen({ navigation }: any) {
 
   const initializeLocation = async () => {
     try {
-      // Request permission
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
+      // Request permission for Android
+      let hasPermission = true;
+      if (Platform.OS === 'android') {
+        const permission = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Permission',
+            message: 'This app needs access to location for live tracking.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          }
+        );
+        hasPermission = permission === PermissionsAndroid.RESULTS.GRANTED;
+      }
+
+      if (!hasPermission) {
         Alert.alert(
           'Permission Required',
           'Location permission is required for live tracking. Please enable it in settings.',
@@ -281,24 +310,49 @@ export function LiveMapScreen({ navigation }: any) {
       }
 
       // Get initial location - default to San Francisco for demo
-      let location;
+      let location: LocationPosition = {
+        coords: {
+          latitude: 37.7749,
+          longitude: -122.4194,
+          altitude: 0,
+          accuracy: 10,
+          speed: 0,
+          heading: 0,
+        },
+        timestamp: Date.now(),
+      };
+      
       try {
-        location = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.BestForNavigation,
+        await new Promise<void>((resolve, reject) => {
+          Geolocation.getCurrentPosition(
+            (position) => {
+              location = {
+                coords: {
+                  latitude: position.coords.latitude,
+                  longitude: position.coords.longitude,
+                  altitude: position.coords.altitude,
+                  accuracy: position.coords.accuracy,
+                  speed: position.coords.speed,
+                  heading: position.coords.heading,
+                },
+                timestamp: position.timestamp,
+              };
+              resolve();
+            },
+            (error) => {
+              console.warn('GPS error:', error);
+              reject(error);
+            },
+            { 
+              enableHighAccuracy: true, 
+              timeout: 15000, 
+              maximumAge: 10000 
+            }
+          );
         });
       } catch (error) {
-        // Use default location if GPS fails
-        location = {
-          coords: {
-            latitude: 37.7749,
-            longitude: -122.4194,
-            altitude: 0,
-            accuracy: 10,
-            speed: 0,
-            heading: 0,
-          },
-          timestamp: Date.now(),
-        } as Location.LocationObject;
+        console.warn('Using default location due to GPS error:', error);
+        // location is already set to default above
       }
       
       setCurrentLocation(location);
@@ -313,7 +367,7 @@ export function LiveMapScreen({ navigation }: any) {
       Alert.alert('Error', 'Failed to initialize GPS. Using default location.');
       
       // Fallback to San Francisco
-      const defaultLocation = {
+      const defaultLocation: LocationPosition = {
         coords: {
           latitude: 37.7749,
           longitude: -122.4194,
@@ -323,7 +377,7 @@ export function LiveMapScreen({ navigation }: any) {
           heading: 0,
         },
         timestamp: Date.now(),
-      } as Location.LocationObject;
+      };
       
       setCurrentLocation(defaultLocation);
       lastLocation.current = defaultLocation;
@@ -332,13 +386,20 @@ export function LiveMapScreen({ navigation }: any) {
 
   const startLocationTracking = async () => {
     try {
-      locationSubscription.current = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.BestForNavigation,
-          timeInterval: 1000, // Update every second
-          distanceInterval: 1, // Update every meter
-        },
-        (location) => {
+      locationSubscription.current = Geolocation.watchPosition(
+        (position) => {
+          const location: LocationPosition = {
+            coords: {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              altitude: position.coords.altitude,
+              accuracy: position.coords.accuracy,
+              speed: position.coords.speed,
+              heading: position.coords.heading,
+            },
+            timestamp: position.timestamp,
+          };
+          
           setCurrentLocation(location);
           
           // Add to route if tracking
@@ -358,6 +419,14 @@ export function LiveMapScreen({ navigation }: any) {
           setCurrentSpeed(Math.max(0, currentSpeedInUserUnit));
           
           lastLocation.current = location;
+        },
+        (error) => {
+          console.warn('Location tracking error:', error);
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 1000,
+          distanceFilter: 1, // Update every meter
         }
       );
       setIsTracking(true);
@@ -727,7 +796,7 @@ export function LiveMapScreen({ navigation }: any) {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <StatusBar style="light" />
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
         <ActivityIndicator size="large" color="#FF0000" />
         <Text style={styles.loadingText}>Initializing Live Map...</Text>
       </View>

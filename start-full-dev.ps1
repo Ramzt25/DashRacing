@@ -45,6 +45,167 @@ function Write-Error {
     Write-Host "❌ $Message" -ForegroundColor $Red
 }
 
+function Test-BackendHealth {
+    Write-Step "Testing backend health..."
+    
+    try {
+        # Wait for backend to be ready
+        $maxAttempts = 10
+        $attempt = 0
+        
+        do {
+            $attempt++
+            try {
+                $response = Invoke-WebRequest -Uri "http://localhost:4000/health" -Method GET -TimeoutSec 5
+                if ($response.StatusCode -eq 200) {
+                    $healthData = $response.Content | ConvertFrom-Json
+                    Write-Success "Backend health check passed"
+                    Write-Host "  📊 Status: $($healthData.status)" -ForegroundColor $Green
+                    Write-Host "  🔢 Version: $($healthData.version)" -ForegroundColor $Green
+                    Write-Host "  📡 WebSocket: $($healthData.websocket)" -ForegroundColor $Green
+                    return $true
+                }
+            } catch {
+                if ($attempt -lt $maxAttempts) {
+                    Write-Host "  ⏳ Backend not ready yet (attempt $attempt/$maxAttempts)..." -ForegroundColor $Yellow
+                    Start-Sleep -Seconds 3
+                } else {
+                    throw $_.Exception
+                }
+            }
+        } while ($attempt -lt $maxAttempts)
+        
+        Write-Error "Backend failed to start after $maxAttempts attempts"
+        return $false
+        
+    } catch {
+        Write-Error "Backend health check failed: $($_.Exception.Message)"
+        return $false
+    }
+}
+
+function Test-APIEndpoints {
+    Write-Step "Testing critical API endpoints..."
+    
+    $endpoints = @(
+        @{ path = "/"; name = "Root API" },
+        @{ path = "/health"; name = "Health Check" },
+        @{ path = "/vehicles/health"; name = "Vehicles API" }
+    )
+    
+    $allPassed = $true
+    
+    foreach ($endpoint in $endpoints) {
+        try {
+            $response = Invoke-WebRequest -Uri "http://localhost:4000$($endpoint.path)" -Method GET -TimeoutSec 5
+            if ($response.StatusCode -eq 200) {
+                Write-Host "  ✅ $($endpoint.name): OK" -ForegroundColor $Green
+            } else {
+                Write-Host "  ⚠️  $($endpoint.name): Status $($response.StatusCode)" -ForegroundColor $Yellow
+            }
+        } catch {
+            Write-Host "  ❌ $($endpoint.name): FAILED - $($_.Exception.Message)" -ForegroundColor $Red
+            $allPassed = $false
+        }
+    }
+    
+    return $allPassed
+}
+
+function Test-WebSocketConnection {
+    Write-Step "Testing WebSocket connection..."
+    
+    try {
+        # Test WebSocket availability (we can't easily test connection in PowerShell, so just check if port is listening)
+        $wsPort = netstat -ano | Select-String ":3001\s.*LISTENING"
+        if ($wsPort) {
+            Write-Success "WebSocket server is listening on port 3001"
+            return $true
+        } else {
+            Write-Warning "WebSocket server may not be running on port 3001"
+            return $false
+        }
+    } catch {
+        Write-Warning "Could not verify WebSocket connection: $($_.Exception.Message)"
+        return $false
+    }
+}
+
+function Test-DatabaseConnection {
+    Write-Step "Testing database connection..."
+    
+    try {
+        # Try to hit an endpoint that requires database access
+        $response = Invoke-WebRequest -Uri "http://localhost:4000/admin/health" -Method GET -TimeoutSec 5
+        if ($response.StatusCode -eq 200) {
+            $healthData = $response.Content | ConvertFrom-Json
+            Write-Success "Database connection verified"
+            Write-Host "  🗄️  Database: $($healthData.database.status)" -ForegroundColor $Green
+            Write-Host "  ⏱️  Response Time: $($healthData.database.responseTime)ms" -ForegroundColor $Green
+            return $true
+        }
+    } catch {
+        # Expected to fail with 401 (auth required), but not database errors
+        if ($_.Exception.Response.StatusCode -eq 401) {
+            Write-Success "Database connection verified (auth endpoint accessible)"
+            return $true
+        } else {
+            Write-Error "Database connection test failed: $($_.Exception.Message)"
+            return $false
+        }
+    }
+}
+
+function Test-MobileAPIConfiguration {
+    Write-Step "Testing mobile API configuration..."
+    
+    try {
+        # Check mobile app's API configuration file
+        $mobileConfigPath = ".\mobile\src\config\api.ts"
+        if (Test-Path $mobileConfigPath) {
+            $configContent = Get-Content $mobileConfigPath -Raw
+            if ($configContent -match "localhost:4000") {
+                Write-Success "Mobile app configured for correct backend port (4000)"
+                return $true
+            } else {
+                Write-Error "Mobile app may be configured for wrong port"
+                Write-Host "  Check: $mobileConfigPath" -ForegroundColor $Yellow
+                return $false
+            }
+        } else {
+            Write-Warning "Mobile API configuration file not found"
+            return $false
+        }
+    } catch {
+        Write-Warning "Could not verify mobile API configuration: $($_.Exception.Message)"
+        return $false
+    }
+}
+
+function Start-DebugMonitor {
+    Write-Step "Starting debug monitor..."
+    
+    try {
+        # Check if debug monitor dependencies are installed
+        $hasWs = npm list ws --depth=0 2>$null
+        $hasAxios = npm list axios --depth=0 2>$null
+        
+        if ($LASTEXITCODE -ne 0 -or (-not $hasWs) -or (-not $hasAxios)) {
+            Write-Host "📦 Installing debug monitor dependencies..." -ForegroundColor $Yellow
+            npm install ws axios --no-save 2>$null | Out-Null
+        }
+        
+        # Start debug monitor in a new window
+        Start-Process -FilePath "pwsh" -ArgumentList "-Command", "cd '$(Get-Location)'; node debug-monitor.js" -WindowStyle Normal
+        Write-Success "Debug monitor started in separate window"
+        return $true
+    } catch {
+        Write-Warning "Failed to start debug monitor: $($_.Exception.Message)"
+        Write-Host "  You can manually start it later with: node debug-monitor.js" -ForegroundColor $Yellow
+        return $false
+    }
+}
+
 function Stop-ProcessOnPort {
     param([int]$Port)
     
@@ -111,13 +272,13 @@ function Start-Backend {
     }
     
     # Kill any existing backend processes
-    Stop-ProcessOnPort 3000
+    Stop-ProcessOnPort 4000
     Stop-ProcessOnPort 3001
     
     try {
         # Start backend in background
-        Start-Process -FilePath "pwsh" -ArgumentList "-Command", "cd '$(Get-Location)\backend'; npm run dev" -WindowStyle Minimized
-        Write-Success "Backend server starting on http://localhost:3000"
+        Start-Process -FilePath "pwsh" -ArgumentList "-Command", "cd '$(Get-Location)\backend'; npm start" -WindowStyle Minimized
+        Write-Success "Backend server starting on http://localhost:4000"
         Start-Sleep -Seconds 3
         return $true
     } catch {
@@ -250,6 +411,68 @@ function Build-AndroidApp {
     return $true
 }
 
+function Test-Prerequisites {
+    Write-Step "Running pre-flight checks..."
+    
+    $allGood = $true
+    
+    # Check Node.js
+    try {
+        $nodeVersion = & node --version 2>$null
+        Write-Host "  ✅ Node.js: $nodeVersion" -ForegroundColor $Green
+    } catch {
+        Write-Host "  ❌ Node.js not found" -ForegroundColor $Red
+        $allGood = $false
+    }
+    
+    # Check npm
+    try {
+        $npmVersion = & npm --version 2>$null
+        Write-Host "  ✅ npm: v$npmVersion" -ForegroundColor $Green
+    } catch {
+        Write-Host "  ❌ npm not found" -ForegroundColor $Red
+        $allGood = $false
+    }
+    
+    # Check Java
+    if (Test-Path $env:JAVA_HOME) {
+        try {
+            $javaVersion = & "$env:JAVA_HOME\bin\java" -version 2>&1 | Select-Object -First 1
+            Write-Host "  ✅ Java: $($javaVersion -replace '.*"(.*)".*','$1')" -ForegroundColor $Green
+        } catch {
+            Write-Host "  ❌ Java not working: $env:JAVA_HOME" -ForegroundColor $Red
+            $allGood = $false
+        }
+    } else {
+        Write-Host "  ❌ JAVA_HOME not set or invalid: $env:JAVA_HOME" -ForegroundColor $Red
+        $allGood = $false
+    }
+    
+    # Check Android SDK
+    if (Test-Path $env:ANDROID_HOME) {
+        Write-Host "  ✅ Android SDK: $env:ANDROID_HOME" -ForegroundColor $Green
+    } else {
+        Write-Host "  ❌ ANDROID_HOME not set or invalid" -ForegroundColor $Red
+        $allGood = $false
+    }
+    
+    # Check ADB
+    try {
+        $adbDevices = & adb devices 2>$null
+        $deviceCount = ($adbDevices | Select-String "device$" | Where-Object { $_ -notmatch "List of devices" }).Count
+        if ($deviceCount -gt 0) {
+            Write-Host "  ✅ ADB: $deviceCount device(s) connected" -ForegroundColor $Green
+        } else {
+            Write-Host "  ⚠️  ADB: No devices connected" -ForegroundColor $Yellow
+        }
+    } catch {
+        Write-Host "  ❌ ADB not found" -ForegroundColor $Red
+        $allGood = $false
+    }
+    
+    return $allGood
+}
+
 # Main execution
 Write-Host @"
 🏁 GridGhost/DashRacing Development Environment Startup
@@ -267,7 +490,7 @@ Write-Success "Running from correct directory: $(Get-Location)"
 
 # Kill any existing processes on common ports
 Write-Step "Cleaning up existing processes..."
-Stop-ProcessOnPort 3000  # Backend
+Stop-ProcessOnPort 4000  # Backend
 Stop-ProcessOnPort 3001  # Backend alternative
 Stop-ProcessOnPort 8081  # Metro default
 Stop-ProcessOnPort 8082  # Metro alternative
@@ -281,9 +504,39 @@ Start-Sleep -Seconds 2
 $backendSuccess = $true
 $metroSuccess = $true
 $mobileSuccess = $true
+$debugMonitorSuccess = $true
 
 if (-not $SkipBackend -and -not $MetroOnly) {
     $backendSuccess = Start-Backend
+    
+    # Test backend health before proceeding
+    if ($backendSuccess) {
+        Write-Step "Waiting for backend to initialize..."
+        Start-Sleep -Seconds 5
+        
+        $healthCheckPassed = Test-BackendHealth
+        if (-not $healthCheckPassed) {
+            Write-Error "Backend health check failed. Cannot proceed safely."
+            $backendSuccess = $false
+        } else {
+            # Run additional health checks
+            Write-Step "Running comprehensive system checks..."
+            $apiEndpointsOK = Test-APIEndpoints
+            $webSocketOK = Test-WebSocketConnection
+            $databaseOK = Test-DatabaseConnection
+            $mobileConfigOK = Test-MobileAPIConfiguration
+            
+            if ($apiEndpointsOK -and $webSocketOK -and $databaseOK -and $mobileConfigOK) {
+                Write-Success "All system health checks passed!"
+                # Start debug monitor after all checks pass
+                $debugMonitorSuccess = Start-DebugMonitor
+            } else {
+                Write-Warning "Some health checks failed, but backend is running"
+                Write-Warning "You may experience issues. Check the logs above."
+                $debugMonitorSuccess = Start-DebugMonitor
+            }
+        }
+    }
 }
 
 if (-not $MetroOnly) {
@@ -319,6 +572,9 @@ Write-Host @"
 if (-not $SkipBackend -and -not $MetroOnly) {
     $status = if ($backendSuccess) { "✅ RUNNING" } else { "❌ FAILED" }
     Write-Host "Backend Server: $status" -ForegroundColor $(if ($backendSuccess) { $Green } else { $Red })
+    
+    $status = if ($debugMonitorSuccess) { "✅ MONITORING" } else { "⚠️  MANUAL START" }
+    Write-Host "Debug Monitor: $status" -ForegroundColor $(if ($debugMonitorSuccess) { $Green } else { $Yellow })
 }
 
 if (-not $MetroOnly) {
@@ -343,7 +599,7 @@ Write-Host @"
 "@ -ForegroundColor $Cyan
 
 if ($backendSuccess) {
-    Write-Host "• Backend API: http://localhost:3000" -ForegroundColor $Green
+    Write-Host "• Backend API: http://localhost:4000" -ForegroundColor $Green
 }
 
 if ($metroSuccess) {

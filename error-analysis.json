@@ -1,0 +1,165 @@
+{
+  "sessionInfo": {
+    "startTime": "2025-08-27T14:34:41.721Z",
+    "duration": "Active session",
+    "backendUrl": "http://localhost:4000",
+    "logFile": "C:\\Users\\tramsey\\Projects\\DashRacing\\debug-session.log"
+  },
+  "summary": {
+    "totalErrors": 11,
+    "criticalErrors": 0,
+    "errorsByCategory": {
+      "API": 2,
+      "STREAM": 9
+    },
+    "mostFrequentErrors": [
+      {
+        "error": "STREAM: Failed to poll backend logs",
+        "count": 9
+      },
+      {
+        "error": "API: Admin Health endpoint failed",
+        "count": 2
+      }
+    ]
+  },
+  "errors": [
+    {
+      "timestamp": "2025-08-27T14:33:07.342Z",
+      "level": "ERROR",
+      "category": "API",
+      "message": "Admin Health endpoint failed",
+      "data": {
+        "path": "/admin/health",
+        "error": "Request failed with status code 401",
+        "status": 401,
+        "code": "ERR_BAD_REQUEST"
+      }
+    },
+    {
+      "timestamp": "2025-08-27T14:33:17.332Z",
+      "level": "ERROR",
+      "category": "STREAM",
+      "message": "Failed to poll backend logs",
+      "data": {
+        "error": "Request failed with status code 404",
+        "status": 404
+      }
+    },
+    {
+      "timestamp": "2025-08-27T14:33:27.338Z",
+      "level": "ERROR",
+      "category": "STREAM",
+      "message": "Failed to poll backend logs",
+      "data": {
+        "error": "Request failed with status code 404",
+        "status": 404
+      }
+    },
+    {
+      "timestamp": "2025-08-27T14:33:37.343Z",
+      "level": "ERROR",
+      "category": "STREAM",
+      "message": "Failed to poll backend logs",
+      "data": {
+        "error": "Request failed with status code 404",
+        "status": 404
+      }
+    },
+    {
+      "timestamp": "2025-08-27T14:33:47.346Z",
+      "level": "ERROR",
+      "category": "STREAM",
+      "message": "Failed to poll backend logs",
+      "data": {
+        "error": "Request failed with status code 404",
+        "status": 404
+      }
+    },
+    {
+      "timestamp": "2025-08-27T14:33:57.391Z",
+      "level": "ERROR",
+      "category": "STREAM",
+      "message": "Failed to poll backend logs",
+      "data": {
+        "error": "Request failed with status code 404",
+        "status": 404
+      }
+    },
+    {
+      "timestamp": "2025-08-27T14:34:07.343Z",
+      "level": "ERROR",
+      "category": "API",
+      "message": "Admin Health endpoint failed",
+      "data": {
+        "path": "/admin/health",
+        "error": "Request failed with status code 401",
+        "status": 401,
+        "code": "ERR_BAD_REQUEST"
+      }
+    },
+    {
+      "timestamp": "2025-08-27T14:34:07.384Z",
+      "level": "ERROR",
+      "category": "STREAM",
+      "message": "Failed to poll backend logs",
+      "data": {
+        "error": "Request failed with status code 404",
+        "status": 404
+      }
+    },
+    {
+      "timestamp": "2025-08-27T14:34:17.398Z",
+      "level": "ERROR",
+      "category": "STREAM",
+      "message": "Failed to poll backend logs",
+      "data": {
+        "error": "Request failed with status code 404",
+        "status": 404
+      }
+    },
+    {
+      "timestamp": "2025-08-27T14:34:27.407Z",
+      "level": "ERROR",
+      "category": "STREAM",
+      "message": "Failed to poll backend logs",
+      "data": {
+        "error": "Request failed with status code 404",
+        "status": 404
+      }
+    },
+    {
+      "timestamp": "2025-08-27T14:34:37.418Z",
+      "level": "ERROR",
+      "category": "STREAM",
+      "message": "Failed to poll backend logs",
+      "data": {
+        "error": "Request failed with status code 404",
+        "status": 404
+      }
+    }
+  ],
+  "metrics": {
+    "totalRequests": 8,
+    "errorRequests": 0,
+    "slowRequests": 0,
+    "averageResponseTime": 0,
+    "responseTimes": [
+      48,
+      21,
+      20,
+      4,
+      6,
+      7,
+      8,
+      2
+    ]
+  },
+  "recommendations": [
+    {
+      "type": "RECURRING_ERROR",
+      "message": "Multiple errors in STREAM (9 occurrences) - needs investigation",
+      "priority": "HIGH"
+    }
+  ]
+}
