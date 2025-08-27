@@ -113,7 +113,7 @@ export function HomeScreen({ navigation }: any) {
 
   const loadLiveMapData = async () => {
     try {
-      console.log('🗺️ Loading live map data...');
+      console.log('[MAP] Loading live map data...');
       // Week 4 Backend Integration - Enhanced Live Map Data
       const userLocation = location ? { latitude: location.latitude, longitude: location.longitude } : undefined;
       const liveStats = await RaceStatsService.getLiveMapStats(userLocation);
@@ -128,14 +128,14 @@ export function HomeScreen({ navigation }: any) {
         console.log('✅ User presence updated');
       }
     } catch (error) {
-      console.error('❌ Failed to load live map data:', error);
+      console.error('Failed to load live map data:', error);
       setBackendConnected(false);
       
-      // Fallback to mock data if backend is unavailable
+      // Use minimal fallback data when backend is unavailable
       setLiveMapData({
-        onlineFriends: Math.floor(Math.random() * 15) + 3,
-        activeMeetups: Math.floor(Math.random() * 5) + 1,
-        nearbyUsers: Math.floor(Math.random() * 20) + 5,
+        onlineFriends: 0,
+        activeMeetups: 0,
+        nearbyUsers: 0,
         gpsActive: location !== null,
         userLocation: location ? { latitude: location.latitude, longitude: location.longitude } : null,
         nearbyEvents: [],
@@ -167,42 +167,39 @@ export function HomeScreen({ navigation }: any) {
           setUserInsights(insights);
           console.log('✅ AI insights loaded');
         } catch (error) {
-          console.warn('⚠️ AI insights unavailable:', error);
+          console.warn('[WARN] AI insights unavailable:', error);
         }
       }
     } catch (error) {
-      console.error('❌ Failed to load user stats:', error);
+      console.error('Failed to load user stats:', error);
       setBackendConnected(false);
       
-      // Fallback to mock data when backend is unavailable
-      const rawSpeed = 156;
-      const convertedSpeed = convertSpeed(rawSpeed, 'mph');
-      
+      // Use empty stats when backend is unavailable - user will need to race to populate
       setUserStats({
-        totalSessions: 15,
-        totalRaces: 12,
-        wins: 7,
-        losses: 5,
-        winRate: 58.3,
-        totalDistance: 245.7,
-        totalTime: 4320,
-        maxSpeed: Math.round(convertedSpeed),
-        averageSpeed: 89,
-        bestZeroToSixty: 4.2,
-        bestQuarterMile: 12.8,
-        sessionsThisWeek: 3,
-        sessionsThisMonth: 8,
-        lastRaceDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        totalSessions: 0,
+        totalRaces: 0,
+        wins: 0,
+        losses: 0,
+        winRate: 0,
+        totalDistance: 0,
+        totalTime: 0,
+        maxSpeed: 0,
+        averageSpeed: 0,
+        bestZeroToSixty: null,
+        bestQuarterMile: null,
+        sessionsThisWeek: 0,
+        sessionsThisMonth: 0,
+        lastRaceDate: null,
         recentPerformance: {
-          averageSpeedLast10: 92,
-          improvementTrend: 'improving',
-          personalBests: 3,
+          averageSpeedLast10: 0,
+          improvementTrend: 'stable',
+          personalBests: 0,
         },
-        globalRank: 1247,
-        localRank: 23,
-        achievements: 12,
-        experience: 2850,
-        level: 8,
+        globalRank: null,
+        localRank: null,
+        achievements: 0,
+        experience: 0,
+        level: 1,
       });
     }
   };
@@ -227,14 +224,14 @@ export function HomeScreen({ navigation }: any) {
       stats: `${liveMapData.activeMeetups} meetups active`,
     },
     {
-      title: 'Quick Race',
-      subtitle: 'Start racing now',
-      icon: 'live-race',
+      title: 'Friends',
+      subtitle: 'Connect with racers',
+      icon: 'nearby',
       color: colors.secondary,
       gradient: [colors.secondary + '20', colors.secondary + '40'],
-      onPress: () => navigation.navigate('LiveRace'),
+      onPress: () => navigation.navigate('Friends'),
       showLiveIndicator: false,
-      stats: 'Instant matchmaking',
+      stats: 'Social racing',
     },
     {
       title: 'Car Meetups',
@@ -286,7 +283,7 @@ export function HomeScreen({ navigation }: any) {
       showLiveIndicator: false,
       stats: 'Customize app',
     },
-    {
+    ...(user?.isPro ? [] : [{
       title: 'Pro Upgrade',
       subtitle: 'Unlock premium',
       icon: 'pro',
@@ -295,7 +292,7 @@ export function HomeScreen({ navigation }: any) {
       onPress: () => navigation.navigate('ProUpgrade'),
       showLiveIndicator: false,
       stats: 'Premium features',
-    },
+    }]),
   ];
 
   const handleLogout = async () => {
@@ -419,7 +416,6 @@ export function HomeScreen({ navigation }: any) {
               title="Open Live Map"
               onPress={() => navigation.navigate('Map')}
               variant="primary"
-              icon="map"
               style={styles.liveMapButton}
             />
           </LinearGradient>
@@ -487,7 +483,7 @@ export function HomeScreen({ navigation }: any) {
                 >
                   <View style={styles.navigationCardHeader}>
                     <View style={styles.navigationCardIcon}>
-                      <DashIcon name={card.icon as any} size={28} color={card.color} />
+                      <DashIcon name={card.icon} size={28} color={card.color} />
                     </View>
                     {card.showLiveIndicator && (
                       <Animated.View style={[styles.cardLiveIndicator, { transform: [{ scale: pulseAnim }] }]}>
@@ -522,14 +518,12 @@ export function HomeScreen({ navigation }: any) {
                   title="Quick Race"
                   onPress={() => navigation.navigate('LiveMap')}
                   variant="primary"
-                  icon="live-race"
                   style={styles.raceButton}
                 />
                 <CustomButton
                   title="Find Events"
                   onPress={() => navigation.navigate('Nearby')}
                   variant="outline"
-                  icon="events"
                   style={styles.raceButton}
                 />
               </View>
@@ -693,7 +687,6 @@ export function HomeScreen({ navigation }: any) {
                   navigation.navigate('Nearby');
                 }}
                 variant="primary"
-                icon="events"
                 style={styles.modalActionButton}
               />
               <CustomButton
@@ -703,7 +696,6 @@ export function HomeScreen({ navigation }: any) {
                   navigation.navigate('Map');
                 }}
                 variant="outline"
-                icon="map"
                 style={styles.modalActionButton}
               />
             </View>
@@ -799,9 +791,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     minHeight: 100,
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 0, 0, 0.3)',
+    backgroundColor: colors.surfaceSecondary,
     borderRadius: 16,
   },
   statValue: {
@@ -955,9 +945,7 @@ const styles = StyleSheet.create({
   },
   liveMapPreviewGradient: {
     padding: spacing.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 0, 0, 0.3)',
+    backgroundColor: colors.surfaceSecondary,
   },
   liveMapPreviewHeader: {
     flexDirection: 'row',
@@ -1058,9 +1046,7 @@ const styles = StyleSheet.create({
     minHeight: 140,
     justifyContent: 'space-between',
     position: 'relative',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 0, 0, 0.2)',
+    backgroundColor: colors.surfaceSecondary,
   },
   navigationCardHeader: {
     flexDirection: 'row',
@@ -1246,9 +1232,7 @@ const styles = StyleSheet.create({
   },
   proBannerGradient: {
     padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 215, 0, 0.3)',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: colors.surfaceSecondary,
   },
   proBannerContent: {
     flexDirection: 'row',

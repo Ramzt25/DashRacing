@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Animated, Image, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Animated, SafeAreaView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { DashIcon } from '../components/DashIcon';
 
 interface SplashScreenProps {
   onFinish: () => void;
@@ -12,7 +13,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
   const glowAnim = new Animated.Value(0);
 
   useEffect(() => {
-    console.log('🎬 SplashScreen starting animations');
+    console.log('[SPLASH] SplashScreen starting animations');
     
     // Start animations
     Animated.sequence([
@@ -87,10 +88,10 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
                   }
                 ]}
               >
-                <Image 
-                  source={require('../../assets/dash-icons/Dash.png')} 
-                  style={styles.dashLogo}
-                  resizeMode="contain"
+                <DashIcon 
+                  name="home" 
+                  size={80}
+                  color="#ff0000"
                 />
               </Animated.View>
               
@@ -119,7 +120,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
             <Text style={styles.subtitle}>Street Racing Revolution</Text>
             
             <View style={styles.taglineContainer}>
-              <Text style={styles.tagline}>Track • Race • Dominate</Text>
+              <Text style={styles.tagline}>Track | Race | Dominate</Text>
             </View>
           </View>
         </Animated.View>

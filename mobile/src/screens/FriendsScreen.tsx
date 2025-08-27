@@ -194,7 +194,7 @@ const FriendsScreen: React.FC<FriendsScreenProps> = ({
         <Text style={styles.requestStats}>
            {item.fromProfile.stats.totalRaces} races • 
           {item.fromProfile.stats.winRate.toFixed(1)}% win rate • 
-          ⭐ {item.fromProfile.stats.skillRating}/10
+          STAR {item.fromProfile.stats.skillRating}/10
         </Text>
       </View>
 
@@ -227,7 +227,7 @@ const FriendsScreen: React.FC<FriendsScreenProps> = ({
           <Text style={styles.searchResultStats}>
              {searchResult.stats.totalRaces} races • 
             {searchResult.stats.winRate.toFixed(1)}% win rate • 
-            ⭐ {searchResult.stats.skillRating}/10
+            STAR {searchResult.stats.skillRating}/10
           </Text>
           {searchResult.location && (
             <Text style={styles.locationText}>

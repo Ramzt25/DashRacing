@@ -516,7 +516,7 @@ export function LiveMapScreen({ navigation }: any) {
       case 'drift_competition': return '';
       case 'car_meet': return '';
       case 'custom_race': return '';
-      default: return '📍';
+      default: return 'PIN';
     }
   };
 
@@ -575,11 +575,11 @@ export function LiveMapScreen({ navigation }: any) {
           }
         },
         {
-          text: '📍 Set Destination',
+          text: 'Set Destination',
           onPress: () => handleSetDestination(coordinate)
         },
         {
-          text: '🚔 Mark Police',
+          text: 'Mark Police',
           onPress: () => handleMarkPolice(coordinate)
         }
       ]
@@ -864,7 +864,7 @@ export function LiveMapScreen({ navigation }: any) {
               key={player.id}
               coordinate={player.location}
               title={player.username}
-              description={`${player.vehicle.make} ${player.vehicle.model} • ${Math.round(player.speed * 2.237)} MPH`}
+              description={`${player.vehicle.make} ${player.vehicle.model} | ${Math.round(player.speed * 2.237)} MPH`}
               onPress={() => viewPlayerProfile(player)}
             >
               <View style={[
@@ -897,11 +897,11 @@ export function LiveMapScreen({ navigation }: any) {
               key={`friend-${friend.racerId}`}
               coordinate={{ latitude: friend.position.lat, longitude: friend.position.lng }}
               title={friend.profile.displayName}
-              description={`Friend • ${friend.status} • ${friend.profile.stats.skillRating}/10 skill`}
+              description={`Friend | ${friend.status} | ${friend.profile.stats.skillRating}/10 skill`}
               onPress={() => {
                 Alert.alert(
                   friend.profile.displayName,
-                  `${friend.profile.racerId}\n\n ${friend.profile.stats.totalRaces} races • ${friend.profile.stats.winRate.toFixed(1)}% win rate\n⭐ ${friend.profile.stats.skillRating}/10 skill\n\nStatus: ${friend.status}${friend.currentActivity ? `\nActivity: ${friend.currentActivity.eventName}` : ''}`,
+                  `${friend.profile.racerId}\n\n ${friend.profile.stats.totalRaces} races | ${friend.profile.stats.winRate.toFixed(1)}% win rate\nSTAR ${friend.profile.stats.skillRating}/10 skill\n\nStatus: ${friend.status}${friend.currentActivity ? `\nActivity: ${friend.currentActivity.eventName}` : ''}`,
                   [
                     { text: 'Cancel', style: 'cancel' },
                     ...(friend.currentActivity?.canJoin ? [{
@@ -951,7 +951,7 @@ export function LiveMapScreen({ navigation }: any) {
               key={event.id}
               coordinate={event.location}
               title={event.title}
-              description={`${event.participants}/${event.maxParticipants} players • ${formatTimeUntilStart(event.startTime)}`}
+              description={`${event.participants}/${event.maxParticipants} players | ${formatTimeUntilStart(event.startTime)}`}
               onPress={() => {
                 Alert.alert(
                   event.title,
@@ -1387,7 +1387,7 @@ export function LiveMapScreen({ navigation }: any) {
                 >
                   <Ionicons name="speedometer" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Quick Drag Race</Text>
-                  <Text style={styles.raceTypeSubtext}>5 min • Up to 8 racers</Text>
+                  <Text style={styles.raceTypeSubtext}>5 min | Up to 8 racers</Text>
                 </LinearGradient>
               </TouchableOpacity>
 
@@ -1408,7 +1408,7 @@ export function LiveMapScreen({ navigation }: any) {
                 >
                   <Ionicons name="car-sport" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Street Circuit</Text>
-                  <Text style={styles.raceTypeSubtext}>10 min • Up to 12 racers</Text>
+                  <Text style={styles.raceTypeSubtext}>10 min | Up to 12 racers</Text>
                 </LinearGradient>
               </TouchableOpacity>
 
@@ -1429,7 +1429,7 @@ export function LiveMapScreen({ navigation }: any) {
                 >
                   <Ionicons name="swap-horizontal" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Drift Battle</Text>
-                  <Text style={styles.raceTypeSubtext}>8 min • Up to 6 racers</Text>
+                  <Text style={styles.raceTypeSubtext}>8 min | Up to 6 racers</Text>
                 </LinearGradient>
               </TouchableOpacity>
 
@@ -1450,7 +1450,7 @@ export function LiveMapScreen({ navigation }: any) {
                 >
                   <Ionicons name="stopwatch" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Time Trial</Text>
-                  <Text style={styles.raceTypeSubtext}>15 min • Up to 20 racers</Text>
+                  <Text style={styles.raceTypeSubtext}>15 min | Up to 20 racers</Text>
                 </LinearGradient>
               </TouchableOpacity>
             </View>
@@ -1500,7 +1500,7 @@ export function LiveMapScreen({ navigation }: any) {
                 >
                   <Ionicons name="car-sport" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Car Meet & Greet</Text>
-                  <Text style={styles.raceTypeSubtext}>Public • 2hrs • 25 people</Text>
+                  <Text style={styles.raceTypeSubtext}>Public | 2hrs | 25 people</Text>
                 </LinearGradient>
               </TouchableOpacity>
 
@@ -1521,7 +1521,7 @@ export function LiveMapScreen({ navigation }: any) {
                 >
                   <Ionicons name="lock-closed" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Private Cruise</Text>
-                  <Text style={styles.raceTypeSubtext}>Private • 3hrs • 10 people</Text>
+                  <Text style={styles.raceTypeSubtext}>Private | 3hrs | 10 people</Text>
                 </LinearGradient>
               </TouchableOpacity>
 
@@ -1542,7 +1542,7 @@ export function LiveMapScreen({ navigation }: any) {
                 >
                   <Ionicons name="megaphone" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Show & Tell</Text>
-                  <Text style={styles.raceTypeSubtext}>Public • 1.5hrs • 30 people</Text>
+                  <Text style={styles.raceTypeSubtext}>Public | 1.5hrs | 30 people</Text>
                 </LinearGradient>
               </TouchableOpacity>
 
@@ -1564,7 +1564,7 @@ export function LiveMapScreen({ navigation }: any) {
                 >
                   <Ionicons name="camera" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Photo Session</Text>
-                  <Text style={styles.raceTypeSubtext}>Public • 2.5hrs • $10 • 15 people</Text>
+                  <Text style={styles.raceTypeSubtext}>Public | 2.5hrs | $10 | 15 people</Text>
                 </LinearGradient>
               </TouchableOpacity>
             </View>

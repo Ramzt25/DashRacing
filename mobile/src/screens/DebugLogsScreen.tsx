@@ -130,8 +130,8 @@ export const DebugLogsScreen: React.FC = () => {
   const getLevelIcon = (level: string) => {
     switch (level) {
       case 'debug': return '🔍';
-      case 'info': return 'ℹ️';
-      case 'warn': return '⚠️';
+      case 'info': return 'i';
+      case 'warn': return '!';
       case 'error': return '❌';
       case 'critical': return '🚨';
       default: return '📝';

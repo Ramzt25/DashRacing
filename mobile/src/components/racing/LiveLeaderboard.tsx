@@ -93,8 +93,8 @@ export function LiveLeaderboard({
   const getPositionIcon = (position: number): string => {
     switch (position) {
       case 1: return '';
-      case 2: return '🥈';
-      case 3: return '🥉';
+      case 2: return '2nd';
+      case 3: return '3rd';
       default: return '';
     }
   };

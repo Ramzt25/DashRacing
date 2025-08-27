@@ -13,8 +13,9 @@ import {
   Image,
   SafeAreaView,
 } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { SimpleIcon } from '../components/SimpleIcon';
 import { useAuth } from '../context/AuthContext';
+import { DashIcon } from '../components/DashIcon';
 
 interface LoginScreenProps {
   onNavigateToRegister: () => void;
@@ -28,27 +29,27 @@ export function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
   const { login } = useAuth();
 
   const handleLogin = async () => {
-    console.log('🔐 Starting login process...', { email, passwordLength: password.length });
+    console.log('[LOGIN] Starting login process...', { email, passwordLength: password.length });
     
     if (!email || !password) {
-      console.log('❌ Login validation failed: missing fields');
+      console.log('[ERROR] Login validation failed: missing fields');
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
 
     if (!email.includes('@')) {
-      console.log('❌ Login validation failed: invalid email');
+      console.log('[ERROR] Login validation failed: invalid email');
       Alert.alert('Error', 'Please enter a valid email address');
       return;
     }
 
     if (password.length < 8) {
-      console.log('❌ Login validation failed: password too short');
+      console.log('[ERROR] Login validation failed: password too short');
       Alert.alert('Error', 'Password must be at least 8 characters long');
       return;
     }
 
-    console.log('✅ Login validation passed, attempting login...');
+    console.log('[SUCCESS] Login validation passed, attempting login...');
     setIsLoading(true);
     try {
       const success = await login(email, password);
@@ -78,10 +79,10 @@ export function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
         {/* Logo Section */}
         <View style={styles.logoSection}>
           <View style={styles.logoContainer}>
-            <Image 
-              source={require('../../assets/dash-icons/Dash.png')} 
-              style={styles.dashLogo}
-              resizeMode="contain"
+            <DashIcon 
+              name="home" 
+              size={60}
+              color="#ff0000"
             />
             <Image 
               source={require('../../assets/Mustangside.png')} 
@@ -97,7 +98,7 @@ export function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
         {/* Login Form */}
         <View style={styles.formContainer}>
           <View style={styles.inputContainer}>
-            <Ionicons name="mail" size={20} color="#888" style={styles.inputIcon} />
+            <SimpleIcon name="mail" size={20} color="#888" />
             <TextInput
               style={styles.input}
               placeholder="Email"
@@ -111,7 +112,7 @@ export function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
           </View>
 
           <View style={styles.inputContainer}>
-            <Ionicons name="lock-closed" size={20} color="#888" style={styles.inputIcon} />
+            <SimpleIcon name="lock-closed" size={20} color="#888" />
             <TextInput
               style={styles.input}
               placeholder="Password"
@@ -125,7 +126,7 @@ export function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
               style={styles.eyeIcon}
               onPress={() => setShowPassword(!showPassword)}
             >
-              <Ionicons 
+              <SimpleIcon 
                 name={showPassword ? "eye-off" : "eye"} 
                 size={20} 
                 color="#888" 
@@ -147,7 +148,7 @@ export function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
             ) : (
               <>
                 <Text style={styles.loginButtonText}>Sign In</Text>
-                <Ionicons name="arrow-forward" size={20} color="#000" />
+                <SimpleIcon name="arrow-forward" size={20} color="#000" />
               </>
             )}
           </TouchableOpacity>
@@ -161,12 +162,12 @@ export function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
           </View>
 
           <TouchableOpacity style={styles.socialButton}>
-            <Ionicons name="logo-google" size={20} color="#fff" />
+            <SimpleIcon name="logo-google" size={20} color="#fff" />
             <Text style={styles.socialButtonText}>Continue with Google</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={[styles.socialButton, styles.appleButton]}>
-            <Ionicons name="logo-apple" size={20} color="#000" />
+            <SimpleIcon name="logo-apple" size={20} color="#000" />
             <Text style={[styles.socialButtonText, styles.appleButtonText]}>Continue with Apple</Text>
           </TouchableOpacity>
         </View>

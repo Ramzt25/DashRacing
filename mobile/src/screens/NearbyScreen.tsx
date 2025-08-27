@@ -161,7 +161,7 @@ export function NearbyScreen({ navigation }: any) {
     const degrees = Math.floor(abs);
     const minutes = ((abs - degrees) * 60).toFixed(3);
     const direction = type === 'lat' ? (coord >= 0 ? 'N' : 'S') : (coord >= 0 ? 'E' : 'W');
-    return `${degrees}°${minutes}'${direction}`;
+    return `${degrees}deg ${minutes}'${direction}`;
   };
 
   const getStatusColor = (status: string) => {
@@ -239,7 +239,7 @@ export function NearbyScreen({ navigation }: any) {
             </Text>
           </View>
           <Text style={styles.accuracy}>
-            Accuracy: ±{location.accuracy?.toFixed(0) || 'N/A'}m
+            Accuracy: +/-{location.accuracy?.toFixed(0) || 'N/A'}m
           </Text>
         </View>
       )}

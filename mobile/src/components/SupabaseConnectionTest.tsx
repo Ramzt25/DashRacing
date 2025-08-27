@@ -119,7 +119,7 @@ export default function SupabaseConnectionTest() {
     }
 
     setIsRunning(false);
-    console.log('🏁 Supabase Connection Tests Completed');
+    console.log('[COMPLETE] Supabase Connection Tests Completed');
   };
 
   useEffect(() => {
@@ -156,12 +156,12 @@ export default function SupabaseConnectionTest() {
       <View style={styles.summary}>
         {allTestsPassed && (
           <Text style={[styles.summaryText, { color: '#00AA00' }]}>
-            🎉 All tests passed! Your Supabase configuration is working correctly.
+            [SUCCESS] All tests passed! Your Supabase configuration is working correctly.
           </Text>
         )}
         {hasFailures && (
           <Text style={[styles.summaryText, { color: '#FF0000' }]}>
-            ⚠️ Some tests failed. Please check the details below.
+            [WARNING] Some tests failed. Please check the details below.
           </Text>
         )}
         {!allTestsPassed && !hasFailures && (

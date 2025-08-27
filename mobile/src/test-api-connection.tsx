@@ -18,7 +18,7 @@ export default function TestApiConnection() {
       const url = API_CONFIG.BASE_URL;
       setApiUrl(url);
       
-      console.log('🧪 Testing API connection to:', url);
+      console.log('[TEST] Testing API connection to:', url);
       
       const response = await fetch(`${url}/health`, {
         method: 'GET',
@@ -29,16 +29,16 @@ export default function TestApiConnection() {
 
       if (response.ok) {
         const data = await response.json();
-        setApiStatus(`✅ Connected! Version: ${data.version}`);
-        console.log('✅ API Connection successful:', data);
+        setApiStatus(`[SUCCESS] Connected! Version: ${data.version}`);
+        console.log('[SUCCESS] API Connection successful:', data);
       } else {
-        setApiStatus(`❌ HTTP ${response.status}: ${response.statusText}`);
-        console.log('❌ API Connection failed:', response.status, response.statusText);
+        setApiStatus(`[ERROR] HTTP ${response.status}: ${response.statusText}`);
+        console.log('[ERROR] API Connection failed:', response.status, response.statusText);
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      setApiStatus(`❌ Error: ${errorMessage}`);
-      console.log('❌ API Connection error:', error);
+      setApiStatus(`[ERROR] Error: ${errorMessage}`);
+      console.log('[ERROR] API Connection error:', error);
     }
   };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, StatusBar, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, StatusBar } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DashIcon } from './DashIcon';
@@ -31,11 +31,7 @@ export function TopNavigation({ currentRoute, onNavigate, onMenuToggle, user }: 
         >
           {/* Left side - DASH logo/title */}
           <View style={styles.leftSection}>
-            <Image 
-              source={require('../../assets/dash-icons/Dash.png')} 
-              style={styles.dashLogo}
-              resizeMode="contain"
-            />
+            <DashIcon name="home" size={32} color={colors.primary} />
             <Text style={styles.dashTitle}>DASH</Text>
             {user?.isPro && (
               <View style={styles.proIndicator}>
@@ -104,11 +100,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 0.2,
-  },
-  dashLogo: {
-    width: 32,
-    height: 32,
-    marginRight: spacing.xs,
   },
   dashTitle: {
     ...typography.h3,

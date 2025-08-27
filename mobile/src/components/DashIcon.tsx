@@ -1,94 +1,64 @@
 import React from 'react';
-import { View, StyleSheet, Image } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { View, Text, StyleSheet } from 'react-native';
 
 interface DashIconProps {
-  name: 'home' | 'live-race' | 'events' | 'garage' | 'map' | 'profile' | 'settings' | 'back' | 'timer' | 'car' | 'nearby';
+  name: string;
   size?: number;
   color?: string;
   focused?: boolean;
 }
 
 export function DashIcon({ name, size = 24, color = '#fff', focused = false }: DashIconProps) {
-  const getIconComponent = () => {
-    // Use your custom DASH icons
-    const iconMap = {
-      'home': require('../../assets/dash-icons/Home.png'),
-      'live-race': require('../../assets/dash-icons/Live race.png'),
-      'events': require('../../assets/dash-icons/Events.png'),
-      'garage': require('../../assets/dash-icons/Mygarage.png'),
-      'map': require('../../assets/dash-icons/Location.png'),
-      'profile': require('../../assets/dash-icons/profile.png'),
-      'settings': require('../../assets/dash-icons/settings.png'),
-      'back': null, // Use Ionicon for back button
-      'timer': null, // Use Ionicon for timer
-      'car': null, // Use Ionicon for car
-      'nearby': null, // Use Ionicon for nearby
-    };
-
-    // Use custom DASH image if available, otherwise fallback to Ionicons
-    if (iconMap[name]) {
-      return (
-        <View style={[
-          styles.iconContainer,
-          focused && styles.focusedContainer,
-          { width: size + 8, height: size + 8 }
-        ]}>
-          <Image 
-            source={iconMap[name]} 
-            style={[
-              styles.customIcon,
-              { 
-                width: size, 
-                height: size,
-                tintColor: focused ? '#FF0000' : color
-              }
-            ]}
-            resizeMode="contain"
-          />
-          {focused && <View style={styles.redAccent} />}
-        </View>
-      );
-    } else {
-      // Fallback to Ionicons for icons without custom images
-      const ionIconMap: Record<string, any> = {
-        'back': 'arrow-back',
-        'timer': 'timer-outline',
-        'car': 'car-outline',
-        'nearby': 'people-outline',
-      };
-      
-      return (
-        <View style={[
-          styles.iconContainer,
-          focused && styles.focusedContainer,
-          { width: size + 8, height: size + 8 }
-        ]}>
-          <Ionicons 
-            name={ionIconMap[name] || 'help-outline'} 
-            size={size} 
-            color={focused ? '#FF0000' : color} 
-          />
-          {focused && <View style={styles.redAccent} />}
-        </View>
-      );
-    }
+  // Map icon names to simple text labels
+  const textMap: { [key: string]: string } = {
+    'home': 'HOME',
+    'live-race': 'RACE',
+    'events': 'EVENTS',
+    'garage': 'GARAGE',
+    'map': 'MAP',
+    'nearby': 'NEAR',
+    'profile': 'USER',
+    'timer': 'TIME',
+    'car': 'CAR',
+    'pro': 'PRO',
+    'simulator': 'SIM',
+    'settings': 'SET',
+    'back': 'BACK',
   };
 
-  return getIconComponent();
+  const displayText = textMap[name] || name.toUpperCase().slice(0, 4);
+  const finalColor = focused ? '#ff0000' : color;
+  const fontSize = Math.max(8, size / 3); // Scale text size based on icon size
+
+  return (
+    <View style={[
+      styles.container, 
+      { width: size + 8, height: size + 8 },
+      focused && styles.focusedContainer
+    ]}>
+      <Text style={[styles.text, { color: finalColor, fontSize }]}>
+        {displayText}
+      </Text>
+      {focused && <View style={styles.redAccent} />}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  iconContainer: {
-    alignItems: 'center',
+  container: {
     justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 4,
     position: 'relative',
   },
   focusedContainer: {
-    // Add any focused state styling here
+    backgroundColor: 'rgba(255, 0, 0, 0.2)',
   },
-  customIcon: {
-    // Custom icon styling
+  text: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 8,
   },
   redAccent: {
     position: 'absolute',
