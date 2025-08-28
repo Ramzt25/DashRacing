@@ -30,11 +30,11 @@ export default function SupabaseConnectionTest() {
 
   const runTests = async () => {
     setIsRunning(true);
-    console.log('🧪 Starting Supabase Connection Tests...');
+    console.log('TEST_START Starting Supabase Connection Tests...');
 
     // Test 1: Environment Variables
     try {
-      console.log('🔧 Test 1: Environment Variables');
+      console.log('TEST_1 Test 1: Environment Variables');
       console.log('  - EXPO_PUBLIC_SUPABASE_URL:', EXPO_PUBLIC_SUPABASE_URL);
       console.log('  - EXPO_PUBLIC_SUPABASE_ANON_KEY length:', EXPO_PUBLIC_SUPABASE_ANON_KEY?.length);
 
@@ -51,13 +51,13 @@ export default function SupabaseConnectionTest() {
       updateTest(0, 'pass', 'Environment variables loaded successfully', 
         `URL: ${EXPO_PUBLIC_SUPABASE_URL}\nKey Length: ${EXPO_PUBLIC_SUPABASE_ANON_KEY.length}`);
     } catch (error) {
-      console.error('❌ Test 1 failed:', error);
+      console.error('TEST_1_FAIL Test 1 failed:', error);
       updateTest(0, 'fail', 'Environment variables failed', (error as Error).message);
     }
 
     // Test 2: Supabase Client
     try {
-      console.log('🔧 Test 2: Supabase Client');
+      console.log('TEST_2 Test 2: Supabase Client');
       
       if (!supabase) {
         throw new Error('Supabase client is not defined');
@@ -75,13 +75,13 @@ export default function SupabaseConnectionTest() {
       updateTest(1, 'pass', 'Supabase client initialized successfully', 
         `Client type: ${typeof supabase}\nHas auth: ${!!supabase.auth}\nHas from: ${!!supabase.from}`);
     } catch (error) {
-      console.error('❌ Test 2 failed:', error);
+      console.error('TEST_2_FAIL Test 2 failed:', error);
       updateTest(1, 'fail', 'Supabase client initialization failed', (error as Error).message);
     }
 
     // Test 3: Auth Service
     try {
-      console.log('🔧 Test 3: Auth Service');
+      console.log('TEST_3 Test 3: Auth Service');
       
       const { data, error } = await supabase.auth.getSession();
       
@@ -92,13 +92,13 @@ export default function SupabaseConnectionTest() {
       updateTest(2, 'pass', 'Auth service is accessible', 
         `Session: ${data?.session ? 'Active' : 'None'}\nError: ${error?.message || 'None'}`);
     } catch (error) {
-      console.error('❌ Test 3 failed:', error);
+      console.error('TEST_3_FAIL Test 3 failed:', error);
       updateTest(2, 'fail', 'Auth service failed', (error as Error).message);
     }
 
     // Test 4: Database Connection
     try {
-      console.log('🔧 Test 4: Database Connection');
+      console.log('TEST_4 Test 4: Database Connection');
       
       // Try a simple query that should work even without authentication
       const { data, error } = await supabase
@@ -114,7 +114,7 @@ export default function SupabaseConnectionTest() {
       updateTest(3, 'pass', 'Database connection successful', 
         `Query result: ${data ? 'Success' : 'Permission-protected (expected)'}\nError: ${error?.message || 'None'}`);
     } catch (error) {
-      console.error('❌ Test 4 failed:', error);
+      console.error('TEST_4_FAIL Test 4 failed:', error);
       updateTest(3, 'fail', 'Database connection failed', (error as Error).message);
     }
 
@@ -130,8 +130,8 @@ export default function SupabaseConnectionTest() {
   const getStatusIcon = (status: TestResult['status']) => {
     switch (status) {
       case 'pending': return '⏳';
-      case 'pass': return '✅';
-      case 'fail': return '❌';
+      case 'pass': return 'PASS';
+      case 'fail': return 'FAIL';
     }
   };
 
@@ -149,7 +149,7 @@ export default function SupabaseConnectionTest() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>🧪 Supabase Connection Test</Text>
+        <Text style={styles.title}>Supabase Connection Test</Text>
         <Text style={styles.subtitle}>Verify your Supabase configuration</Text>
       </View>
 

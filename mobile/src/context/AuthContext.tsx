@@ -49,12 +49,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         AsyncStorage.getItem('isFirstTime')
       ]);
 
-      console.log('💾 Saved user data:', savedUser ? 'Found' : 'None');
+      console.log('SAVED_DATA Saved user data:', savedUser ? 'Found' : 'None');
       console.log(' First time flag:', firstTimeFlag);
 
       if (savedUser) {
         const userData = JSON.parse(savedUser) as User;
-        console.log('👤 Parsed user data:', { 
+        console.log('PARSED_DATA Parsed user data:', { 
           id: userData.id, 
           email: userData.email, 
           hasToken: !!userData.token 
@@ -62,20 +62,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         // Validate token if it exists
         if (userData.token) {
-          console.log('🔐 Validating token...');
+          console.log('TOKEN_VALIDATE Validating token...');
           try {
             const isValidToken = await AuthService.validateToken(userData.token);
-            console.log('✅ Token validation result:', isValidToken);
+            console.log('TOKEN_RESULT Token validation result:', isValidToken);
             if (isValidToken) {
               setUser(userData);
               console.log(' User authenticated successfully');
             } else {
               // Token is invalid, clear stored user
-              console.log('❌ Token invalid, clearing stored user');
+              console.log('TOKEN_INVALID Token invalid, clearing stored user');
               await AsyncStorage.removeItem('user');
             }
           } catch (tokenError) {
-            console.error('🚨 Token validation error:', tokenError);
+            console.error('TOKEN_ERROR Token validation error:', tokenError);
             // Clear invalid stored data
             await AsyncStorage.removeItem('user');
           }
@@ -86,9 +86,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       setIsFirstTime(firstTimeFlag === null);
-      console.log('✅ Auth state check completed');
+      console.log('AUTH_COMPLETE Auth state check completed');
     } catch (error) {
-      console.error('🚨 Auth state check error:', error);
+      console.error('AUTH_ERROR Auth state check error:', error);
     } finally {
       setIsLoading(false);
       console.log(' Auth loading finished');
@@ -125,9 +125,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log(' AuthContext.login starting:', { email, passwordLength: password.length });
       
-      console.log('📡 Calling AuthService.login...');
+      console.log('LOGIN_CALL Calling AuthService.login...');
       const authResponse = await AuthService.login({ email, password });
-      console.log('✅ AuthService.login success:', { 
+      console.log('LOGIN_SUCCESS AuthService.login success:', { 
         userId: authResponse.user.id, 
         userEmail: authResponse.user.email,
         hasToken: !!authResponse.token 
@@ -146,16 +146,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         subscriptionEnd: authResponse.user.subscriptionEnd,
       };
       
-      console.log('💾 Saving user to AsyncStorage...');
+      console.log('SAVE_STORAGE Saving user to AsyncStorage...');
       await AsyncStorage.setItem('user', JSON.stringify(user));
-      console.log('✅ User saved to AsyncStorage');
+      console.log('SAVE_COMPLETE User saved to AsyncStorage');
       
-      console.log('👤 Setting user in context...');
+      console.log('SET_USER Setting user in context...');
       setUser(user);
       console.log(' Login completed successfully!');
       return true;
     } catch (error) {
-      console.error('🚨 Login error:', error);
+      console.error('LOGIN_ERROR Login error:', error);
       return false;
     }
   };

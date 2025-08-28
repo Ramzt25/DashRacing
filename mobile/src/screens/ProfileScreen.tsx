@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Dimensions } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import LinearGradient from 'react-native-linear-gradient';
 import { ScreenHeader } from '../components/common/ScreenHeader';
 import { useAuth } from '../context/AuthContext';
 import { colors, typography, spacing, shadows } from '../utils/theme';
+import { globalStyles } from '../styles/globalStyles';
 import ScreenContainer from '../components/layout/ScreenContainer';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 export function ProfileScreen({ navigation }: any) {
   const { user, refreshUser } = useAuth();
@@ -50,7 +52,7 @@ export function ProfileScreen({ navigation }: any) {
   };
 
   return (
-    <ScreenContainer hideTopInset={true}>
+    <ScreenContainer hideTopInset={true} scroll={true}>
       <ScreenHeader 
         title="Profile"
         onBackPress={() => navigation.goBack()}
@@ -60,9 +62,8 @@ export function ProfileScreen({ navigation }: any) {
           </TouchableOpacity>
         }
       />
-    <ScrollView style={styles.scrollView}>
       {/* Profile Header */}
-      <View style={styles.header}>
+      <View style={[globalStyles.garageCard, styles.header]}>
         <View style={styles.avatar}>
           <Ionicons name="person" size={48} color={colors.primary} />
         </View>
@@ -73,16 +74,11 @@ export function ProfileScreen({ navigation }: any) {
         
         {/* Pro Status Badge */}
         {user?.isPro && (
-          <View style={styles.proBadge}>
-            <LinearGradient
-              colors={['#FFD700', '#FFA500']}
-              style={styles.proBadgeGradient}
-            >
-              <Ionicons name="diamond" size={16} color="#000" />
-              <Text style={styles.proText}>
-                PRO {user.subscriptionTier?.toUpperCase() || 'MEMBER'}
-              </Text>
-            </LinearGradient>
+          <View style={[globalStyles.garageCard, styles.proBadge]}>
+            <Ionicons name="diamond" size={16} color={colors.warning} />
+            <Text style={styles.proText}>
+              PRO {user.subscriptionTier?.toUpperCase() || 'MEMBER'}
+            </Text>
           </View>
         )}
         
@@ -190,25 +186,15 @@ export function ProfileScreen({ navigation }: any) {
           <Text style={[styles.actionText, styles.secondaryText]}>Settings</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
     </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollView: {
-    flex: 1,
-  },
   header: {
     alignItems: 'center',
     padding: spacing.lg,
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.surfaceSecondary,
+    marginBottom: spacing.md,
   },
   avatar: {
     width: 80,

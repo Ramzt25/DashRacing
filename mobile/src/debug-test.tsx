@@ -9,7 +9,7 @@ import {
   EXPO_PUBLIC_SUPABASE_ANON_KEY,
 } from '@env';
 
-console.log('🧪 Environment Variable Test Results:');
+console.log('ENV_TEST Environment Variable Test Results:');
 console.log('=====================================');
 console.log('EXPO_PUBLIC_SUPABASE_URL:', EXPO_PUBLIC_SUPABASE_URL);
 console.log('Type:', typeof EXPO_PUBLIC_SUPABASE_URL);
@@ -23,7 +23,7 @@ console.log('=====================================');
 // Test Supabase import
 import { supabase } from './lib/supabase';
 
-console.log('🧪 Supabase Client Test Results:');
+console.log('SUPABASE_TEST Supabase Client Test Results:');
 console.log('=================================');
 console.log('Supabase client:', typeof supabase);
 console.log('Is undefined:', supabase === undefined);

@@ -16,6 +16,7 @@ import {
 import { SimpleIcon } from '../components/SimpleIcon';
 import { useAuth } from '../context/AuthContext';
 import { DashIcon } from '../components/DashIcon';
+import { globalStyles } from '../styles/globalStyles';
 
 interface LoginScreenProps {
   onNavigateToRegister: () => void;
@@ -70,12 +71,12 @@ export function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
 
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[globalStyles.fullWidthContainer, styles.safeArea]}>
       <KeyboardAvoidingView 
-        style={styles.container} 
+        style={[globalStyles.fullWidthContainer, styles.container]} 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ScrollView contentContainerStyle={[globalStyles.garageContainer, styles.scrollContainer]}>
         {/* Logo Section */}
         <View style={styles.logoSection}>
           <View style={styles.logoContainer}>
@@ -96,7 +97,7 @@ export function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
         </View>
 
         {/* Login Form */}
-        <View style={styles.formContainer}>
+        <View style={[globalStyles.garageCard, styles.formContainer]}>
           <View style={styles.inputContainer}>
             <SimpleIcon name="mail" size={20} color="#888" />
             <TextInput

@@ -92,7 +92,7 @@ class RealTimeRaceTelemetryService {
         };
 
         this.wsConnection.onerror = (error: any) => {
-          console.error('🚨 Race telemetry WebSocket error:', error);
+          console.error('TELEMETRY_ERROR Race telemetry WebSocket error:', error);
         };
 
         this.wsConnection.onclose = () => {

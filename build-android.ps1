@@ -1,8 +1,8 @@
 # Android Build Script
-Set-Location "C:\DashRacing\gridghost-mobile-v2"
-$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot"
-$env:ANDROID_HOME = "C:\Users\tramsey\AppData\Local\Android\Sdk"
-$env:ANDROID_SDK_ROOT = "C:\Users\tramsey\AppData\Local\Android\Sdk"
+Set-Location "C:\Programming Projects\DashRacing\mobile"
+$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-11.0.26.4-hotspot"
+$env:ANDROID_HOME = "C:\Users\ramzt\AppData\Local\Android\Sdk"
+$env:ANDROID_SDK_ROOT = "C:\Users\ramzt\AppData\Local\Android\Sdk"
 $env:PATH = "$env:PATH;$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\emulator;$env:ANDROID_HOME\tools;$env:ANDROID_HOME\tools\bin"
 
 Write-Host "Current Directory: $(Get-Location)"

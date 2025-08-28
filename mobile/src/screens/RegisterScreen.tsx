@@ -14,6 +14,11 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../context/AuthContext';
+import { colors, spacing, typography } from '../utils/theme';
+import { globalStyles } from '../styles/globalStyles';
+import { Dimensions } from 'react-native';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 interface RegisterScreenProps {
   onNavigateToLogin: () => void;
@@ -88,12 +93,12 @@ export function RegisterScreen({ onNavigateToLogin }: RegisterScreenProps) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[globalStyles.fullWidthContainer, styles.safeArea]}>
       <KeyboardAvoidingView 
-        style={styles.container} 
+        style={[globalStyles.fullWidthContainer, styles.container]} 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView contentContainerStyle={[globalStyles.garageContainer, styles.scrollContainer]}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={onNavigateToLogin}>
@@ -118,7 +123,7 @@ export function RegisterScreen({ onNavigateToLogin }: RegisterScreenProps) {
         </View>
 
         {/* Registration Form */}
-        <View style={styles.formContainer}>
+        <View style={[globalStyles.garageCard, styles.formContainer]}>
           <View style={styles.inputContainer}>
             <Ionicons name="mail" size={20} color="#888" style={styles.inputIcon} />
             <TextInput
@@ -197,7 +202,7 @@ export function RegisterScreen({ onNavigateToLogin }: RegisterScreenProps) {
             onPress={() => setAcceptTerms(!acceptTerms)}
           >
             <View style={[styles.checkbox, acceptTerms && styles.checkedBox]}>
-              {acceptTerms && <Ionicons name="checkmark" size={16} color="#000" />}
+              {acceptTerms && <Ionicons name="checkmark" size={16} color={colors.textPrimary} />}
             </View>
             <View style={styles.termsTextContainer}>
               <Text style={styles.termsText}>
@@ -210,16 +215,16 @@ export function RegisterScreen({ onNavigateToLogin }: RegisterScreenProps) {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.registerButton, isLoading && styles.disabledButton]}
+            style={[globalStyles.garageButton, styles.registerButton, isLoading && styles.disabledButton]}
             onPress={handleRegister}
             disabled={isLoading}
           >
             {isLoading ? (
-              <ActivityIndicator color="#000" />
+              <ActivityIndicator color={colors.primary} />
             ) : (
               <>
                 <Text style={styles.registerButtonText}>Create Account</Text>
-                <Ionicons name="arrow-forward" size={20} color="#000" />
+                <Ionicons name="arrow-forward" size={20} color={colors.textPrimary} />
               </>
             )}
           </TouchableOpacity>
@@ -236,7 +241,7 @@ export function RegisterScreen({ onNavigateToLogin }: RegisterScreenProps) {
           </TouchableOpacity>
 
           <TouchableOpacity style={[styles.socialButton, styles.appleButton]}>
-            <Ionicons name="logo-apple" size={20} color="#000" />
+            <Ionicons name="logo-apple" size={20} color={colors.textPrimary} />
             <Text style={[styles.socialButtonText, styles.appleButtonText]}>Sign up with Apple</Text>
           </TouchableOpacity>
         </View>
@@ -256,40 +261,52 @@ export function RegisterScreen({ onNavigateToLogin }: RegisterScreenProps) {
 
 const styles = StyleSheet.create({
   safeArea: {
-    flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: colors.background,
+    width: screenWidth,
   },
   container: {
-    flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: colors.background,
+    width: screenWidth,
   },
   scrollContainer: {
-    flexGrow: 1,
-    padding: 24,
-    paddingBottom: 40, // Extra bottom padding for safe area
+    padding: spacing.lg,
+    paddingBottom: 60,
+    width: '100%',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 32,
-    marginTop: 16,
+    marginBottom: spacing.lg,
+    marginTop: spacing.md,
+    width: '100%',
   },
   backButton: {
-    padding: 4,
+    padding: spacing.sm,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 0, 0, 0.1)',
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.textPrimary,
+    textShadowColor: 'rgba(255, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   logoSection: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: spacing.xl,
+    width: '100%',
   },
   logoContainer: {
     position: 'relative',
-    marginBottom: 16,
+    marginBottom: spacing.md,
+    backgroundColor: 'rgba(255, 0, 0, 0.1)',
+    borderRadius: 20,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 0, 0, 0.3)',
   },
   speedLines: {
     position: 'absolute',
@@ -315,31 +332,29 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   appTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
-    letterSpacing: 2,
-    marginBottom: 4,
+    fontSize: 32,
+    fontWeight: '900',
+    color: colors.primary,
+    letterSpacing: 3,
+    marginBottom: spacing.sm,
+    textShadowColor: 'rgba(255, 0, 0, 0.7)',
+    textShadowOffset: { width: 0, height: 3 },
+    textShadowRadius: 8,
   },
   appSubtitle: {
     fontSize: 16,
-    color: '#888',
-    fontWeight: '500',
+    color: colors.textSecondary,
+    fontWeight: '600',
+    letterSpacing: 1,
   },
   formContainer: {
     width: '100%',
-    marginBottom: 24,
+    marginBottom: spacing.lg,
+    padding: spacing.lg,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1a1a1a',
-    borderRadius: 12,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#333',
-    paddingHorizontal: 16,
-    height: 56,
+    marginBottom: spacing.md,
+    width: '100%',
   },
   inputIcon: {
     marginRight: 12,
@@ -386,14 +401,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   registerButton: {
-    backgroundColor: '#FF0000',
-    borderRadius: 12,
-    height: 56,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    marginBottom: 24,
+    marginBottom: spacing.lg,
+    gap: spacing.sm,
+    width: '100%',
   },
   disabledButton: {
     opacity: 0.7,
@@ -431,7 +441,7 @@ const styles = StyleSheet.create({
     borderColor: '#333',
   },
   appleButton: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surfaceSecondary,
   },
   socialButtonText: {
     color: '#fff',

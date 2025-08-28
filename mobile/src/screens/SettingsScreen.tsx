@@ -7,12 +7,12 @@ import {
   TouchableOpacity,
   Switch 
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { useSettings, SpeedUnit } from '../context/SettingsContext';
 import { colors, spacing, typography, shadows } from '../utils/theme';
 import { DashIcon } from '../components/DashIcon';
 import { ScreenHeader } from '../components/common/ScreenHeader';
 import ScreenContainer from '../components/layout/ScreenContainer';
+import { globalStyles } from '../styles/globalStyles';
 
 export function SettingsScreen({ navigation }: any) {
   const { 
@@ -40,39 +40,31 @@ export function SettingsScreen({ navigation }: any) {
         <TouchableOpacity
           key={option.value}
           style={[
+            globalStyles.garageCard,
             styles.optionCard,
             settings.speedUnit === option.value && styles.optionCardActive
           ]}
           onPress={() => updateSpeedUnit(option.value)}
         >
-          <LinearGradient
-            colors={
-              settings.speedUnit === option.value 
-                ? [colors.primary + '20', colors.primary + '10'] 
-                : [colors.surfaceSecondary, colors.surfaceElevated]
-            }
-            style={styles.optionGradient}
-          >
-            <View style={styles.optionContent}>
-              <View style={styles.optionInfo}>
-                <Text style={[
-                  styles.optionTitle,
-                  settings.speedUnit === option.value && styles.optionTitleActive
-                ]}>
-                  {option.label}
-                </Text>
-                <Text style={styles.optionDescription}>
-                  {option.description}
-                </Text>
-              </View>
-              
-              {settings.speedUnit === option.value && (
-                <View style={styles.selectedIndicator}>
-                  <DashIcon name="events" size={20} color={colors.primary} />
-                </View>
-              )}
+          <View style={styles.optionContent}>
+            <View style={styles.optionInfo}>
+              <Text style={[
+                styles.optionTitle,
+                settings.speedUnit === option.value && styles.optionTitleActive
+              ]}>
+                {option.label}
+              </Text>
+              <Text style={styles.optionDescription}>
+                {option.description}
+              </Text>
             </View>
-          </LinearGradient>
+            
+            {settings.speedUnit === option.value && (
+              <View style={styles.selectedIndicator}>
+                <DashIcon name="events" size={20} color={colors.primary} />
+              </View>
+            )}
+          </View>
         </TouchableOpacity>
       ))}
     </View>
@@ -135,32 +127,21 @@ export function SettingsScreen({ navigation }: any) {
         title="Settings"
         onBackPress={() => navigation.goBack()}
       />
-      <LinearGradient
-        colors={[colors.background, colors.surface]}
-        style={styles.scrollView}
+      <ScrollView 
+        style={[globalStyles.fullWidthScreen, styles.scrollView]}
+        contentContainerStyle={[globalStyles.garageContainer, styles.scrollContent]}
+        showsVerticalScrollIndicator={false}
       >
-        <ScrollView 
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Current Settings Summary */}
-          <View style={styles.summaryCard}>
-            <LinearGradient
-              colors={[colors.surfaceSecondary, colors.surfaceElevated]}
-              style={styles.summaryGradient}
-            >
-              <View style={styles.summaryRow}>
-                <DashIcon name="timer" size={24} color={colors.primary} />
-                <View style={styles.summaryInfo}>
-                  <Text style={styles.summaryLabel}>Speed Unit</Text>
-                  <Text style={styles.summaryValue}>{getSpeedUnitLabel()}</Text>
-                </View>
-              </View>
-            </LinearGradient>
+        {/* Current Settings Summary */}
+        <View style={[globalStyles.garageCard, styles.summaryCard]}>
+          <View style={styles.summaryRow}>
+            <DashIcon name="timer" size={24} color={colors.primary} />
+            <View style={styles.summaryInfo}>
+              <Text style={styles.summaryLabel}>Speed Unit</Text>
+              <Text style={styles.summaryValue}>{getSpeedUnitLabel()}</Text>
+            </View>
           </View>
-
-        {/* Speed Units Section */}
+        </View>        {/* Speed Units Section */}
         {renderSpeedUnitSelector()}
 
         {/* Toggle Settings */}
@@ -169,22 +150,16 @@ export function SettingsScreen({ navigation }: any) {
         {/* About Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>About</Text>
-          <View style={styles.aboutCard}>
-            <LinearGradient
-              colors={[colors.surfaceSecondary, colors.surfaceElevated]}
-              style={styles.aboutGradient}
-            >
-              <Text style={styles.aboutTitle}>DASH Racing Platform</Text>
-              <Text style={styles.aboutVersion}>Version 1.0.0</Text>
-              <Text style={styles.aboutDescription}>
-                Professional mobile racing platform with real-time GPS tracking,
-                live leaderboards, and community features.
-              </Text>
-            </LinearGradient>
+          <View style={[globalStyles.garageCard, styles.aboutCard]}>
+            <Text style={styles.aboutTitle}>DASH Racing Platform</Text>
+            <Text style={styles.aboutVersion}>Version 1.0.0</Text>
+            <Text style={styles.aboutDescription}>
+              Professional mobile racing platform with real-time GPS tracking,
+              live leaderboards, and community features.
+            </Text>
           </View>
         </View>
         </ScrollView>
-      </LinearGradient>
     </ScreenContainer>
   );
 }

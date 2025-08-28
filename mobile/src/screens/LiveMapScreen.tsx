@@ -19,10 +19,10 @@ import { ScreenHeader } from '../components/common/ScreenHeader';
 import Geolocation from 'react-native-geolocation-service';
 import { StatusBar } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
-import LinearGradient from 'react-native-linear-gradient';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
 import { colors, spacing, typography, shadows } from '../utils/theme';
+import { globalStyles } from '../styles/globalStyles';
 import { GPSCoordinate } from '../types/racing';
 import { LiveMapService } from '../services/LiveMapService';
 import { EnhancedLiveMapService } from '../services/EnhancedLiveMapService';
@@ -804,7 +804,8 @@ export function LiveMapScreen({ navigation }: any) {
   }
 
   return (
-    <ScreenContainer hideTopInset={true}>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       <ScreenHeader 
         title="Live Map" 
         onBackPress={() => navigation.goBack()}
@@ -1060,21 +1061,15 @@ export function LiveMapScreen({ navigation }: any) {
 
       {/* Compact Speed Display */}
       <View style={styles.compactSpeedContainer}>
-        <LinearGradient
-          colors={[colors.background + 'EE', colors.surface + 'EE']}
-          style={styles.compactSpeedGradient}
-        >
+        <View style={[globalStyles.garageCard, styles.compactSpeedGradient]}>
           <Text style={styles.compactSpeedValue}>{currentSpeed.toFixed(0)}</Text>
           <Text style={styles.compactSpeedUnit}>{getSpeedUnitLabel()}</Text>
-        </LinearGradient>
+        </View>
       </View>
 
       {/* Compact Activity Counter - Moved to side */}
       <View style={styles.compactActivityContainer}>
-        <LinearGradient
-          colors={[colors.primary + '30', colors.secondary + '30']}
-          style={styles.compactActivityGradient}
-        >
+        <View style={[globalStyles.garageCard, styles.compactActivityGradient]}>
           <View style={styles.compactActivityItem}>
             <Ionicons name="people" size={12} color={colors.primary} />
             <Text style={styles.compactActivityCount}>{filteredPlayers.length}</Text>
@@ -1083,7 +1078,7 @@ export function LiveMapScreen({ navigation }: any) {
             <Ionicons name="flag" size={12} color={colors.warning} />
             <Text style={styles.compactActivityCount}>{filteredEvents.filter(e => e.status === 'active').length}</Text>
           </View>
-        </LinearGradient>
+        </View>
       </View>
 
       {/* Action Buttons */}
@@ -1097,26 +1092,20 @@ export function LiveMapScreen({ navigation }: any) {
             setMapMode(modes[nextIndex]);
           }}
         >
-          <LinearGradient
-            colors={[colors.surfaceSecondary, colors.surfaceElevated]}
-            style={styles.buttonGradient}
-          >
+          <View style={[globalStyles.garageCard, styles.buttonGradient]}>
             <Ionicons name="map" size={20} color="#fff" />
             <Text style={styles.buttonText}>{mapMode.toUpperCase()}</Text>
-          </LinearGradient>
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity 
           style={styles.filtersButton}
           onPress={() => setShowDestinationModal(true)}
         >
-          <LinearGradient
-            colors={[colors.accent + '80', colors.accent]}
-            style={styles.buttonGradient}
-          >
+          <View style={[globalStyles.garageCard, styles.buttonGradient]}>
             <Ionicons name="navigate" size={20} color="#fff" />
             <Text style={styles.buttonText}>DESTINATION</Text>
-          </LinearGradient>
+          </View>
         </TouchableOpacity>
 
         {destination && (
@@ -1124,13 +1113,10 @@ export function LiveMapScreen({ navigation }: any) {
             style={styles.filtersButton}
             onPress={clearDestination}
           >
-            <LinearGradient
-              colors={[colors.warning + '80', colors.warning]}
-              style={styles.buttonGradient}
-            >
+            <View style={[globalStyles.garageCard, styles.buttonGradient]}>
               <Ionicons name="close" size={20} color="#fff" />
               <Text style={styles.buttonText}>CLEAR</Text>
-            </LinearGradient>
+            </View>
           </TouchableOpacity>
         )}
 
@@ -1138,20 +1124,14 @@ export function LiveMapScreen({ navigation }: any) {
           style={styles.filtersButton}
           onPress={() => setShowFilters(true)}
         >
-          <LinearGradient
-            colors={[colors.surfaceSecondary, colors.surfaceElevated]}
-            style={styles.buttonGradient}
-          >
+          <View style={[globalStyles.garageCard, styles.buttonGradient]}>
             <Ionicons name="options" size={20} color="#fff" />
             <Text style={styles.buttonText}>FILTERS</Text>
-          </LinearGradient>
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.refreshButton} onPress={initializeLocation}>
-          <LinearGradient
-            colors={[colors.primary, colors.secondary]}
-            style={styles.buttonGradient}
-          >
+          <View style={[globalStyles.garageCard, styles.buttonGradient]}>
             <Animated.View style={{ transform: [{ rotate: rotateAnim.interpolate({
               inputRange: [0, 1],
               outputRange: ['0deg', '360deg']
@@ -1159,7 +1139,7 @@ export function LiveMapScreen({ navigation }: any) {
               <Ionicons name="refresh" size={20} color="#fff" />
             </Animated.View>
             <Text style={styles.buttonText}>REFRESH</Text>
-          </LinearGradient>
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -1237,13 +1217,8 @@ export function LiveMapScreen({ navigation }: any) {
                 onPress={() => joinEvent(selectedEvent)}
                 disabled={selectedEvent.participants >= selectedEvent.maxParticipants}
               >
-                <LinearGradient
-                  colors={selectedEvent.participants >= selectedEvent.maxParticipants 
-                    ? ['#666', '#444'] 
-                    : [colors.primary, colors.secondary]
-                  }
-                  style={styles.joinButtonGradient}
-                >
+                <View style={[globalStyles.garageCard, styles.joinButtonGradient, 
+                  selectedEvent.participants >= selectedEvent.maxParticipants && {opacity: 0.6}]}>
                   <Ionicons 
                     name={selectedEvent.participants >= selectedEvent.maxParticipants ? "lock-closed" : "flag"} 
                     size={20} 
@@ -1252,7 +1227,7 @@ export function LiveMapScreen({ navigation }: any) {
                   <Text style={styles.joinButtonText}>
                     {selectedEvent.participants >= selectedEvent.maxParticipants ? 'Event Full' : 'Join Event'}
                   </Text>
-                </LinearGradient>
+                </View>
               </TouchableOpacity>
             </ScrollView>
           )}
@@ -1336,13 +1311,10 @@ export function LiveMapScreen({ navigation }: any) {
                 style={styles.playerActionButton}
                 onPress={() => challengePlayer(selectedPlayer)}
               >
-                <LinearGradient
-                  colors={[colors.primary, colors.secondary]}
-                  style={styles.playerActionGradient}
-                >
+                <View style={[globalStyles.garageCard, styles.playerActionGradient]}>
                   <Ionicons name="flag" size={20} color="#fff" />
                   <Text style={styles.playerActionText}>Challenge to Race</Text>
-                </LinearGradient>
+                </View>
               </TouchableOpacity>
             </ScrollView>
           )}
@@ -1381,14 +1353,11 @@ export function LiveMapScreen({ navigation }: any) {
                   description: 'Fast quarter-mile drag race'
                 })}
               >
-                <LinearGradient
-                  colors={['#FF4444', '#FF6666']}
-                  style={styles.raceTypeGradient}
-                >
+                <View style={[globalStyles.garageCard, styles.raceTypeGradient]}>
                   <Ionicons name="speedometer" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Quick Drag Race</Text>
                   <Text style={styles.raceTypeSubtext}>5 min | Up to 8 racers</Text>
-                </LinearGradient>
+                </View>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -1402,14 +1371,11 @@ export function LiveMapScreen({ navigation }: any) {
                   description: 'Multi-lap street circuit racing'
                 })}
               >
-                <LinearGradient
-                  colors={['#00AA44', '#00CC55']}
-                  style={styles.raceTypeGradient}
-                >
+                <View style={[globalStyles.garageCard, styles.raceTypeGradient]}>
                   <Ionicons name="car-sport" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Street Circuit</Text>
                   <Text style={styles.raceTypeSubtext}>10 min | Up to 12 racers</Text>
-                </LinearGradient>
+                </View>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -1423,14 +1389,11 @@ export function LiveMapScreen({ navigation }: any) {
                   description: 'Score-based drifting competition'
                 })}
               >
-                <LinearGradient
-                  colors={['#AA00FF', '#CC44FF']}
-                  style={styles.raceTypeGradient}
-                >
+                <View style={[globalStyles.garageCard, styles.raceTypeGradient]}>
                   <Ionicons name="swap-horizontal" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Drift Battle</Text>
                   <Text style={styles.raceTypeSubtext}>8 min | Up to 6 racers</Text>
-                </LinearGradient>
+                </View>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -1444,19 +1407,16 @@ export function LiveMapScreen({ navigation }: any) {
                   description: 'Individual time attack mode'
                 })}
               >
-                <LinearGradient
-                  colors={['#FF8800', '#FFAA44']}
-                  style={styles.raceTypeGradient}
-                >
+                <View style={[globalStyles.garageCard, styles.raceTypeGradient]}>
                   <Ionicons name="stopwatch" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Time Trial</Text>
                   <Text style={styles.raceTypeSubtext}>15 min | Up to 20 racers</Text>
-                </LinearGradient>
+                </View>
               </TouchableOpacity>
             </View>
             
             <Text style={styles.locationInfo}>
-              📍 Race will be created at your selected map location
+              LOCATION: Race will be created at your selected map location
             </Text>
           </ScrollView>
         </View>
@@ -1494,14 +1454,11 @@ export function LiveMapScreen({ navigation }: any) {
                   duration: 120, // 2 hours
                 })}
               >
-                <LinearGradient
-                  colors={['#4CAF50', '#66BB6A']}
-                  style={styles.raceTypeGradient}
-                >
+                <View style={[globalStyles.garageCard, styles.raceTypeGradient]}>
                   <Ionicons name="car-sport" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Car Meet & Greet</Text>
                   <Text style={styles.raceTypeSubtext}>Public | 2hrs | 25 people</Text>
-                </LinearGradient>
+                </View>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -1515,14 +1472,11 @@ export function LiveMapScreen({ navigation }: any) {
                   duration: 180, // 3 hours
                 })}
               >
-                <LinearGradient
-                  colors={['#2196F3', '#42A5F5']}
-                  style={styles.raceTypeGradient}
-                >
+                <View style={[globalStyles.garageCard, styles.raceTypeGradient]}>
                   <Ionicons name="lock-closed" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Private Cruise</Text>
                   <Text style={styles.raceTypeSubtext}>Private | 3hrs | 10 people</Text>
-                </LinearGradient>
+                </View>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -1536,14 +1490,11 @@ export function LiveMapScreen({ navigation }: any) {
                   duration: 90, // 1.5 hours
                 })}
               >
-                <LinearGradient
-                  colors={['#FF9800', '#FFB74D']}
-                  style={styles.raceTypeGradient}
-                >
+                <View style={[globalStyles.garageCard, styles.raceTypeGradient]}>
                   <Ionicons name="megaphone" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Show & Tell</Text>
                   <Text style={styles.raceTypeSubtext}>Public | 1.5hrs | 30 people</Text>
-                </LinearGradient>
+                </View>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -1558,19 +1509,16 @@ export function LiveMapScreen({ navigation }: any) {
                   entryFee: 10, // Small fee for photographer
                 })}
               >
-                <LinearGradient
-                  colors={['#9C27B0', '#BA68C8']}
-                  style={styles.raceTypeGradient}
-                >
+                <View style={[globalStyles.garageCard, styles.raceTypeGradient]}>
                   <Ionicons name="camera" size={24} color="#fff" />
                   <Text style={styles.raceTypeText}>Photo Session</Text>
                   <Text style={styles.raceTypeSubtext}>Public | 2.5hrs | $10 | 15 people</Text>
-                </LinearGradient>
+                </View>
               </TouchableOpacity>
             </View>
             
             <Text style={styles.locationInfo}>
-              📍 Event will be created at your selected map location
+              LOCATION: Event will be created at your selected map location
             </Text>
           </ScrollView>
         </View>
@@ -1636,15 +1584,15 @@ export function LiveMapScreen({ navigation }: any) {
             )}
 
             <View style={styles.destinationTipsContainer}>
-              <Text style={styles.destinationTipsTitle}>💡 Pro Tips:</Text>
-              <Text style={styles.destinationTip}>• Tap on any event marker to set it as destination</Text>
-              <Text style={styles.destinationTip}>• Long press anywhere on the map for quick destination</Text>
-              <Text style={styles.destinationTip}>• Use the map actions to mark police locations</Text>
+              <Text style={styles.destinationTipsTitle}>PRO TIPS:</Text>
+              <Text style={styles.destinationTip}>- Tap on any event marker to set it as destination</Text>
+              <Text style={styles.destinationTip}>- Long press anywhere on the map for quick destination</Text>
+              <Text style={styles.destinationTip}>- Use the map actions to mark police locations</Text>
             </View>
           </ScrollView>
         </View>
       </Modal>
-    </ScreenContainer>
+    </View>
   );
 }
 
@@ -1721,6 +1669,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+    width: '100%',
+    height: '100%',
   },
   headerActions: {
     flexDirection: 'row',

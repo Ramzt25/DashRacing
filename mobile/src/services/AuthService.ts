@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase';
 
 // Debug the import
-console.log('🔧 AuthService: Imported supabase client:', {
+console.log('AUTH_SERVICE AuthService: Imported supabase client:', {
   supabaseType: typeof supabase,
   isUndefined: supabase === undefined,
   isNull: supabase === null,
@@ -66,14 +66,14 @@ export class AuthService {
         password: credentials.password,
       });
 
-      console.log('📡 Supabase login response:', { 
+      console.log('LOGIN_RESPONSE Supabase login response:', { 
         success: !!data.user,
         hasSession: !!data.session,
         error: error?.message 
       });
 
       if (error) {
-        console.error('❌ Supabase login failed:', error);
+        console.error('LOGIN_ERROR Supabase login failed:', error);
         throw new Error(error.message);
       }
 
@@ -89,7 +89,7 @@ export class AuthService {
         .single();
 
       if (profileError) {
-        console.error('❌ Profile fetch failed:', profileError);
+        console.error('PROFILE_ERROR Profile fetch failed:', profileError);
         throw new Error('Failed to get user profile');
       }
 
@@ -108,7 +108,7 @@ export class AuthService {
         }
       };
 
-      console.log('✅ Login successful:', { 
+      console.log('LOGIN_SUCCESS Login successful:', { 
         userId: result.user.id, 
         userEmail: result.user.email,
         hasToken: !!result.token 
@@ -116,7 +116,7 @@ export class AuthService {
       
       return result;
     } catch (error) {
-      console.error('🚨 AuthService.login error:', error);
+      console.error('LOGIN_CATCH AuthService.login error:', error);
       throw error;
     }
   }
@@ -141,14 +141,14 @@ export class AuthService {
         }
       });
 
-      console.log('📡 Supabase signup response:', { 
+      console.log('SIGNUP_RESPONSE Supabase signup response:', { 
         success: !!data.user,
         hasSession: !!data.session,
         error: error?.message 
       });
 
       if (error) {
-        console.error('❌ Supabase signup failed:', error);
+        console.error('SIGNUP_ERROR Supabase signup failed:', error);
         throw new Error(error.message);
       }
 
@@ -166,7 +166,7 @@ export class AuthService {
           .single();
 
         if (profileError) {
-          console.error('❌ Profile fetch failed:', profileError);
+          console.error('SIGNUP_PROFILE_ERROR Profile fetch failed:', profileError);
           throw new Error('Failed to get user profile');
         }
 
@@ -185,7 +185,7 @@ export class AuthService {
           }
         };
 
-        console.log('✅ Signup successful:', { 
+        console.log('SIGNUP_SUCCESS Signup successful:', { 
           userId: result.user.id, 
           userEmail: result.user.email,
           hasToken: !!result.token 
@@ -197,7 +197,7 @@ export class AuthService {
         throw new Error('Please check your email for a confirmation link');
       }
     } catch (error) {
-      console.error('🚨 AuthService.signup error:', error);
+      console.error('SIGNUP_CATCH AuthService.signup error:', error);
       throw error;
     }
   }
@@ -233,7 +233,7 @@ export class AuthService {
         subscriptionEnd: profile.subscription_end ? new Date(profile.subscription_end) : null,
       };
     } catch (error) {
-      console.error('🚨 AuthService.getCurrentUser error:', error);
+      console.error('GET_USER_ERROR AuthService.getCurrentUser error:', error);
       throw error;
     }
   }
@@ -307,7 +307,7 @@ export class AuthService {
         },
       };
     } catch (error) {
-      console.error('🚨 AuthService.upgradeToPro error:', error);
+      console.error('UPGRADE_ERROR AuthService.upgradeToPro error:', error);
       throw error;
     }
   }
@@ -352,7 +352,7 @@ export class AuthService {
         },
       };
     } catch (error) {
-      console.error('🚨 AuthService.cancelSubscription error:', error);
+      console.error('CANCEL_ERROR AuthService.cancelSubscription error:', error);
       throw error;
     }
   }

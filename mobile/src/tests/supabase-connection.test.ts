@@ -6,7 +6,7 @@ import {
 
 describe('Supabase Connection Test', () => {
   beforeAll(() => {
-    console.log('🧪 Starting Supabase Connection Tests');
+    console.log('TEST_START Starting Supabase Connection Tests');
     console.log('📍 Test Environment Check:');
     console.log('  - Supabase URL:', EXPO_PUBLIC_SUPABASE_URL);
     console.log('  - Anon Key Length:', EXPO_PUBLIC_SUPABASE_ANON_KEY?.length);
@@ -14,7 +14,7 @@ describe('Supabase Connection Test', () => {
   });
 
   test('Environment variables should be loaded', () => {
-    console.log('🔧 Testing environment variables...');
+    console.log('TEST_ENV Testing environment variables...');
     
     expect(EXPO_PUBLIC_SUPABASE_URL).toBeDefined();
     expect(EXPO_PUBLIC_SUPABASE_URL).toBe('https://srhqcanyeatasprlvzvh.supabase.co');
@@ -22,11 +22,11 @@ describe('Supabase Connection Test', () => {
     expect(EXPO_PUBLIC_SUPABASE_ANON_KEY).toBeDefined();
     expect(EXPO_PUBLIC_SUPABASE_ANON_KEY).toContain('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9');
     
-    console.log('✅ Environment variables loaded correctly');
+    console.log('ENV_SUCCESS Environment variables loaded correctly');
   });
 
   test('Supabase client should be initialized', () => {
-    console.log('🔧 Testing Supabase client initialization...');
+    console.log('TEST_CLIENT Testing Supabase client initialization...');
     
     expect(supabase).toBeDefined();
     expect(supabase).not.toBeNull();
@@ -40,11 +40,11 @@ describe('Supabase Connection Test', () => {
     expect(supabase.from).toBeDefined();
     expect(typeof supabase.from).toBe('function');
     
-    console.log('✅ Supabase client initialized correctly');
+    console.log('CLIENT_SUCCESS Supabase client initialized correctly');
   });
 
   test('Supabase client should have correct configuration', () => {
-    console.log('🔧 Testing Supabase client configuration...');
+    console.log('TEST_CONFIG Testing Supabase client configuration...');
     
     // Access the internal supabaseUrl and supabaseKey
     const clientUrl = (supabase as any).supabaseUrl;
@@ -54,11 +54,11 @@ describe('Supabase Connection Test', () => {
     expect(clientKey).toBeDefined();
     expect(clientKey.length).toBeGreaterThan(100); // JWT tokens are long
     
-    console.log('✅ Supabase client configured correctly');
+    console.log('CONFIG_SUCCESS Supabase client configured correctly');
   });
 
   test('Supabase connection should be reachable', async () => {
-    console.log('🔧 Testing Supabase connection...');
+    console.log('TEST_CONNECTION Testing Supabase connection...');
     
     try {
       // Try to fetch the current session (this doesn't require authentication)
@@ -69,15 +69,15 @@ describe('Supabase Connection Test', () => {
       expect(data).toBeDefined();
       expect(data.session).toBeNull(); // Should be null since we're not logged in
       
-      console.log('✅ Supabase connection successful');
+      console.log('CONNECTION_SUCCESS Supabase connection successful');
     } catch (error) {
-      console.error('❌ Supabase connection failed:', error);
+      console.error('CONNECTION_ERROR Supabase connection failed:', error);
       throw error;
     }
   });
 
   test('Database connection should work', async () => {
-    console.log('🔧 Testing database connection...');
+    console.log('TEST_DATABASE Testing database connection...');
     
     try {
       // Try to query the users table (this should work even without authentication for the schema)
@@ -91,20 +91,20 @@ describe('Supabase Connection Test', () => {
         // If it's a permission error, that's actually good - it means we connected
         expect(error.message).not.toContain('connection');
         expect(error.message).not.toContain('network');
-        console.log('✅ Database connection successful (got expected permission response)');
+        console.log('DB_SUCCESS Database connection successful (got expected permission response)');
       } else {
         // If no error, that's great too
         expect(data).toBeDefined();
-        console.log('✅ Database connection and query successful');
+        console.log('DB_QUERY_SUCCESS Database connection and query successful');
       }
     } catch (error) {
-      console.error('❌ Database connection failed:', error);
+      console.error('DB_ERROR Database connection failed:', error);
       throw error;
     }
   });
 
   test('Auth service should be accessible', async () => {
-    console.log('🔧 Testing auth service...');
+    console.log('TEST_AUTH Testing auth service...');
     
     try {
       // Try to get user (should return null/error since we're not logged in)
@@ -113,19 +113,19 @@ describe('Supabase Connection Test', () => {
       // We expect either no user (data.user = null) or an auth error
       if (error) {
         // Auth errors are expected when not logged in
-        console.log('✅ Auth service accessible (got expected auth response)');
+        console.log('AUTH_SUCCESS Auth service accessible (got expected auth response)');
       } else {
         expect(data).toBeDefined();
         expect(data.user).toBeNull(); // Should be null since we're not logged in
-        console.log('✅ Auth service accessible and working');
+        console.log('AUTH_WORKING_SUCCESS Auth service accessible and working');
       }
     } catch (error) {
-      console.error('❌ Auth service failed:', error);
+      console.error('AUTH_ERROR Auth service failed:', error);
       throw error;
     }
   });
 
   afterAll(() => {
-    console.log('🏁 Supabase Connection Tests Completed');
+    console.log('TEST_COMPLETE Supabase Connection Tests Completed');
   });
 });

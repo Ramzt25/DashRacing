@@ -129,12 +129,12 @@ export const DebugLogsScreen: React.FC = () => {
 
   const getLevelIcon = (level: string) => {
     switch (level) {
-      case 'debug': return '🔍';
-      case 'info': return 'i';
-      case 'warn': return '!';
-      case 'error': return '❌';
-      case 'critical': return '🚨';
-      default: return '📝';
+      case 'debug': return 'DBG';
+      case 'info': return 'INF';
+      case 'warn': return 'WRN';
+      case 'error': return 'ERR';
+      case 'critical': return 'CRT';
+      default: return 'LOG';
     }
   };
 
@@ -175,7 +175,7 @@ export const DebugLogsScreen: React.FC = () => {
       {/* Stats */}
       <View style={styles.statsContainer}>
         <Text style={styles.statsText}>
-          {logs.length} logs • Errors: {logs.filter(l => l.level === 'error' || l.level === 'critical').length}
+          {logs.length} logs | Errors: {logs.filter(l => l.level === 'error' || l.level === 'critical').length}
         </Text>
       </View>
 

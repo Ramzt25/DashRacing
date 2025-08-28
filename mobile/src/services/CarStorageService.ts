@@ -39,7 +39,7 @@ export class CarStorageService {
         localCars.push(car);
       }
       await this.saveToLocal(localCars);
-      console.log('✅ Car saved to local storage successfully');
+      console.log('CAR_SAVE_SUCCESS Car saved to local storage successfully');
       
       try {
         // Transform to API format and try to sync
@@ -54,11 +54,11 @@ export class CarStorageService {
           const updatedLocalCars = localCars.map(c => c.id === car.id ? updatedCar : c);
           await this.saveToLocal(updatedLocalCars);
           
-          console.log('✅ Car synced to API with ID:', response.vehicle.id);
+          console.log('CAR_SYNC_SUCCESS Car synced to API with ID:', response.vehicle.id);
         } else {
           // Existing car - update in API
           await ApiService.updateVehicle(car.id, apiCarData);
-          console.log('✅ Car updated in API');
+          console.log('CAR_UPDATE_SUCCESS Car updated in API');
         }
       } catch (apiError) {
         console.warn(' API sync failed, but car saved locally:', apiError);
@@ -67,7 +67,7 @@ export class CarStorageService {
       
       return true;
     } catch (error) {
-      console.error('❌ Failed to save car locally:', error);
+      console.error('CAR_SAVE_ERROR Failed to save car locally:', error);
       return false;
     }
   }

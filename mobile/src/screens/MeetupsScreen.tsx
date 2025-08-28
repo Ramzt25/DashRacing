@@ -11,8 +11,8 @@ import {
   StatusBar
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, typography, shadows } from '../utils/theme';
+import { globalStyles } from '../styles/globalStyles';
 import { DashIcon } from '../components/DashIcon';
 import { ScreenHeader } from '../components/common/ScreenHeader';
 import { meetupService, Meetup } from '../services/MeetupService';
@@ -181,13 +181,10 @@ export function MeetupsScreen({ navigation }: any) {
 
         {/* Create Meetup Button */}
         <TouchableOpacity style={styles.createButton} onPress={handleCreateMeetup}>
-          <LinearGradient
-            colors={[colors.primary, colors.secondary]}
-            style={styles.createGradient}
-          >
+          <View style={[globalStyles.garageCard, styles.createGradient]}>
             <Ionicons name="add-circle" size={24} color={colors.surface} />
             <Text style={styles.createButtonText}>Create New Meetup</Text>
-          </LinearGradient>
+          </View>
         </TouchableOpacity>
 
         {/* Filter Tabs */}
@@ -242,10 +239,7 @@ export function MeetupsScreen({ navigation }: any) {
           ) : (
             filteredMeetups.map((meetup) => (
               <View key={meetup.id} style={styles.meetupCard}>
-                <LinearGradient
-                  colors={[colors.surfaceSecondary, colors.surfaceElevated]}
-                  style={styles.meetupGradient}
-                >
+                <View style={[globalStyles.garageCard, styles.meetupGradient]}>
                   <View style={styles.meetupHeader}>
                     <View style={styles.meetupType}>
                       <Ionicons 
@@ -316,7 +310,7 @@ export function MeetupsScreen({ navigation }: any) {
                     <Text style={styles.joinButtonText}>Join Meetup</Text>
                     <Ionicons name="arrow-forward" size={16} color={colors.surface} />
                   </TouchableOpacity>
-                </LinearGradient>
+                </View>
               </View>
             ))
           )}

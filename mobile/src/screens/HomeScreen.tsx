@@ -13,13 +13,13 @@ import {
   SafeAreaView,
   StatusBar
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import ScreenContainer from '../components/layout/ScreenContainer';
 import { colors, spacing, typography, shadows } from '../utils/theme';
+import { globalStyles } from '../styles/globalStyles';
 import { DashIcon } from '../components/DashIcon';
 import { CustomButton } from '../components/common/CustomButton';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
@@ -30,6 +30,7 @@ import { RaceStatsService, UserRaceStats, LiveMapStats, UserInsights } from '../
 import { API_CONFIG, INTEGRATION_STATUS } from '../config/api';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 
 export function HomeScreen({ navigation }: any) {
   const { user, logout } = useAuth();
@@ -117,15 +118,15 @@ export function HomeScreen({ navigation }: any) {
       // Week 4 Backend Integration - Enhanced Live Map Data
       const userLocation = location ? { latitude: location.latitude, longitude: location.longitude } : undefined;
       const liveStats = await RaceStatsService.getLiveMapStats(userLocation);
-      console.log('✅ Live map data loaded:', liveStats);
+      console.log('[SUCCESS] Live map data loaded:', liveStats);
       
       setLiveMapData(liveStats);
       
       // Update user presence if location is available
       if (userLocation && user) {
-        console.log('📍 Updating user presence...');
+        console.log('[INFO] Updating user presence...');
         await RaceStatsService.updatePresence(userLocation, 'online');
-        console.log('✅ User presence updated');
+        console.log('[SUCCESS] User presence updated');
       }
     } catch (error) {
       console.error('Failed to load live map data:', error);
@@ -145,10 +146,10 @@ export function HomeScreen({ navigation }: any) {
 
   const loadUserStats = async () => {
     try {
-      console.log('📊 Loading user stats...');
+            console.log('[INFO] Loading user stats...');
       // Week 4 Backend Integration - Enhanced User Statistics
       const stats = await RaceStatsService.getUserRaceStats();
-      console.log('✅ User stats loaded:', stats);
+      console.log('[SUCCESS] User stats loaded:', stats);
       const convertedMaxSpeed = convertSpeed(stats.maxSpeed, 'mph');
       
       setUserStats({
@@ -157,15 +158,15 @@ export function HomeScreen({ navigation }: any) {
       });
       
       setBackendConnected(true);
-      console.log('🔗 Backend connected');
+      console.log('[SUCCESS] Backend connected');
       
       // Load AI insights if user ID is available
       if (user?.id) {
         try {
-          console.log('🤖 Loading AI insights...');
+          console.log('[INFO] Loading AI insights...');
           const insights = await RaceStatsService.getUserInsights(user.id);
           setUserInsights(insights);
-          console.log('✅ AI insights loaded');
+          console.log('[SUCCESS] AI insights loaded');
         } catch (error) {
           console.warn('[WARN] AI insights unavailable:', error);
         }
@@ -309,13 +310,10 @@ export function HomeScreen({ navigation }: any) {
 
   return (
     <ScreenContainer>
-      <LinearGradient
-        colors={[colors.background, colors.surface]}
-        style={styles.container}
-      >
+      <View style={[globalStyles.fullWidthContainer, styles.container]}>
         <ScrollView 
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          style={[globalStyles.fullWidthScreen, styles.scrollView]}
+          contentContainerStyle={[globalStyles.garageContainer, styles.scrollContent]}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -346,123 +344,93 @@ export function HomeScreen({ navigation }: any) {
           <View style={styles.proBanner}>
             <TouchableOpacity 
               onPress={() => navigation.navigate('ProUpgrade')}
-              style={styles.proBannerTouchable}
+              style={[globalStyles.garageCard, styles.proBannerTouchable]}
             >
-              <LinearGradient
-                colors={['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.1)']}
-                style={styles.proBannerGradient}
-              >
-                <View style={styles.proBannerContent}>
-                  <View style={styles.proBannerIcon}>
-                    <Ionicons name="diamond" size={24} color={colors.warning} />
-                  </View>
-                  <View style={styles.proBannerText}>
-                    <Text style={styles.proBannerTitle}>Upgrade to GridGhost Pro</Text>
-                    <Text style={styles.proBannerSubtitle}>Unlimited cars, advanced mods & AI insights</Text>
-                  </View>
-                  <Ionicons name="chevron-forward" size={20} color={colors.warning} />
+              <View style={styles.proBannerContent}>
+                <View style={styles.proBannerIcon}>
+                  <Ionicons name="diamond" size={24} color={colors.warning} />
                 </View>
-              </LinearGradient>
+                <View style={styles.proBannerText}>
+                  <Text style={styles.proBannerTitle}>Upgrade to GridGhost Pro</Text>
+                  <Text style={styles.proBannerSubtitle}>Unlimited cars, advanced mods & AI insights</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color={colors.warning} />
+              </View>
             </TouchableOpacity>
           </View>
         )}
 
         {/* Live Map Preview Card */}
         <TouchableOpacity
-          style={styles.liveMapPreviewCard}
+          style={[globalStyles.garageCard, styles.liveMapPreviewCard]}
           onPress={() => setShowMapPreview(true)}
         >
-          <LinearGradient
-            colors={[colors.primary + '15', colors.secondary + '15']}
-            style={styles.liveMapPreviewGradient}
-          >
-            <View style={styles.liveMapPreviewHeader}>
-              <View style={styles.liveMapPreviewTitle}>
-                <DashIcon name="map" size={24} color={colors.primary} />
-                <Text style={styles.liveMapPreviewTitleText}>Live Map</Text>
-                {liveMapData.gpsActive && (
-                  <View style={styles.gpsIndicator}>
-                    <View style={styles.gpsIndicatorDot} />
-                  </View>
-                )}
-                <Animated.View style={[styles.liveIndicator, { transform: [{ scale: pulseAnim }] }]}>
-                  <View style={styles.liveIndicatorDot} />
-                </Animated.View>
-              </View>
-              <TouchableOpacity
-                style={styles.expandButton}
-                onPress={() => setShowMapPreview(true)}
-              >
-                <Ionicons name="expand" size={20} color={colors.primary} />
-              </TouchableOpacity>
+          <View style={styles.liveMapPreviewHeader}>
+            <View style={styles.liveMapPreviewTitle}>
+              <DashIcon name="map" size={24} color={colors.primary} />
+              <Text style={styles.liveMapPreviewTitleText}>Live Map</Text>
+              {liveMapData.gpsActive && (
+                <View style={styles.gpsIndicator}>
+                  <View style={styles.gpsIndicatorDot} />
+                </View>
+              )}
+              <Animated.View style={[styles.liveIndicator, { transform: [{ scale: pulseAnim }] }]}>
+                <View style={styles.liveIndicatorDot} />
+              </Animated.View>
             </View>
-            
-            <View style={styles.liveMapStats}>
-              <View style={styles.liveMapStat}>
-                <Text style={styles.liveMapStatValue}>{liveMapData.onlineFriends}</Text>
-                <Text style={styles.liveMapStatLabel}>Friends Online</Text>
-              </View>
-              <View style={styles.liveMapStat}>
-                <Text style={styles.liveMapStatValue}>{liveMapData.activeMeetups}</Text>
-                <Text style={styles.liveMapStatLabel}>Meetups</Text>
-              </View>
-              <View style={styles.liveMapStat}>
-                <Text style={styles.liveMapStatValue}>{liveMapData.nearbyUsers}</Text>
-                <Text style={styles.liveMapStatLabel}>Nearby</Text>
-              </View>
+            <TouchableOpacity
+              style={styles.expandButton}
+              onPress={() => setShowMapPreview(true)}
+            >
+              <Ionicons name="expand" size={20} color={colors.primary} />
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.liveMapStats}>
+            <View style={styles.liveMapStat}>
+              <Text style={styles.liveMapStatValue}>{liveMapData.onlineFriends}</Text>
+              <Text style={styles.liveMapStatLabel}>Friends Online</Text>
             </View>
-            
-            <CustomButton
-              title="Open Live Map"
-              onPress={() => navigation.navigate('Map')}
-              variant="primary"
-              style={styles.liveMapButton}
-            />
-          </LinearGradient>
+            <View style={styles.liveMapStat}>
+              <Text style={styles.liveMapStatValue}>{liveMapData.activeMeetups}</Text>
+              <Text style={styles.liveMapStatLabel}>Meetups</Text>
+            </View>
+            <View style={styles.liveMapStat}>
+              <Text style={styles.liveMapStatValue}>{liveMapData.nearbyUsers}</Text>
+              <Text style={styles.liveMapStatLabel}>Nearby</Text>
+            </View>
+          </View>
+          
+          <CustomButton
+            title="Open Live Map"
+            onPress={() => navigation.navigate('Map')}
+            variant="primary"
+            style={styles.liveMapButton}
+          />
         </TouchableOpacity>
 
         {/* Racing Stats Dashboard */}
         <View style={styles.statsContainer}>
           <Text style={styles.sectionTitle}>Racing Stats</Text>
           <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <LinearGradient
-                colors={[colors.surfaceSecondary, colors.surfaceElevated]}
-                style={styles.statCardGradient}
-              >
-                <Text style={styles.statValue}>{userStats.totalRaces}</Text>
-                <Text style={styles.statLabel}>Total Races</Text>
-              </LinearGradient>
+            <View style={[globalStyles.garageCard, styles.statCard]}>
+              <Text style={styles.statValue}>{userStats.totalRaces}</Text>
+              <Text style={styles.statLabel}>Total Races</Text>
             </View>
             
-            <View style={styles.statCard}>
-              <LinearGradient
-                colors={[colors.primary + '20', colors.primary + '40']}
-                style={styles.statCardGradient}
-              >
-                <Text style={styles.statValue}>{userStats.wins}</Text>
-                <Text style={styles.statLabel}>Wins</Text>
-              </LinearGradient>
+            <View style={[globalStyles.garageCard, styles.statCard]}>
+              <Text style={styles.statValue}>{userStats.wins}</Text>
+              <Text style={styles.statLabel}>Wins</Text>
             </View>
             
-            <View style={styles.statCard}>
-              <LinearGradient
-                colors={[colors.surfaceSecondary, colors.surfaceElevated]}
-                style={styles.statCardGradient}
-              >
-                <Text style={styles.statValue}>{userStats.maxSpeed}</Text>
-                <Text style={styles.statLabel}>Best Speed ({getSpeedUnitLabel()})</Text>
-              </LinearGradient>
+            <View style={[globalStyles.garageCard, styles.statCard]}>
+              <Text style={styles.statValue}>{userStats.maxSpeed}</Text>
+              <Text style={styles.statLabel}>Best Speed ({getSpeedUnitLabel()})</Text>
             </View>
             
-            <View style={styles.statCard}>
-              <LinearGradient
-                colors={[colors.secondary + '20', colors.secondary + '40']}
-                style={styles.statCardGradient}
-              >
-                <Text style={styles.statValue}>{userStats.winRate.toFixed(1)}%</Text>
-                <Text style={styles.statLabel}>Win Rate</Text>
-              </LinearGradient>
+            <View style={[globalStyles.garageCard, styles.statCard]}>
+              <Text style={styles.statValue}>{userStats.winRate.toFixed(1)}%</Text>
+              <Text style={styles.statLabel}>Win Rate</Text>
             </View>
           </View>
         </View>
@@ -474,86 +442,71 @@ export function HomeScreen({ navigation }: any) {
             {navigationCards.map((card, index) => (
               <TouchableOpacity
                 key={index}
-                style={styles.navigationCard}
+                style={[globalStyles.garageCard, styles.navigationCard]}
                 onPress={card.onPress}
               >
-                <LinearGradient
-                  colors={[card.gradient[0], card.gradient[1]] as const}
-                  style={styles.navigationCardGradient}
-                >
-                  <View style={styles.navigationCardHeader}>
-                    <View style={styles.navigationCardIcon}>
-                      <DashIcon name={card.icon} size={28} color={card.color} />
-                    </View>
-                    {card.showLiveIndicator && (
-                      <Animated.View style={[styles.cardLiveIndicator, { transform: [{ scale: pulseAnim }] }]}>
-                        <View style={styles.cardLiveIndicatorDot} />
-                      </Animated.View>
-                    )}
+                <View style={styles.navigationCardHeader}>
+                  <View style={styles.navigationCardIcon}>
+                    <DashIcon name={card.icon} size={28} color={card.color} />
                   </View>
-                  <Text style={styles.navigationCardTitle}>{card.title}</Text>
-                  <Text style={styles.navigationCardSubtitle}>{card.subtitle}</Text>
-                  <Text style={styles.navigationCardStats}>{card.stats}</Text>
-                </LinearGradient>
+                  {card.showLiveIndicator && (
+                    <Animated.View style={[styles.cardLiveIndicator, { transform: [{ scale: pulseAnim }] }]}>
+                      <View style={styles.cardLiveIndicatorDot} />
+                    </Animated.View>
+                  )}
+                </View>
+                <Text style={styles.navigationCardTitle}>{card.title}</Text>
+                <Text style={styles.navigationCardSubtitle}>{card.subtitle}</Text>
+                <Text style={styles.navigationCardStats}>{card.stats}</Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
 
         {/* Race Now Section */}
-        <View style={styles.raceNowContainer}>
-          <LinearGradient
-            colors={[colors.primary + '20', colors.secondary + '20']}
-            style={styles.raceNowGradient}
-          >
-            <View style={styles.raceNowContent}>
-              <DashIcon name="live-race" size={48} color={colors.primary} />
-              <Text style={styles.raceNowTitle}>Ready to Race?</Text>
-              <Text style={styles.raceNowSubtitle}>
-                Start a quick race or join an event near you
-              </Text>
-              
-              <View style={styles.raceNowButtons}>
-                <CustomButton
-                  title="Quick Race"
-                  onPress={() => navigation.navigate('LiveMap')}
-                  variant="primary"
-                  style={styles.raceButton}
-                />
-                <CustomButton
-                  title="Find Events"
-                  onPress={() => navigation.navigate('Nearby')}
-                  variant="outline"
-                  style={styles.raceButton}
-                />
-              </View>
+        <View style={[globalStyles.garageCard, styles.raceNowContainer]}>
+          <View style={styles.raceNowContent}>
+            <DashIcon name="live-race" size={48} color={colors.primary} />
+            <Text style={styles.raceNowTitle}>Ready to Race?</Text>
+            <Text style={styles.raceNowSubtitle}>
+              Start a quick race or join an event near you
+            </Text>
+            
+            <View style={styles.raceNowButtons}>
+              <CustomButton
+                title="Quick Race"
+                onPress={() => navigation.navigate('LiveMap')}
+                variant="primary"
+                style={styles.raceButton}
+              />
+              <CustomButton
+                title="Find Events"
+                onPress={() => navigation.navigate('Nearby')}
+                variant="outline"
+                style={styles.raceButton}
+              />
             </View>
-          </LinearGradient>
+          </View>
         </View>
 
         {/* Recent Activity */}
         <View style={styles.activityContainer}>
           <Text style={styles.sectionTitle}>Recent Activity</Text>
           {userStats.lastRaceDate ? (
-            <View style={styles.activityCard}>
-              <LinearGradient
-                colors={[colors.surfaceSecondary, colors.surfaceElevated]}
-                style={styles.activityCardGradient}
-              >
-                <DashIcon name="events" size={24} color={colors.primary} />
-                <View style={styles.activityContent}>
-                  <Text style={styles.activityTitle}>Last Race</Text>
-                  <Text style={styles.activityTime}>
-                    {Math.floor((Date.now() - new Date(userStats.lastRaceDate).getTime()) / (1000 * 60 * 60 * 24))} days ago
-                  </Text>
-                </View>
-                <TouchableOpacity style={styles.activityButton}>
-                  <Text style={styles.activityButtonText}>View</Text>
-                </TouchableOpacity>
-              </LinearGradient>
+            <View style={[globalStyles.garageCard, styles.activityCard]}>
+              <DashIcon name="events" size={24} color={colors.primary} />
+              <View style={styles.activityContent}>
+                <Text style={styles.activityTitle}>Last Race</Text>
+                <Text style={styles.activityTime}>
+                  {Math.floor((Date.now() - new Date(userStats.lastRaceDate).getTime()) / (1000 * 60 * 60 * 24))} days ago
+                </Text>
+              </View>
+              <TouchableOpacity style={styles.activityButton}>
+                <Text style={styles.activityButtonText}>View</Text>
+              </TouchableOpacity>
             </View>
           ) : (
-            <View style={styles.noActivityCard}>
+            <View style={[globalStyles.garageCard, styles.noActivityCard]}>
               <DashIcon name="events" size={48} color={colors.textSecondary} />
               <Text style={styles.noActivityText}>No recent races</Text>
               <Text style={styles.noActivitySubtext}>
@@ -566,16 +519,11 @@ export function HomeScreen({ navigation }: any) {
         {/* Logout Button */}
         <View style={styles.logoutContainer}>
           <TouchableOpacity
-            style={styles.logoutButton}
+            style={[globalStyles.garageButton, styles.logoutButton]}
             onPress={handleLogout}
           >
-            <LinearGradient
-              colors={[colors.surfaceSecondary, colors.surface]}
-              style={styles.logoutButtonGradient}
-            >
-              <Ionicons name="log-out-outline" size={20} color={colors.textSecondary} />
-              <Text style={styles.logoutButtonText}>Sign Out</Text>
-            </LinearGradient>
+            <Ionicons name="log-out-outline" size={20} color={colors.textSecondary} />
+            <Text style={styles.logoutButtonText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -702,7 +650,7 @@ export function HomeScreen({ navigation }: any) {
           </View>
         </View>
       </Modal>
-      </LinearGradient>
+      </View>
     </ScreenContainer>
   );
 }
@@ -710,12 +658,16 @@ export function HomeScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.background,
+    width: screenWidth,
   },
   scrollView: {
     flex: 1,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     paddingBottom: spacing.xxxl,
+    backgroundColor: colors.background,
   },
   header: {
     padding: spacing.lg,

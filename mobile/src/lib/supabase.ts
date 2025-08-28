@@ -1,40 +1,41 @@
 import { createClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  EXPO_PUBLIC_SUPABASE_URL,
-  EXPO_PUBLIC_SUPABASE_ANON_KEY,
-} from '@env';
+
+// Direct values for debugging - this should work
+const supabaseUrl = 'https://srhqcanyeatasprlvzvh.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyaHFjYW55ZWF0YXNwcmx2enZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYyMzY4MjEsImV4cCI6MjA3MTgxMjgyMX0.Xv3CPkQCLJA1bEhBigPhnzFOK6z75v6-G_HyzBsUarc';
 
 // Debug environment variables
-console.log('🔧 Environment check:', {
-  supabaseUrl: EXPO_PUBLIC_SUPABASE_URL,
-  anonKeyLength: EXPO_PUBLIC_SUPABASE_ANON_KEY?.length,
+console.log('Environment check:', {
+  supabaseUrl: supabaseUrl,
+  anonKeyLength: supabaseAnonKey?.length,
   env: process.env.NODE_ENV,
 });
 
-// Additional debugging
-console.log('🔧 Detailed environment check:', {
-  supabaseUrl: typeof EXPO_PUBLIC_SUPABASE_URL,
-  supabaseUrlValue: EXPO_PUBLIC_SUPABASE_URL,
-  anonKey: typeof EXPO_PUBLIC_SUPABASE_ANON_KEY,
-  anonKeyLength: EXPO_PUBLIC_SUPABASE_ANON_KEY?.length,
-  anonKeyStart: EXPO_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 20) + '...',
-});
-
-const supabaseUrl = EXPO_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = EXPO_PUBLIC_SUPABASE_ANON_KEY;
+// Try to import from @env for comparison
+try {
+  const { EXPO_PUBLIC_SUPABASE_URL, EXPO_PUBLIC_SUPABASE_ANON_KEY } = require('@env');
+  console.log('@env comparison:', {
+    envUrl: EXPO_PUBLIC_SUPABASE_URL,
+    envKey: EXPO_PUBLIC_SUPABASE_ANON_KEY,
+    directUrl: supabaseUrl,
+    directKey: supabaseAnonKey,
+  });
+} catch (error) {
+  console.log('@env import failed:', error.message);
+}
 
 if (!supabaseUrl) {
-  console.error('❌ supabaseUrl is undefined:', { supabaseUrl, type: typeof supabaseUrl });
+  console.error('ERROR supabaseUrl is undefined:', { supabaseUrl, type: typeof supabaseUrl });
   throw new Error('supabaseUrl is required.');
 }
 
 if (!supabaseAnonKey) {
-  console.error('❌ supabaseAnonKey is undefined:', { supabaseAnonKey, type: typeof supabaseAnonKey });
+  console.error('ERROR supabaseAnonKey is undefined:', { supabaseAnonKey, type: typeof supabaseAnonKey });
   throw new Error('supabaseAnonKey is required.');
 }
 
-console.log('✅ Creating Supabase client with valid credentials');
+console.log('SUCCESS Creating Supabase client with valid credentials');
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -45,7 +46,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
-console.log('✅ Supabase client created successfully:', {
+console.log('SUCCESS Supabase client created successfully:', {
   clientType: typeof supabase,
   hasAuth: !!supabase.auth,
   hasFrom: !!supabase.from,

@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../context/AuthContext';
+import { colors, spacing, typography } from '../utils/theme';
 import { useNavigation } from '@react-navigation/native';
 import { TermsGate } from '../components/legal/TermsGate';
 
@@ -212,13 +213,13 @@ export function ProUpgradeScreen({ onClose }: ProUpgradeScreenProps) {
           disabled={isLoading}
         >
           {isLoading ? (
-            <ActivityIndicator color="#000" />
+            <ActivityIndicator color={colors.primary} />
           ) : (
             <>
               <Text style={styles.upgradeButtonText}>
                 Start {selectedPlan === 'yearly' ? 'Yearly' : 'Monthly'} Pro
               </Text>
-              <Ionicons name="rocket" size={20} color="#000" />
+              <Ionicons name="rocket" size={20} color={colors.textPrimary} />
             </>
           )}
         </TouchableOpacity>

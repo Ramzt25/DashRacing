@@ -22,9 +22,9 @@ export default function ScreenContainer({
   showsVerticalScrollIndicator = false,
 }: Props) {
   
-  // Base padding: consistent across all screens
+  // Base padding: responsive to layout needs
   const baseContentStyle: ViewStyle = {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: hideTopInset ? 0 : spacing.md, // No padding for overlay screens like maps
     paddingBottom: spacing.lg,
   };
 

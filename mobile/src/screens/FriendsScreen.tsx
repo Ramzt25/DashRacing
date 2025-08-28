@@ -152,12 +152,12 @@ const FriendsScreen: React.FC<FriendsScreenProps> = ({
           </View>
           
           <Text style={styles.friendStats}>
-             {friendProfile.stats.totalRaces} races • {friendProfile.stats.winRate.toFixed(1)}% win rate
+             {friendProfile.stats.totalRaces} races | {friendProfile.stats.winRate.toFixed(1)}% win rate
           </Text>
           
           <View style={styles.raceHistory}>
             <Text style={styles.raceHistoryText}>
-              Together: {item.racesTogetherCount} races • 
+              Together: {item.racesTogetherCount} races | 
               You: {item.winLossRecord.racer1Wins} - {item.winLossRecord.racer2Wins} :Them
             </Text>
           </View>
@@ -192,8 +192,8 @@ const FriendsScreen: React.FC<FriendsScreenProps> = ({
           <Text style={styles.requestMessage}>"{item.message}"</Text>
         )}
         <Text style={styles.requestStats}>
-           {item.fromProfile.stats.totalRaces} races • 
-          {item.fromProfile.stats.winRate.toFixed(1)}% win rate • 
+           {item.fromProfile.stats.totalRaces} races | 
+          {item.fromProfile.stats.winRate.toFixed(1)}% win rate | 
           STAR {item.fromProfile.stats.skillRating}/10
         </Text>
       </View>
@@ -225,13 +225,13 @@ const FriendsScreen: React.FC<FriendsScreenProps> = ({
           <Text style={styles.friendName}>{searchResult.displayName}</Text>
           <Text style={styles.racerId}>#{searchResult.racerId}</Text>
           <Text style={styles.searchResultStats}>
-             {searchResult.stats.totalRaces} races • 
-            {searchResult.stats.winRate.toFixed(1)}% win rate • 
+             {searchResult.stats.totalRaces} races | 
+            {searchResult.stats.winRate.toFixed(1)}% win rate | 
             STAR {searchResult.stats.skillRating}/10
           </Text>
           {searchResult.location && (
             <Text style={styles.locationText}>
-              📍 {searchResult.location.city}, {searchResult.location.state}
+              LOC: {searchResult.location.city}, {searchResult.location.state}
             </Text>
           )}
         </View>

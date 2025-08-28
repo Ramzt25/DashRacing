@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, TextInput, ActivityIndicator, Image, FlatList } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import LinearGradient from 'react-native-linear-gradient';
 import { StatusBar } from 'react-native';
 import { ScreenHeader } from '../components/common/ScreenHeader';
 import ScreenContainer from '../components/layout/ScreenContainer';
@@ -12,6 +11,7 @@ import { EdmundsApiService, VehicleSearchResult } from '../services/EdmundsApiSe
 import { Car, CarMod, CarColor } from '../types/car';
 import { useAuth } from '../context/AuthContext';
 import { colors, typography, spacing, shadows } from '../utils/theme';
+import { globalStyles } from '../styles/globalStyles';
 
 export function GarageScreen({ navigation }: any) {
   const { user } = useAuth();
@@ -343,10 +343,7 @@ export function GarageScreen({ navigation }: any) {
 
   const renderCarCard = (car: Car) => (
     <View key={car.id} style={styles.carCard}>
-      <LinearGradient
-        colors={[colors.surface, colors.surfaceSecondary]}
-        style={styles.carCardGradient}
-      >
+      <View style={[globalStyles.garageCard, styles.carCardGradient]}>
         {/* Car Image */}
         {car.images.length > 0 && (
           <Image source={{ uri: car.images[car.primaryImageIndex] }} style={styles.carImage} />
@@ -400,7 +397,7 @@ export function GarageScreen({ navigation }: any) {
             <Ionicons name="trash" size={20} color="#FF6B6B" />
           </TouchableOpacity>
         </View>
-      </LinearGradient>
+      </View>
     </View>
   );
 
@@ -436,7 +433,7 @@ export function GarageScreen({ navigation }: any) {
             <View style={styles.userInfo}>
               <Text style={styles.welcomeText}>Welcome to your garage!</Text>
               <Text style={styles.userType}>
-                {user?.isPro ? ' Pro Racer' : ' Free User'} • {ownedCars.length} car{ownedCars.length !== 1 ? 's' : ''}
+                {user?.isPro ? ' Pro Racer' : ' Free User'} | {ownedCars.length} car{ownedCars.length !== 1 ? 's' : ''}
               </Text>
               {!user?.isPro && (
                 <TouchableOpacity 
@@ -810,7 +807,7 @@ export function GarageScreen({ navigation }: any) {
                             {item.make} {item.model}
                           </Text>
                           <Text style={styles.searchResultSubtitle}>
-                            {item.category} • {item.years.length} years available
+                            {item.category} | {item.years.length} years available
                           </Text>
                           <View style={styles.searchResultMeta}>
                             <View style={styles.popularityBar}>

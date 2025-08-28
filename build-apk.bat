@@ -4,7 +4,7 @@ echo Building GridGhost Mobile App
 echo ========================================
 
 :: Set correct JAVA_HOME
-set "JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot"
+set "JAVA_HOME=C:\Program Files\Java\jdk-17"
 echo JAVA_HOME: %JAVA_HOME%
 
 :: Determine build type (default to debug)
