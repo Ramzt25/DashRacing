@@ -494,9 +494,6 @@ Stop-ProcessOnPort 4000  # Backend
 Stop-ProcessOnPort 3001  # Backend alternative
 Stop-ProcessOnPort 8081  # Metro default
 Stop-ProcessOnPort 8082  # Metro alternative
-Stop-ProcessOnPort 19000 # Expo
-Stop-ProcessOnPort 19001 # Expo
-Stop-ProcessOnPort 19002 # Expo
 
 Start-Sleep -Seconds 2
 
