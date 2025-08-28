@@ -1,5 +1,8 @@
 node_modules
 
+# APK files are too large for GitHub (>100MB)
+*.apk
+
 # Environment variables with secrets
 .env
 .env.local
