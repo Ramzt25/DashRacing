@@ -1,24 +1,43 @@
-# GridGhost Racing Platform
+# CannaBalance - Wellness & T-Break Companion
 
-> **Race Anywhere, Meet Anywhere** - The ultimate social racing platform for car enthusiasts
+> **ECS Support First** - The ultimate wellness platform for daily THC users managing tolerance, mood, sleep and T-breaks
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
-[![React Native](https://img.shields.io/badge/React%20Native-0.79-61DAFB.svg)](https://reactnative.dev/)
+[![React](https://img.shields.io/badge/React-18+-61DAFB.svg)](https://reactjs.org/)
 
-## 🏎️ About GridGhost
+## 🌿 About CannaBalance
 
-GridGhost is a revolutionary mobile racing platform that combines real-world GPS locations with social gaming mechanics. Race anywhere in the world, create custom events, and connect with the global racing community.
+CannaBalance is a cross-platform PWA that helps daily THC users manage tolerance, mood, sleep and T-breaks, while offering evidence-based supplement guidance and ECS (Endocannabinoid System) support.
 
 ### ✨ Key Features
 
-- **🗺️ Live Racing Map** - Real-time player tracking with friend differentiation
-- **🏁 Race Creation** - Create races anywhere on Earth (Drag, Circuit, Drift, Time Trial)
-- **🎉 Social Events** - Host car meets, cruises, and photo sessions
-- **👥 Friend System** - Connect with racers and challenge friends
-- **🚗 Vehicle Garage** - Manage your car collection with real vehicle data
-- **📊 Racing Analytics** - Track performance and improve your skills
+- **🧬 ECS Foundation Stacks** - Core, Premium, and Elite supplement bundles for endocannabinoid support
+- **📊 ECS Impact Score** - Real-time scoring based on Absorption (40%), Antioxidant (25%), Neuro/Stress (20%), Gut (10%), Sleep (5%)
+- **🎯 Gamified Progress** - Points, streaks, and badges for consistency and wellness goals
+- **🚫 T-Break Support** - Dedicated tolerance break tracking with milestone rewards
+- **📱 Daily Check-ins** - Supplement and mood logging with AI-powered insights
+- **🛒 Smart Shop** - Evidence-based supplement recommendations with subscription options
+
+## 🧬 ECS Support - Our Main Focus
+
+The Endocannabinoid System (ECS) is central to everything we do:
+
+### **CannaBalance Core — ECS Foundation** ($69/month subscription)
+- **Goal**: Daily endocannabinoid support that improves cannabinoid absorption and baseline signaling
+- **Includes**: Omega-3 Fish Oil, Magnesium Glycinate, Multivitamin, Probiotic 40B CFU
+- **Timing**: AM — Omega-3 + Multi + Probiotic (with food); PM — Mag Glycinate
+
+### **CannaBalance Premium — Absorb & Resilience** ($109/month subscription)  
+- **Goal**: Add absorption (MCT) + adaptogen & neuro support to stabilize mood and sensitivity
+- **Includes**: Core + Ashwagandha, Mushroom Immune Booster, MCT Oil
+- **Timing**: AM — Omega-3, Multi, Probiotic, Mushroom; Midday — Ashwagandha, MCT; PM — Mag
+
+### **CannaBalance Elite — Reset & Protect** ($149/month subscription)
+- **Goal**: Full recovery stack with antioxidant/phase-II detox + sleep for nightly receptor maintenance  
+- **Includes**: Premium + NAC, Glutathione Complex, Sleep Formula
+- **Timing**: Complete daily protocol for optimal ECS function and tolerance management
 
 ## 🚀 Quick Start
 
@@ -27,20 +46,19 @@ GridGhost is a revolutionary mobile racing platform that combines real-world GPS
 - Node.js 18 or higher
 - Docker (for local development)
 - Azure CLI (for deployment)
-- Expo CLI (for mobile development)
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-org/gridghost.git
-   cd gridghost
+   git clone https://github.com/your-org/cannabalance.git
+   cd cannabalance
    ```
 
 2. **Install dependencies**
    ```bash
    npm install
-   cd gridghost-mobile-v2
+   cd admin-portal
    npm install
    cd ..
    ```
@@ -56,30 +74,30 @@ GridGhost is a revolutionary mobile racing platform that combines real-world GPS
    # Backend API
    npm run dev
 
-   # Mobile app (in another terminal)
-   cd gridghost-mobile-v2
-   npm start
+   # Web app (in another terminal)
+   cd admin-portal
+   npm run dev
    ```
 
 ## 🏗️ Architecture
 
-GridGhost uses a modern, scalable architecture:
+CannaBalance uses a modern, scalable architecture focused on ECS support:
 
 - **Backend**: Node.js + Fastify + TypeScript
-- **Database**: PostgreSQL with Prisma ORM
-- **Mobile**: React Native + Expo
+- **Database**: PostgreSQL with Prisma ORM  
+- **Frontend**: React + Vite + TypeScript + Tailwind CSS
 - **Infrastructure**: Azure Container Apps + Static Web Apps
-- **Real-time**: WebSocket integration for live features
+- **Real-time**: WebSocket integration for live gamification features
 
-## 📱 Mobile App
+## 📱 PWA Features
 
-The mobile app is built with React Native and Expo, featuring:
+The web app is built as a Progressive Web App featuring:
 
-- Cross-platform compatibility (iOS/Android)
-- Real-time GPS tracking
-- Interactive maps with racing venues
-- Social features and friend system
-- Vehicle management and customization
+- Mobile-first responsive design
+- Offline supplement tracking
+- Push notifications for supplement reminders
+- Install prompt for home screen access
+- ECS Impact Score calculator
 
 ### Running the Mobile App
 

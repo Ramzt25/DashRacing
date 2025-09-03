@@ -1,7 +1,7 @@
 {
-  "name": "gridghost",
+  "name": "cannabalance",
   "version": "1.0.0",
-  "description": "GridGhost Racing Platform - Race Anywhere, Meet Anywhere",
+  "description": "CannaBalance - Wellness & T-Break Companion for ECS Support",
   "private": true,
   "type": "module",
   "scripts": {
@@ -65,13 +65,15 @@
     "node": ">=18"
   },
   "keywords": [
-    "racing",
-    "social",
-    "mobile",
-    "gps",
-    "automotive",
-    "multiplayer"
+    "wellness",
+    "cannabis",
+    "supplements",
+    "ECS",
+    "endocannabinoid",
+    "health",
+    "tolerance-break",
+    "gamification"
   ],
-  "author": "GridGhost Team",
+  "author": "CannaBalance Team",
   "license": "MIT"
 }

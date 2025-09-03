@@ -2,15 +2,16 @@ import React, { ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
-  Users, 
-  Car, 
-  Trophy, 
+  Heart, 
+  ShoppingCart, 
+  CheckCircle, 
   Calendar, 
-  BarChart3, 
-  Settings,
+  Trophy, 
+  User,
   LogOut,
   Menu,
-  X
+  X,
+  Leaf
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useState } from 'react';
@@ -27,16 +28,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Users', href: '/users', icon: Users },
-    { name: 'Cars', href: '/cars', icon: Car },
-    { name: 'Races', href: '/races', icon: Trophy },
-    { name: 'Events', href: '/events', icon: Calendar },
-    { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-    { name: 'System', href: '/system', icon: Settings },
+    { name: 'ECS Stacks', href: '/stacks', icon: Heart },
+    { name: 'Shop', href: '/shop', icon: ShoppingCart },
+    { name: 'Daily Check-In', href: '/checkin', icon: CheckCircle },
+    { name: 'T-Break Tracker', href: '/tbreak', icon: Calendar },
+    { name: 'Rewards', href: '/rewards', icon: Trophy },
+    { name: 'Profile', href: '/profile', icon: User },
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-green-50">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
@@ -52,10 +53,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         'fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       )}>
-        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
-          <h1 className="text-xl font-bold text-gray-900">DashRacing Admin</h1>
+        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-green-600">
+          <div className="flex items-center space-x-2">
+            <Leaf className="w-7 h-7 text-white" />
+            <h1 className="text-xl font-bold text-white">CannaBalance</h1>
+          </div>
           <button
-            className="lg:hidden"
+            className="lg:hidden text-white"
             onClick={() => setSidebarOpen(false)}
           >
             <X className="w-6 h-6" />
@@ -73,7 +77,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   className={clsx(
                     'group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
                     isActive
-                      ? 'bg-primary-100 text-primary-700'
+                      ? 'bg-green-100 text-green-700'
                       : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                   )}
                   onClick={() => setSidebarOpen(false)}
@@ -82,7 +86,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     className={clsx(
                       'mr-3 h-5 w-5 transition-colors',
                       isActive
-                        ? 'text-primary-600'
+                        ? 'text-green-600'
                         : 'text-gray-400 group-hover:text-gray-600'
                     )}
                   />
@@ -93,6 +97,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
 
           <div className="mt-8 pt-8 border-t border-gray-200">
+            <div className="px-3 py-2 mb-4 bg-green-50 rounded-lg">
+              <p className="text-xs text-green-600 font-medium">ECS Focus</p>
+              <p className="text-sm text-gray-600 mt-1">Supporting your Endocannabinoid System daily</p>
+            </div>
+            
             <button
               onClick={logout}
               className="group flex items-center w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors"
@@ -115,7 +124,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             >
               <Menu className="w-6 h-6" />
             </button>
-            <h1 className="text-lg font-semibold text-gray-900">DashRacing Admin</h1>
+            <div className="flex items-center space-x-2">
+              <Leaf className="w-6 h-6 text-green-600" />
+              <h1 className="text-lg font-semibold text-gray-900">CannaBalance</h1>
+            </div>
             <div className="w-6" /> {/* Spacer */}
           </div>
         </header>
