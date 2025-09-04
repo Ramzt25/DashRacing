@@ -2,11 +2,15 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { theme } from '@dash/utils';
 import { useAuthStore } from '../../stores/authStore';
+import type { RootStackParamList } from '../../navigation/AppNavigator';
+
+type TermsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Terms'>;
 
 export function TermsScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<TermsScreenNavigationProp>();
   const { acceptTerms } = useAuthStore();
 
   const handleAccept = async () => {

@@ -60,7 +60,6 @@ export const APP_CONFIG = {
   privacyVersion: 1,
 } as const;
 
-// Feature flags and limits
 export const LIMITS = {
   free: {
     maxVehicles: 1,
@@ -75,6 +74,9 @@ export const LIMITS = {
     aiCallsPerDay: 50,
   },
 } as const;
+
+export const FREE_LIMITS = LIMITS.free;
+export const PREMIUM_BENEFITS = LIMITS.premium;
 
 // Map settings
 export const MAP_CONFIG = {

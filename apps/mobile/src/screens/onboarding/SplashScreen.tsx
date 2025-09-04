@@ -7,11 +7,15 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { theme } from '@dash/utils';
 import { useAuthStore } from '../../stores/authStore';
+import type { RootStackParamList } from '../../navigation/AppNavigator';
+
+type SplashScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Splash'>;
 
 export function SplashScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<SplashScreenNavigationProp>();
   const { isLoading, isAuthenticated, user } = useAuthStore();
 
   useEffect(() => {

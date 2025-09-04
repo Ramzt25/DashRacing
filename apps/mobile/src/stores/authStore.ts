@@ -66,8 +66,10 @@ export const useAuthStore = create<AuthState>()(
       try {
         const { data, error } = await supabase.auth.verifyOtp({
           token,
-          type,
-        });
+          type: type === 'email' ? 'email' : 'sms',
+          email: type === 'email' ? 'placeholder@example.com' : undefined,
+          phone: type === 'sms' ? '+1234567890' : undefined,
+        } as any);
         
         if (error) throw error;
         
@@ -152,7 +154,7 @@ export const useAuthStore = create<AuthState>()(
 
 // Initialize auth state listener
 supabase.auth.onAuthStateChange(async (event, session) => {
-  const { set } = useAuthStore.getState();
+  const state = useAuthStore.getState();
 
   if (event === 'SIGNED_IN' && session?.user) {
     try {
@@ -166,24 +168,20 @@ supabase.auth.onAuthStateChange(async (event, session) => {
         .eq('id', session.user.id)
         .single();
 
-      set({
-        user: profile,
-        session,
-        isAuthenticated: true,
-        isLoading: false,
-      });
+      state.user = profile;
+      state.session = session;
+      state.isAuthenticated = true;
+      state.isLoading = false;
     } catch (error) {
       console.error('Auth state change error:', error);
-      set({ isLoading: false });
+      state.isLoading = false;
     }
   } else if (event === 'SIGNED_OUT') {
-    set({
-      user: null,
-      session: null,
-      isAuthenticated: false,
-      isLoading: false,
-    });
+    state.user = null;
+    state.session = null;
+    state.isAuthenticated = false;
+    state.isLoading = false;
   } else {
-    set({ isLoading: false });
+    state.isLoading = false;
   }
 });

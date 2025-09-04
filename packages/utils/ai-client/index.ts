@@ -243,7 +243,7 @@ Limit to 5-8 realistic recommendations prioritized by value and safety.
       throw new Error(`AI API error: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
     const content = data.choices?.[0]?.message?.content;
 
     if (!content) {
