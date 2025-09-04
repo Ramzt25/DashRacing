@@ -1,0 +1,26 @@
+{
+  "name": "@dash/config",
+  "version": "1.0.0",
+  "description": "Shared configuration for Dash monorepo",
+  "main": "index.js",
+  "type": "module",
+  "exports": {
+    "./eslint": "./eslint.config.js",
+    "./prettier": "./prettier.config.js",
+    "./typescript": "./tsconfig.json"
+  },
+  "files": [
+    "eslint.config.js",
+    "prettier.config.js",
+    "tsconfig.json"
+  ],
+  "dependencies": {
+    "@react-native/eslint-config": "^0.73.2",
+    "eslint-config-next": "^14.1.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

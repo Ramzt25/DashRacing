@@ -1,0 +1,24 @@
+{
+  "name": "@dash/types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types for Dash",
+  "main": "index.ts",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./user": "./user.ts",
+    "./garage": "./garage.ts",
+    "./meets": "./meets.ts",
+    "./pins": "./pins.ts",
+    "./features": "./features.ts"
+  },
+  "files": [
+    "*.ts"
+  ],
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,170 +1,172 @@
-# GridGhost Racing Platform
+# Dash - Mobile Community Platform
 
-> **Race Anywhere, Meet Anywhere** - The ultimate social racing platform for car enthusiasts
+> **Connect. Share. Discover.** - The ultimate mobile platform for automotive enthusiasts
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
-[![React Native](https://img.shields.io/badge/React%20Native-0.79-61DAFB.svg)](https://reactnative.dev/)
+[![React Native](https://img.shields.io/badge/React%20Native-0.74+-61DAFB.svg)](https://reactnative.dev/)
 
-## 🏎️ About GridGhost
+## 🚗 About Dash
 
-GridGhost is a revolutionary mobile racing platform that combines real-world GPS locations with social gaming mechanics. Race anywhere in the world, create custom events, and connect with the global racing community.
+Dash is a production-grade mobile community platform built for automotive enthusiasts. Connect with fellow car lovers, discover local meets, share your garage, and explore automotive culture - all while maintaining privacy and safety.
 
 ### ✨ Key Features
 
-- **🗺️ Live Racing Map** - Real-time player tracking with friend differentiation
-- **🏁 Race Creation** - Create races anywhere on Earth (Drag, Circuit, Drift, Time Trial)
-- **🎉 Social Events** - Host car meets, cruises, and photo sessions
-- **👥 Friend System** - Connect with racers and challenge friends
-- **🚗 Vehicle Garage** - Manage your car collection with real vehicle data
-- **📊 Racing Analytics** - Track performance and improve your skills
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js 18 or higher
-- Docker (for local development)
-- Azure CLI (for deployment)
-- Expo CLI (for mobile development)
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-org/gridghost.git
-   cd gridghost
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   cd gridghost-mobile-v2
-   npm install
-   cd ..
-   ```
-
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
-
-4. **Start the development servers**
-   ```bash
-   # Backend API
-   npm run dev
-
-   # Mobile app (in another terminal)
-   cd gridghost-mobile-v2
-   npm start
-   ```
+- **🗺️ Interactive Maps** - Discover meets, events, and community pins with Mapbox integration
+- **🤝 Community Meets** - Create and attend local automotive gatherings
+- **🚗 Smart Garage** - AI-powered vehicle management and upgrade suggestions
+- **📍 Safety Pins** - Report and share road conditions, hazards, and points of interest
+- **👥 Friend Network** - Connect with local enthusiasts and track their activity
+- **🔒 Privacy First** - Granular location sharing controls and home geofencing
+- **⭐ Premium Features** - Advanced tools and unlimited vehicle management
 
 ## 🏗️ Architecture
 
-GridGhost uses a modern, scalable architecture:
+Dash uses a modern monorepo architecture:
 
-- **Backend**: Node.js + Fastify + TypeScript
-- **Database**: PostgreSQL with Prisma ORM
-- **Mobile**: React Native + Expo
-- **Infrastructure**: Azure Container Apps + Static Web Apps
-- **Real-time**: WebSocket integration for live features
+- **Mobile**: React Native bare app with TypeScript
+- **Admin**: Next.js admin panel for moderation and management
+- **Backend**: Supabase (Auth, Database, Storage, Edge Functions)
+- **Maps**: Mapbox for interactive mapping
+- **Realtime**: Ably for live presence and location sharing
+- **Push**: OneSignal for notifications
+- **Analytics**: Sentry + PostHog for monitoring and insights
+- **AI**: Pluggable AI backend for vehicle resolution and suggestions
 
-## 📱 Mobile App
+## 🚀 Prerequisites
 
-The mobile app is built with React Native and Expo, featuring:
+- Node.js 18+
+- pnpm (package manager)
+- Xcode (for iOS development)
+- Android Studio (for Android development)
+- Supabase CLI
+- CocoaPods (for iOS)
 
-- Cross-platform compatibility (iOS/Android)
-- Real-time GPS tracking
-- Interactive maps with racing venues
-- Social features and friend system
-- Vehicle management and customization
-
-### Running the Mobile App
+## 📦 Installation
 
 ```bash
-cd gridghost-mobile-v2
+# Clone the repository
+git clone https://github.com/your-org/dash.git
+cd dash
 
-# Start Expo development server
-npm start
+# Install dependencies
+pnpm install
 
-# Run on specific platforms
-npm run android
-npm run ios
-npm run web
+# Copy environment files
+cp apps/mobile/.env.example apps/mobile/.env
+cp apps/admin/.env.local.example apps/admin/.env.local
+
+# Setup Supabase
+npx supabase init
+npx supabase start
+npx supabase db reset
 ```
 
-## 🌐 API Endpoints
+## 🛠️ Development
 
-### Authentication
-- `POST /auth/register` - User registration
-- `POST /auth/login` - User login
-- `GET /auth/profile` - Get user profile
-- `POST /auth/upgrade` - Upgrade to premium
+### Mobile App
 
-### Racing
-- `GET /races` - List races
-- `POST /races` - Create race
-- `POST /races/:id/join` - Join race
-- `POST /races/:id/start` - Start race
+```bash
+# Start Metro bundler
+pnpm --filter @dash/mobile start
 
-### Events
-- `GET /events` - List events
-- `POST /events` - Create event
-- `POST /events/:id/join` - Join event
+# Run on iOS
+pnpm --filter @dash/mobile ios
 
-### Social
-- `GET /friends` - List friends
-- `POST /friends/request` - Send friend request
-- `POST /friends/accept` - Accept friend request
+# Run on Android
+pnpm --filter @dash/mobile android
+```
 
-Full API documentation is available in `/documents/PROJECT_DOCUMENTATION.md`
+### Admin Panel
+
+```bash
+# Start development server
+pnpm --filter @dash/admin dev
+```
+
+### Supabase Functions
+
+```bash
+# Deploy functions
+npx supabase functions deploy
+```
 
 ## 🧪 Testing
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
-# Run backend tests only
-npm run test:backend
+# Run mobile tests
+pnpm --filter @dash/mobile test
 
-# Run with coverage
-npm run test:coverage
+# Run admin tests
+pnpm --filter @dash/admin test
 ```
 
 ## 🚀 Deployment
 
-GridGhost is designed for Azure deployment using Azure Developer CLI (azd):
+### Mobile App
 
 ```bash
-# Login to Azure
-az login
+# Build iOS
+pnpm --filter @dash/mobile ios --configuration Release
 
-# Deploy to Azure
-azd up
-
-# Monitor deployment
-azd logs
+# Build Android
+pnpm --filter @dash/mobile android --variant release
 ```
 
-### Infrastructure
+### Admin Panel
 
-The Azure infrastructure includes:
-- **Azure Container Apps** for the API server
-- **Azure Database for PostgreSQL** for data storage
-- **Azure Static Web Apps** for the mobile app
-- **Azure Key Vault** for secrets management
-- **Application Insights** for monitoring
+```bash
+# Build for production
+pnpm --filter @dash/admin build
+```
 
-## 📊 Monitoring
+## 🔒 Security & Privacy
 
-Production monitoring includes:
-- Application performance metrics
-- Error tracking and logging
-- User analytics and usage patterns
-- Infrastructure health monitoring
+Dash prioritizes user safety and privacy:
+
+- No racing features or speed tracking
+- Opt-in location sharing with granular controls
+- Home geofencing to protect private locations
+- Comprehensive abuse reporting system
+- Shadow ban support for problematic users
+- Terms and privacy disclaimers required
+
+## 📋 Environment Variables
+
+### Mobile App (.env)
+
+```bash
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+ONESIGNAL_APP_ID=your_onesignal_app_id
+MAPBOX_ACCESS_TOKEN=your_mapbox_token
+ABLY_API_KEY=your_ably_key
+SENTRY_DSN=your_sentry_dsn
+POSTHOG_API_KEY=your_posthog_key
+AI_API_BASE=https://api.your-ai-gateway.example
+AI_API_KEY=your_ai_api_key
+FEATURE_FLAGS_TABLE=feature_flags
+```
+
+### Admin Panel (.env.local)
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+MAPBOX_ACCESS_TOKEN=your_mapbox_token
+```
+
+## 📚 Documentation
+
+- [Setup Instructions](./docs/setup.md)
+- [API Documentation](./docs/api.md)
+- [Mobile Development](./apps/mobile/README.md)
+- [Admin Panel](./apps/admin/README.md)
+- [Supabase Schema](./supabase/README.md)
 
 ## 🤝 Contributing
 
@@ -178,16 +180,10 @@ Production monitoring includes:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🔗 Links
+## 🆘 Support
 
-- [📚 Documentation](./documents/PROJECT_DOCUMENTATION.md)
-- [🐛 Issues](https://github.com/your-org/gridghost/issues)
-- [💬 Discussions](https://github.com/your-org/gridghost/discussions)
-
-## 📞 Support
-
-For support, email support@gridghost.com or create an issue in this repository.
+For support, create an issue in this repository or contact the development team.
 
 ---
 
-**Built with ❤️ by the GridGhost Team**
+**Built with ❤️ for the automotive community**

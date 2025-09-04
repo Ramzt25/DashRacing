@@ -1,1 +1,0 @@
-export { SupabaseRaceService as RaceService } from './SupabaseRaceService';

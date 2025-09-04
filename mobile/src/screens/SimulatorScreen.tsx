@@ -1,1 +1,0 @@
-export { LiveRaceScreen as SimulatorScreen } from './LiveRaceScreen';
